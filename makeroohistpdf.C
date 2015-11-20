@@ -8,10 +8,9 @@
 #include <RooDataHist.h>
 using namespace RooFit;
 
-RooHistPdf makeroohistpdf(TH1F *h, RooRealVar *x){
-  RooDataHist* hist = new RooDataHist("hist","hist",RooArgList(*x),h);
+RooHistPdf makeroohistpdf(RooDataHist *h, RooRealVar *x){
   TString htitle = h->GetTitle();
   TString histpdftitle = htitle + " PDF";
-  RooHistPdf histpdf("histpdf",histpdftitle,*x,*hist);
+  RooHistPdf histpdf("histpdf",histpdftitle,*x,*h);
   return histpdf;
 }
