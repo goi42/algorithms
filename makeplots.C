@@ -18,7 +18,7 @@
 #include <TString.h>
 
 // local
-#include "storeAll.C"
+#include "/afs/cern.ch/user/m/mwilkins/algorithms/storeAll.C"
 
 //-----------------------------------------------------------------------------
 // Implementation file for class : makeplots
@@ -31,8 +31,8 @@
 //=============================================================================
 void makeplots(TString runmode = "d", TString drawopt = "norm"){
   gROOT->SetBatch(kTRUE);
-  cout<<endl<<"If you want to use custom parameters, option 'b' for branch, 'c' for cuts,"\
-      <<", 'o' to specify the output, or 'f' to select the files and trees to include."<<endl;
+  cout<<endl<<"If you want to use custom parameters, option 'b' for branch, 'c' for cuts,";
+  cout<<", 'o' to specify the output, or 'f' to select the files and trees to include."<<endl;
   cout<<"Option 'C' saves canvases as .C files."<<endl;
   cout<<"The second parameter is the draw option. 'norm' by default."<<endl<<endl;
   cout<<"This program handles a specified number of variations and generates plots from the files corresponding to these.";
@@ -130,8 +130,12 @@ void makeplots(TString runmode = "d", TString drawopt = "norm"){
   int nComparisons=1;
   vector<TString> comparison(nComparisons);
   comparison[0]="decay";
-  int nhpc=2;
-  int nCanvases=4;
+  int nhpc=1;
+  int nCanvases=1;
+  for(int i=0;i<nLayers;i++){
+    if(i>=(nLayers-nComparisons)){ nhpc*=nL[i];//now we're in the realm of comparisons
+    }else{nCanvases *= nL[i];}
+  }
   vector<TString> list(0);//this holds the combinations of things used to describe the files; 
   //                        keep empty as the combinations are appended in get custom parameters
   //-----------------------------get custom parameters-----------------------//
@@ -168,7 +172,7 @@ void makeplots(TString runmode = "d", TString drawopt = "norm"){
       //-----check for syntax/spelling errors in 'branch' and 'cut'
       bool branch_check=kFALSE;
       bool cut_check=kFALSE;
-      if(Lresponse[i].Contains("ranc",kIgnoreCase)&&Lresponse[i]!="branch") branch_check=kTRUE;
+      if(Lresponse[i].Contains("ranc",TString::kIgnoreCase)&&Lresponse[i]!="branch") branch_check=kTRUE;
       if(branch_check){
         cout<<"You entered "<<Lresponse[i]<<". Did you mean 'branch' (necessary syntax if you're comparing branches)? (y/n)";
         cin>>response;
@@ -178,7 +182,7 @@ void makeplots(TString runmode = "d", TString drawopt = "norm"){
         }
         if(response=="y") Lresponse[i] = "branch";
       }
-      if(Lresponse[i].Contains("ut",kIgnoreCase)&&Lresponse[i]!="cut") cut_check=kTRUE;
+      if(Lresponse[i].Contains("ut",TString::kIgnoreCase)&&Lresponse[i]!="cut") cut_check=kTRUE;
       if(cut_check){
         cout<<"You entered "<<Lresponse[i]<<". Did you mean 'cut' (necessary syntax if you're comparing cuts)? (y/n)";
         cin>>response;
@@ -248,7 +252,8 @@ void makeplots(TString runmode = "d", TString drawopt = "norm"){
     if(same=="y"){
       cout<<"What folder (include '/' at the end)?"<<endl;
       filelocation.ReadLine(std::cin);
-      while(filelocation[filelocation.Length()-1] != "/"){
+      TString forwardslash = "/";
+      while(filelocation[filelocation.Length()-1] != forwardslash){
         cout<<"Try again. Include '/' at the end."<<endl;
         filelocation.ReadLine(std::cin);
       }
