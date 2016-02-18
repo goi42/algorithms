@@ -8,10 +8,15 @@
 #include <RooDataHist.h>
 using namespace RooFit;
 
-RooHistPdf makeroohistpdf(RooDataHist *h, RooRealVar *x,\
-                          TString hpdfname="jibberish", TString hpdftitle="jibberish"){
-  if(hpdfname=="jibberish") hpdfname = h->GetName() + " PDF";
-  if(hpdftitle=="jibberish") hpdftitle = h->GetTitle() + " PDF";
+RooHistPdf makeroohistpdf(RooDataHist *h, RooRealVar *x, TString hpdfname="jibberish", TString hpdftitle="jibberish"){
+  if(hpdfname=="jibberish") {
+    TString temp = h->GetName();
+    hpdfname = temp + " PDF";
+  }
+  if(hpdftitle=="jibberish"){
+    TString temp = h->GetTitle();
+    hpdftitle = temp + " PDF";
+  }
   RooHistPdf histpdf(hpdfname,hpdftitle,*x,*h);
   return histpdf;
 }
