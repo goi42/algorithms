@@ -27,11 +27,11 @@ public:
   TString name;//nickname for the file
   map<TString,TString> quality;//handy for comparing files, e.g., quality["year"]="2015"
   vector<TTree*> t;
+  vector<TString> tname;
   void add_tree(TString);
   vector<branch> b;
   void add_branch(TString);
   void add_branch(TString,TString);
-  void operator = (TFile*);
   
 protected:
 
@@ -57,6 +57,7 @@ void file::add_tree(TString temp){
   TTree * temptree;
   self->GetObject(temp,temptree);
   t.push_back(temptree);
+  tname.push_back(temp);
 }
 void file::add_branch(TString temp){
   branch tempbranch(temp);
@@ -65,9 +66,6 @@ void file::add_branch(TString temp){
 void file::add_branch(TString temp1,TString temp2){
   branch tempbranch(temp1,temp2);//self and name
   b.push_back(tempbranch);
-}
-void file::operator= (TFile* param){
-  self = param;
 }
 
 
