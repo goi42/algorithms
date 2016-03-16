@@ -1,4 +1,6 @@
 //modified from printAll.C to add the combinations to list instead of printing them
+#ifndef __storeAll_C_INCLUDED__
+#define __storeAll_C_INCLUDED__
 #include <vector>
 #include <TString.h>
 
@@ -16,3 +18,4 @@ void storeAll(const vector<vector<TString> > &allVecs, size_t vecIndex, TString 
     storeAll(allVecs, vecIndex+1, strSoFar+allVecs[vecIndex][i]+", ", list);
 }
 
+#endif

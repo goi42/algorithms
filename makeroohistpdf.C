@@ -1,6 +1,8 @@
 #ifndef __CINT__
 #include "RooGlobalFunc.h"
 #endif
+#ifndef __makeroohistpdf_C_INCLUDED__
+#define __makeroohistpdf_C_INCLUDED__
 #include "RooHistPdf.h"
 #include <TH1.h>
 #include <TString.h>
@@ -20,3 +22,4 @@ RooHistPdf makeroohistpdf(RooDataHist *h, RooRealVar *x, TString hpdfname="jibbe
   RooHistPdf histpdf(hpdfname,hpdftitle,*x,*h);
   return histpdf;
 }
+#endif

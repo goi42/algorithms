@@ -1,3 +1,6 @@
+#ifndef __inv_mass_C_INCLUDED__
+#define __inv_mass_C_INCLUDED__
+
 double inv_mass(double px_c,double py_c,double pz_c,double pe_c,double px_m,double py_m,double pz_m,double pe_m,double px_n,double py_n,double pz_n,double pe_n) {
   
   TVector3 *_P_Lc = new TVector3();
@@ -18,3 +21,4 @@ double inv_mass(double px_c,double py_c,double pz_c,double pe_c,double px_m,doub
   return mass;
   
 }
+#endif

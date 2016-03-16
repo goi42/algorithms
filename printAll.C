@@ -2,6 +2,8 @@
 //http://stackoverflow.com/questions/1700079/howto-create-combinations-of-several-vectors-without-hardcoding-loops-in-c
 //posted by interjay 2009/11/09.
 //It is a recursive function to print combinations of elements in a vector of vectors without hardcoding loops.
+#ifndef __printAll_C_INCLUDED__
+#define __printAll_C_INCLUDED__
 #include <vector>
 #include <TString.h>
 //call with printAll(allVecs, 0, "");
@@ -20,3 +22,4 @@ void printAll(const vector<vector<TString> > &allVecs, size_t vecIndex, TString 
     printAll(allVecs, vecIndex+1, strSoFar+allVecs[vecIndex][i]);
   
 }
+#endif
