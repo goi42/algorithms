@@ -40,15 +40,18 @@ private:
 };
 file::file(TString temp){
   self = TFile::Open(temp);
+  if(self==NULL) exit(EXIT_FAILURE);
   location = temp;
 }
 file::file(TString temp1,TString temp2){
   self = TFile::Open(temp1);
+  if(self==NULL) exit(EXIT_FAILURE);
   location = temp1;
   name = temp2;
 }
 file::file(TString temp1,TString temp2,map<TString,TString> temp3){
   self = TFile::Open(temp1);
+  if(self==NULL) exit(EXIT_FAILURE);
   location = temp1;
   name = temp2;
   quality = temp3;
