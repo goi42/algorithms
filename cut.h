@@ -19,6 +19,8 @@ public:
   //virtual ~cut( ); ///< Destructor
   TCut self;
   TString name;
+  TCut csig; //the cut in addition to self that produces nsig
+  TCut cbkg; //the cut in addition to self that produces nbkg
   int nsig;
   int nbkg;
   int nL;
