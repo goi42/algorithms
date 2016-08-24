@@ -282,7 +282,7 @@ void matrix::resize(int r, int c){
 void matrix::print(){
   for(unsigned int i=0; i<Nrows; i++) for(unsigned int j=0; j<Ncols; j++){
       if(j==0&&i>0)cout<<endl;
-      cout<<content[i][j];
+      cout<<content[i][j]<<" ";
     }
   cout<<endl;
 }
@@ -332,9 +332,7 @@ matrix matrix::operator* (const double& param) const{
 }
 matrix operator* (const double &param, const matrix &matr){
   //non-member function for other-way multiplication
-  matrix temp(matr.GetNrows(),matr.GetNcols());
-  temp = matr*param;
-  return temp;
+  return matr*param;
 }
 matrix matrix::operator* (const complex<double>& param) {
   matrix temp(Nrows,Ncols);
@@ -352,9 +350,7 @@ matrix matrix::operator* (const complex<double>& param) const{
 }
 matrix operator* (const complex<double> &param, const matrix &matr){
   //non-member function for other-way multiplication
-  matrix temp(matr.GetNrows(),matr.GetNcols());
-  temp = matr*param;
-  return temp;
+  return matr*param;
 }
 void matrix::operator*= (const matrix& param) {
   (*this) = (*this)*param;
@@ -436,7 +432,7 @@ matrix matrix::operator- (const double& param) const{
 }
 matrix operator- (const double &param, const matrix &matr){
   //non-member function for other-way subtraction
-  return matr-param;
+  return (-1)*(matr-param);
 }
 matrix matrix::operator- (const complex<double>& param) {
   return (*this)+((double)(-1)*param);
@@ -446,7 +442,7 @@ matrix matrix::operator- (const complex<double>& param) const{
 }
 matrix operator- (const complex<double> &param, const matrix &matr){
   //non-member function for other-way subtraction
-  return matr-param;
+  return (-1)*(matr-param);
 }
 void matrix::operator-= (const matrix& param) {
   (*this) = (*this)-param;
@@ -479,24 +475,22 @@ matrix sqrt(matrix in){
 //------------define/declare non-member functions------------------------//
 complex<double> operator* (const double &real, const complex<double> &comp){
   complex<double> temp(real,0);
-  complex<double> out = temp*comp;
-  return out;
+  return temp*comp;
 }
 complex<double> operator* (const complex<double> &comp, const double &real){
   return real*comp;
 }
 complex<double> operator/ (const double &real, const complex<double> &comp){
   complex<double> temp(real,0);
-  complex<double> out = temp/comp;
-  return out;
+  return temp/comp;
 }
 complex<double> operator/ (const complex<double> &comp, const double &real){
-  return real/comp;
+  complex<double> temp(real,0);
+  return comp/temp;
 }
 complex<double> operator+ (const double &real, const complex<double> &comp){
   complex<double> temp(real,0);
-  complex<double> out = temp+comp;
-  return out;
+  return temp+comp;
 }
 complex<double> operator+ (const complex<double> &comp, const double &real){
   return real+comp;
@@ -507,7 +501,12 @@ complex<double> operator- (const double &real, const complex<double> &comp){
   return out;
 }
 complex<double> operator- (const complex<double> &comp, const double &real){
-  return real-comp;
+  return (-1)*(real-comp);
+}
+complex<double> ArcTanh(const complex<double> &z){
+  //This is intended as an alternative to atanh(complex<double>) included in <complex>
+  //That function disagrees with Wolfram Mathematica about the sign of the imaginary component in some cases
+  return 0.5*(log(1+z)-log(1-z));
 }
 //------------end define/declare non-member functions--------------------//
 #endif // MATRIX_H
