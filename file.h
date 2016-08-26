@@ -38,36 +38,36 @@ protected:
 private:
 
 };
-file::file(TString temp){
-  self = TFile::Open(temp);
+file::file(TString loc){
+  self = TFile::Open(loc);
   if(self==NULL) exit(EXIT_FAILURE);
-  location = temp;
+  location = loc;
 }
-file::file(TString temp1,TString temp2){
-  self = TFile::Open(temp1);
+file::file(TString loc,TString nm){
+  self = TFile::Open(loc);
   if(self==NULL) exit(EXIT_FAILURE);
-  location = temp1;
-  name = temp2;
+  location = loc;
+  name = nm;
 }
-file::file(TString temp1,TString temp2,map<TString,TString> temp3){
-  self = TFile::Open(temp1);
+file::file(TString loc,TString nm,map<TString,TString> mp){
+  self = TFile::Open(loc);
   if(self==NULL) exit(EXIT_FAILURE);
-  location = temp1;
-  name = temp2;
-  quality = temp3;
+  location = loc;
+  name = nm;
+  quality = mp;
 }
-void file::add_tree(TString temp){
+void file::add_tree(TString trname){
   TTree * temptree;
-  self->GetObject(temp,temptree);
+  self->GetObject(trname,temptree);
   t.push_back(temptree);
-  tname.push_back(temp);
+  tname.push_back(trname);
 }
-void file::add_branch(TString temp){
-  branch tempbranch(temp);
+void file::add_branch(TString br){
+  branch tempbranch(br);
   b.push_back(tempbranch);
 }
-void file::add_branch(TString temp1,TString temp2){
-  branch tempbranch(temp1,temp2);//self and name
+void file::add_branch(TString br,TString brname){
+  branch tempbranch(br,brname);//self and name
   b.push_back(tempbranch);
 }
 
