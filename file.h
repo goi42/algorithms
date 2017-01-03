@@ -32,6 +32,8 @@ public:
   vector<branch> b;
   void add_branch(TString);
   void add_branch(TString,TString);
+  void add_branch(TString,int,double,double);
+  void add_branch(TString,TString,int,double,double);
   
 protected:
 
@@ -68,6 +70,14 @@ void file::add_branch(TString br){
 }
 void file::add_branch(TString br,TString brname){
   branch tempbranch(br,brname);//self and name
+  b.push_back(tempbranch);
+}
+void file::add_branch(TString br,int nbins,double lobin,double hibin){
+  branch tempbranch(br,nbins,lobin,hibin);
+  b.push_back(tempbranch);
+}
+void file::add_branch(TString br,TString brname,int nbins,double lobin,double hibin){
+  branch tempbranch(br,brname,nbins,lobin,hibin);//self and name
   b.push_back(tempbranch);
 }
 

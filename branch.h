@@ -20,6 +20,8 @@ public:
   branch(TString,TString);
   branch(TString,TString,int,double,double);
   branch(TString,TString,int,double,double,TString,TString);
+  branch(TString,int,double,double);
+  branch(TString,int,double,double,TString,TString);
   TString self;//what the branch is called in the tree
   TString name;//nickname--usually what you want to appear on a plot
   TString xlabel;
@@ -39,6 +41,7 @@ private:
 };
 branch::branch (TString temp) {
   self = temp;
+  name = temp;
 }
 branch::branch(TString temp1, TString temp2){
   self = temp1;
@@ -54,6 +57,22 @@ branch::branch(TString tself, TString tname, int nb, double lb, double hb){
 branch::branch(TString tself, TString tname, int nb, double lb, double hb, TString x, TString y){
   self = tself;
   name = tname;
+  nBins = nb;
+  loBin = lb;
+  hiBin = hb;
+  xlabel = x;
+  ylabel = y;
+}
+branch::branch(TString tself, int nb, double lb, double hb){
+  self = tself;
+  name = tself;
+  nBins = nb;
+  loBin = lb;
+  hiBin = hb;
+}
+branch::branch(TString tself, int nb, double lb, double hb, TString x, TString y){
+  self = tself;
+  name = tself;
   nBins = nb;
   loBin = lb;
   hiBin = hb;
