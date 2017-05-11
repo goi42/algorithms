@@ -29,7 +29,9 @@ public:
   int nBins;
   double loBin;
   double hiBin;
+  bool can_extend;//do you want Draw to change the bin range?
   void binning(int,double,double);
+  void binning(int,double,double,bool);
   vector<cut> c;//cuts to be applied to the branch
   void add_cut(TCut);
   void add_cut(TCut,TString);
@@ -39,50 +41,43 @@ protected:
 private:
 
 };
-branch::branch (TString temp) {
-  self = temp;
-  name = temp;
-}
-branch::branch(TString tself, TString tname){
+branch::branch (TString tself) {
   self = tself;
+  name = tself;
+  binning(0,0,0);
+}
+branch::branch(TString tself, TString tname) : branch(tself){
   name = tname;
 }
-branch::branch(TString tself, TString tname, int nb, double lb, double hb){
-  self = tself;
-  name = tname;
-  nBins = nb;
-  loBin = lb;
-  hiBin = hb;
+branch::branch(TString tself, TString tname, int nb, double lb, double hb) : branch(tself,tname){
+  binning(nb,lb,hb);
 }
-branch::branch(TString tself, TString tname, int nb, double lb, double hb, TString x, TString y){
-  self = tself;
-  name = tname;
-  nBins = nb;
-  loBin = lb;
-  hiBin = hb;
+branch::branch(TString tself, TString tname, int nb, double lb, double hb, TString x, TString y) : branch(tself,tname,nb,lb,hb){
   xlabel = x;
   ylabel = y;
 }
-branch::branch(TString tself, int nb, double lb, double hb){
-  self = tself;
-  name = tself;
-  nBins = nb;
-  loBin = lb;
-  hiBin = hb;
+branch::branch(TString tself, int nb, double lb, double hb) : branch(tself){
+  binning(nb,lb,hb);
 }
-branch::branch(TString tself, int nb, double lb, double hb, TString x, TString y){
-  self = tself;
-  name = tself;
-  nBins = nb;
-  loBin = lb;
-  hiBin = hb;
+branch::branch(TString tself, int nb, double lb, double hb, TString x, TString y) : branch(tself,nb,lb,hb){
   xlabel = x;
   ylabel = y;
 }
-void branch::binning(int b1, double b2, double b3){
-  nBins = b1;
-  loBin = b2;
-  hiBin = b3;
+void branch::binning(int nb, double lb, double hb){
+  nBins = nb;
+  loBin = lb;
+  hiBin = hb;
+  if(nBins < 0 || loBin > hiBin){
+    if(nBins < 0)
+      cout<<"branch "<<name<<" has nBins = "<<nBins<<". nBins must be >= 0!"<<endl;
+    if(loBin > hiBin)
+      cout<<"branch "<<name<<" has loBin = "<<loBin<<" and hiBin = "<<hiBin<<". loBin must be <= hiBin!"<<endl;
+    exit(EXIT_FAILURE);
+  }    
+}
+void branch::binning(int nb, double lb, double hb, bool ce){
+  binning(nb,lb,hb);
+  can_extend = ce;
 }
 void branch::add_cut(TCut temp){
   cut tempcut(temp);

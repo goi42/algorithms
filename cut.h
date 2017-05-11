@@ -32,13 +32,12 @@ protected:
 private:
 
 };
-cut::cut(TCut temp){
-  self = temp;
-  name = temp;
+cut::cut(TCut tself){
+  self = tself;
+  name = tself;
 }
-cut::cut(TCut temp1, TString temp2){
-  self = temp1;
-  name = temp2;
+cut::cut(TCut tself, TString tname) : cut(tself){
+  name = tname;
 }
 
 #endif // LBJPSIPPI_CUT_H

@@ -49,17 +49,10 @@ file::file(TString loc){
   if(self==NULL) exit(EXIT_FAILURE);
   location = loc;
 }
-file::file(TString loc,TString nm){
-  self = TFile::Open(loc);
-  if(self==NULL) exit(EXIT_FAILURE);
-  location = loc;
+file::file(TString loc,TString nm) : file(loc){
   name = nm;
 }
-file::file(TString loc,TString nm,map<TString,TString> mp){
-  self = TFile::Open(loc);
-  if(self==NULL) exit(EXIT_FAILURE);
-  location = loc;
-  name = nm;
+file::file(TString loc,TString nm,map<TString,TString> mp) : file(loc,nm){
   quality = mp;
 }
 void file::add_tree(TString trname){
@@ -69,27 +62,21 @@ void file::add_tree(TString trname){
   tname.push_back(trname);
 }
 void file::add_branch(TString br){
-  branch tempbranch(br);
-  b.push_back(tempbranch);
+  b.push_back(branch(br));
 }
 void file::add_branch(TString br,TString brname){
-  branch tempbranch(br,brname);//self and name
-  b.push_back(tempbranch);
+  b.push_back(branch(br,brname));//self and name
 }
 void file::add_branch(TString br,int nbins,double lobin,double hibin){
-  branch tempbranch(br,nbins,lobin,hibin);
-  b.push_back(tempbranch);
+  b.push_back(branch(br,nbins,lobin,hibin));
 }
 void file::add_branch(TString br,TString brname,int nbins,double lobin,double hibin){
-  branch tempbranch(br,brname,nbins,lobin,hibin);//self and name
-  b.push_back(tempbranch);
+  b.push_back(branch(br,brname,nbins,lobin,hibin));//self and name
 }
 void file::add_cut(TCut temp){
-  cut tempcut(temp);
-  c.push_back(tempcut);
+  c.push_back(cut(temp));
 }
 void file::add_cut(TCut temp,TString tname){
-  cut tempcut(temp,tname);
-  c.push_back(tempcut);
+  c.push_back(cut(temp,tname));
 }
 #endif // LBJPSIPPI_FILE_H
