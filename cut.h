@@ -34,6 +34,7 @@ private:
 };
 cut::cut(TCut temp){
   self = temp;
+  name = temp;
 }
 cut::cut(TCut temp1, TString temp2){
   self = temp1;

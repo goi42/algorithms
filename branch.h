@@ -43,9 +43,9 @@ branch::branch (TString temp) {
   self = temp;
   name = temp;
 }
-branch::branch(TString temp1, TString temp2){
-  self = temp1;
-  name = temp2;
+branch::branch(TString tself, TString tname){
+  self = tself;
+  name = tname;
 }
 branch::branch(TString tself, TString tname, int nb, double lb, double hb){
   self = tself;

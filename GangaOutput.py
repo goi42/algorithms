@@ -3,7 +3,7 @@ jid = sys.argv[1]
 # jid = 317
 j = jobs(jid)
 base_path = '/tmp/mwilkins/'
-s = 'Job ID = ' + repr(jid)
+s = 'Job ID = ' + repr(jid) + ', ' + j.name
 print s
 
 # f = j.outputfiles.get(DiracFile)
@@ -16,13 +16,13 @@ print s
 
 for sj in j.subjobs:
   if sj.status != 'completed': continue
-  # s = 'On subjob ' + repr(sj)
-  # if (sj.id == 169):
-  #    print s
+  s = 'On ' + repr(sj)
+  # if (sj.id == 0):
+  print s
   for f in sj.outputfiles.get(DiracFile):
-     whole_path = os.path.join(base_path, sj.fqid)
-     if not os.path.exists(whole_path):
-        os.makedirs(whole_path)
-        f.localDir = whole_path
-        f.get()
-         
+    whole_path = os.path.join(base_path, sj.fqid)
+    if not os.path.exists(whole_path):
+      os.makedirs(whole_path)
+      f.localDir = whole_path
+      f.get()
+        

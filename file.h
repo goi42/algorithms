@@ -7,6 +7,7 @@
 #include <TVector.h>
 #include <TFile.h>
 #include "branch.h"
+#include "cut.h"
 
 
 /** @class file file.h LbJpsipPi/file.h
@@ -34,7 +35,10 @@ public:
   void add_branch(TString,TString);
   void add_branch(TString,int,double,double);
   void add_branch(TString,TString,int,double,double);
-  
+  vector<cut> c;//cuts to be applied to the file
+  void add_cut(TCut);
+  void add_cut(TCut,TString);
+
 protected:
 
 private:
@@ -80,6 +84,12 @@ void file::add_branch(TString br,TString brname,int nbins,double lobin,double hi
   branch tempbranch(br,brname,nbins,lobin,hibin);//self and name
   b.push_back(tempbranch);
 }
-
-
+void file::add_cut(TCut temp){
+  cut tempcut(temp);
+  c.push_back(tempcut);
+}
+void file::add_cut(TCut temp,TString tname){
+  cut tempcut(temp,tname);
+  c.push_back(tempcut);
+}
 #endif // LBJPSIPPI_FILE_H
