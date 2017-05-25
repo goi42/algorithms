@@ -21,6 +21,7 @@ public:
   branch(TString,TString,int,double,double);
   branch(TString,TString,int,double,double,TString,TString);
   branch(TString,int,double,double);
+  branch(TString,int,double,double,TString);
   branch(TString,int,double,double,TString,TString);
   TString self;//what the branch is called in the tree
   TString name;//nickname--usually what you want to appear on a plot
@@ -30,6 +31,7 @@ public:
   double loBin;
   double hiBin;
   bool can_extend;//do you want Draw to change the bin range?
+  bool set_log_Y;//do you want a log scale?
   void binning(int,double,double);
   void binning(int,double,double,bool);
   vector<cut> c;//cuts to be applied to the branch
@@ -45,6 +47,8 @@ branch::branch (TString tself) {
   self = tself;
   name = tself;
   binning(0,0,0);
+  set_log_Y=0;
+  can_extend=0;
 }
 branch::branch(TString tself, TString tname) : branch(tself){
   name = tname;

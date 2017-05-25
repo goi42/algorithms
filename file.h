@@ -8,6 +8,7 @@
 #include <TFile.h>
 #include "branch.h"
 #include "cut.h"
+#include "fch.h"
 
 
 /** @class file file.h LbJpsipPi/file.h
@@ -16,28 +17,24 @@
  *  @author Michael Wilkinson
  *  @date   2016-01-14
  */
-class file {
-public: 
+class file : public fch {
+public:
   /// Standard constructor
   file(TString);
   file(TString,TString);
+  file(TString,TString,TString);
   file(TString,TString,map<TString,TString>);
+  file(TString,TString,map<TString,TString>,TString);
+  file(TString,TString,TString,map<TString,TString>);
   //  virtual ~file( ){delete self;} ///< Destructor
   TFile* self;//the file
   TString location;//the path to it, e.g., "/afs/.../file.root"
-  TString name;//nickname for the file
-  map<TString,TString> quality;//handy for comparing files, e.g., quality["year"]="2015"
-  vector<TTree*> t;
-  vector<TString> tname;
   void add_tree(TString);
-  vector<branch> b;
-  void add_branch(TString);
-  void add_branch(TString,TString);
-  void add_branch(TString,int,double,double);
-  void add_branch(TString,TString,int,double,double);
-  vector<cut> c;//cuts to be applied to the file
-  void add_cut(TCut);
-  void add_cut(TCut,TString);
+  TObjArray * GetListOfBranches();
+  int GetNbranches();
+  double GetMaximum(TString);
+  double GetMinimum(TString);
+  void Draw(TString,TCut,TString);
 
 protected:
 
@@ -50,10 +47,18 @@ file::file(TString loc){
   location = loc;
 }
 file::file(TString loc,TString nm) : file(loc){
-  name = nm;
+  fch::set_name(nm);
+}
+file::file(TString loc,TString nm,TString tr) : file(loc,nm) {
+  add_tree(tr);
 }
 file::file(TString loc,TString nm,map<TString,TString> mp) : file(loc,nm){
-  quality = mp;
+  fch::set_map(mp);
+}
+file::file(TString loc,TString nm,map<TString,TString> mp,TString tr) : file(loc,nm,mp){
+  add_tree(tr);
+}
+file::file(TString loc,TString nm,TString tr,map<TString,TString> mp) : file(loc,nm,mp,tr){
 }
 void file::add_tree(TString trname){
   TTree * temptree;
@@ -61,22 +66,37 @@ void file::add_tree(TString trname){
   t.push_back(temptree);
   tname.push_back(trname);
 }
-void file::add_branch(TString br){
-  b.push_back(branch(br));
+TObjArray * file::GetListOfBranches(){
+  if(!check_tsize_1()){
+    cout<<"file::GetListOfBranches() is only available for objects with only one tree."<<endl;
+    exit(EXIT_FAILURE);
+  }
+  return t[0]->GetListOfBranches();
 }
-void file::add_branch(TString br,TString brname){
-  b.push_back(branch(br,brname));//self and name
+int file::GetNbranches(){
+  if(!check_tsize_1()){
+    cout<<"file::GetNbranches() is only available for objects with only one tree."<<endl;
+    exit(EXIT_FAILURE);
+  }
+  return t[0]->GetNbranches();
 }
-void file::add_branch(TString br,int nbins,double lobin,double hibin){
-  b.push_back(branch(br,nbins,lobin,hibin));
+double file::GetMaximum(TString bnm){
+  if(!check_tsize_1()){
+    cout<<"file::GetMaximum(<branch>) is only available for objects with only one tree."<<endl;
+    exit(EXIT_FAILURE);
+  }
+  return t[0]->GetMaximum(bnm);
 }
-void file::add_branch(TString br,TString brname,int nbins,double lobin,double hibin){
-  b.push_back(branch(br,brname,nbins,lobin,hibin));//self and name
+double file::GetMinimum(TString bnm){
+  if(!check_tsize_1()){
+    cout<<"file::GetMinimum(<branch>) is only available for objects with only one tree."<<endl;
+    exit(EXIT_FAILURE);
+  }
+  return t[0]->GetMinimum(bnm);
 }
-void file::add_cut(TCut temp){
-  c.push_back(cut(temp));
-}
-void file::add_cut(TCut temp,TString tname){
-  c.push_back(cut(temp,tname));
+void file::Draw(TString varexp,TCut acut="",TString opt=""){
+  
+  if(can_Draw())
+    t[0]->Draw(varexp,acut,opt);
 }
 #endif // LBJPSIPPI_FILE_H

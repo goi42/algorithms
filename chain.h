@@ -8,6 +8,7 @@
 #include <TChain.h>
 #include "branch.h"
 #include "file.h"
+#include "fch.h"
 
 /** @class file chain.h LbJpsipPi/file.h
  *  
@@ -15,82 +16,97 @@
  *  @author Michael Wilkinson
  *  @date   2016-08-26
  */
-class chain {
+class chain : public fch {
 public: 
   /// Standard constructor
-  /* chain(file); */
+  chain(TString);
+  chain(TString,TString);
+  chain(TString,TString,map<TString,TString>);
   chain(TString,vector<file>);
   chain(TString,vector<file>,TString);
   chain(TString,vector<file>,TString,map<TString,TString>);
-  /* chain(TString); */
-  /* chain(TString,TString); */
-  /* chain(TString,TString,map<TString,TString>); */
-  /* chain(vector<TString>); */
-  /* chain(vector<TString>,vector<TString>); */
-  /* chain(vector<TString>,vector<TString>,map<TString,TString>); */
   //  virtual ~chain( ){delete self;} ///< Destructor
   TChain* self;//the chain
   /* vector<TString> locations;//the paths to the chained files, e.g., "/afs/.../file1.root" */
-  TString name;//nickname for the chain
-  map<TString,TString> quality;//handy for comparing chains, e.g., quality["year"]="2015"
-  TString tname;//name of tree--should include any intervening folders and be common to all files in the chain
-  vector<branch> b;
-  void add_branch(TString);
-  void add_branch(TString,TString);
+  void add_tree(TString,bool);
+  void add_file(TString);
   void add_files(vector<file>,bool);
-  void Draw(TString);
+  TObjArray * GetListOfBranches();
+  int GetNbranches();
+  double GetMaximum(TString);
+  double GetMinimum(TString);
   void Draw(TString,TCut,TString);
-  void Draw(TString,TString,TString);
-  
+
 protected:
 
 private:
 
 };
-chain::chain(TString tr, vector<file> lfiles){
-  tname = tr;
+chain::chain(TString tr){
+  tname.push_back(tr);
   self = new TChain(tr,"");
+  t.push_back(self->GetTree());
+}
+chain::chain(TString tr ,TString nm) : chain(tr){
+  fch::set_name(nm);
+}
+chain::chain(TString tr,TString nm,map<TString,TString> mp) : chain(tr,nm) {
+  fch::set_map(mp);
+}
+chain::chain(TString tr, vector<file> lfiles) : chain(tr){
   for(unsigned int i=0; i<lfiles.size(); i++){
     self->Add(lfiles[i].location);
     if(self==NULL) exit(EXIT_FAILURE);
   }
 }
-chain::chain(TString tr, vector<file> lfiles, TString nm){
-  chain tempchain(tr, lfiles);
-  (*this)=tempchain;
-  name = nm;
+chain::chain(TString tr, vector<file> lfiles, TString nm) : chain(tr,lfiles){
+  fch::set_name(nm);
 }
-chain::chain(TString tr, vector<file> lfiles, TString nm,map<TString,TString> mp){
-  chain tempchain(tr, lfiles, nm);
-  (*this)=tempchain;
-  quality = mp;
-}void chain::add_branch(TString br){
-  branch tempbranch(br);
-  b.push_back(tempbranch);
+chain::chain(TString tr, vector<file> lfiles, TString nm,map<TString,TString> mp) : chain(tr,lfiles,nm){
+  fch::set_map(mp);
 }
-void chain::add_branch(TString br,TString brname){
-  branch tempbranch(br,brname);//self and name
-  b.push_back(tempbranch);
+void chain::add_tree(TString trname,bool rcr=0){
+  cout<<"chain::add_tree not yet implemented because it is not clear what it should do."<<endl;
+  exit(EXIT_FAILURE);
+}
+void chain::add_file(TString floc){
+  self->Add(floc);
+  if(check_tsize_1())
+    t[0] = self->GetTree();
+  else{
+    cout<<"chain::add_file only works if there is only 1 associated tree."<<endl;
+    exit(EXIT_FAILURE);
+  }
+  if(self==NULL) exit(EXIT_FAILURE);
 }
 void chain::add_files(vector<file> lfiles,bool del=0){
   if(del){
+    if(!fch::check_tsize_1()){
+      cout<<"chain::add_files(<files>,del=1) requires 1 tree to avoid ambiguity."<<endl;
+      exit(EXIT_FAILURE);
+    }
     delete self;
-    self = new TChain(tname,"");
+    self = new TChain(tname[0],"");
   }
   for(unsigned int i=0; i<lfiles.size(); i++){
     self->Add(lfiles[i].location);
     if(self==NULL) exit(EXIT_FAILURE);
   }
-}  
-void chain::Draw(TString opt=""){
-  self->Draw(opt);
 }
-void chain::Draw(TString varexp,TCut acut,TString opt=""){
-  self->Draw(varexp,acut,opt);
+TObjArray * chain::GetListOfBranches(){
+  return self->GetListOfBranches();
 }
-void chain::Draw(TString varexp,TString acut,TString opt=""){
-  TCut tempcut = (TCut)acut;
-  self->Draw(varexp,tempcut,opt);
+int chain::GetNbranches(){
+  return self->GetNbranches();
 }
-
+double chain::GetMaximum(TString bnm){
+  return self->GetMaximum(bnm);
+}
+double chain::GetMinimum(TString bnm){
+  return self->GetMinimum(bnm);
+}
+void chain::Draw(TString varexp,TCut acut="",TString opt=""){
+  if(can_Draw())
+    self->Draw(varexp,acut,opt);
+}
 #endif // LBJPSIPPI_CHAIN_H
