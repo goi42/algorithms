@@ -12,6 +12,7 @@ class chain(fch):
         if quality: self.set_quality(quality)
         if lfiles: self.add_files(lfiles)
         self.locations = []
+        self.thething = self.chain
     def add_tree(self,trname,recreate=False):
         print "chain.add_tree not yet implemented because it is not clear what it should do."
         sys.exit()
@@ -32,18 +33,4 @@ class chain(fch):
         for ifile in lfiles:
             self.add_file(ifile)
 
-    def GetListOfBranches(self):
-        temp = []
-        for nm in self.chain.GetListOfBranches():
-            temp.append(nm.GetName())
-        return temp
-    def GetNbranches(self):
-        return self.chain.GetNbranches()
-    def GetMaximum(self,brname):
-        return self.chain.GetMaximum(brname)
-    def GetMinimum(self,brname):
-        return self.chain.GetMinimum(brname)
-    def Draw(self,varexp,acut="",opt=""):
-        if self.can_Draw():
-            self.chain.Draw(varexp,acut,opt)
 

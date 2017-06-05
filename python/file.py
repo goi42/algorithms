@@ -15,26 +15,5 @@ class file(fch):
         self.file.GetObject(trname,temptree)
         self.t.append(temptree)
         self.tname.append(trname)
-    def GetListOfBranches(self):
-        if not self.check_tsize_1():
-            print "file.GetListOfBranches() is only available for objects with only one tree."
-            sys.exit()
-        return self.t[0].GetListOfBranches()
-    def GetNbranches(self):
-        if not self.check_tsize_1():
-            print "file.GetNbranches() is only available for objects with only one tree."
-            sys.exit()
-        return self.t[0].GetNbranches()
-    def GetMaximum(self,bname):
-        if not self.check_tsize_1():
-            print "file.GetMaximum() is only available for objects with only one tree."
-            sys.exit()
-        return self.t[0].GetMaximum()
-    def GetMinimum(self,bname):
-        if not self.check_tsize_1():
-            print "file.GetMinimum() is only available for objects with only one tree."
-            sys.exit()
-        return self.t[0].GetMinimum()
-    def Draw(self,varexp,acut="",opt=""):
-        if self.can_Draw():
-            self.t[0].Draw(varexp,acut,opt)
+        if(self.check_tsize_1()):
+            self.thething = self.t[0]

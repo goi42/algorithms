@@ -22,6 +22,11 @@ class branch:
         self.can_extend = False #do you want Draw to change the bin range?
         self.set_log_Y = False #do you want a log scale?
         self.c=[]#cuts to be applied to the branch
+        # self.legxi = 0.3
+        # self.legxf = 0.6
+        # self.legyi = 0.7
+        # self.legyf = 0.9
+        # self.legend = TLegend(self.legxi,self.legyi,self.legxf,self.legyf)
     def binning(self,nBins,loBin,hiBin,can_extend=None):
         if nBins<0 or loBin>hiBin:
             if nBins<0:

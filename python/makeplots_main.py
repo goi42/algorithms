@@ -1,6 +1,10 @@
 #!/usr/bin/python
 '''
-This compares any number of layers on any number of plots. It needs to be passed a list of layers, which it imports from a file called makeplots_layer.py. Such a file need only declare (and fill) a list of layers called L. This script handles all the sorting logic and plot making. It takes arguments as described in makeplots_parser.py, one of which specifies the directory containing makeplots_layer.py. Overall, this architecture should make things much cleaner as this script should be able to reside undisturbed in this directory while users (*ahem* just me *ahem*) will only have to modify/create project-specific makeplots_layers.py scripts.
+example usage:
+    (in directory containing makeplots_layer.py:)
+    python ~/algorithms/python/makeplots_main.py --verbose
+
+This compares any number of layers on any number of plots. It needs to be passed a list of layers, which it imports from a file called makeplots_layer.py. Such a file need only declare (and fill) a list of layers called L. This script handles all the sorting logic and plot making. It takes arguments as described in makeplots_parser.py, one of which specifies the directory containing makeplots_layer.py. Overall, this architecture should make things much cleaner as this script should be able to reside undisturbed in this directory while users (*ahem* just me *ahem*) will only have to modify/create project-specific makeplots_layer.py scripts.
 
 I say it can compare any number of layers. It should be able to--the C++ code it was adapted from could. But I've made some small changes to the layer class (specifically, the element list no longer just holds names but an actual list of items--this change allows this script simply to import the layer list L without having to worry about anything else), and while I know it still compares files, branches, and cuts just fine, I haven't tried it out with anything more complicated. (Things like having multiple files from various years and comparing years, for instance.)
 
@@ -20,23 +24,29 @@ from file import *
 from chain import *
 from layer import *
 
-
-if debug: verbose = True
-
 ROOT.gROOT.SetBatch(True)
+
+sys.path.insert(0,pathtolayerfile)
+from makeplots_layer import L
+
+print '---------------------------makeplots_main.py---------------------------'
+print 'using layer input from '+pathtolayerfile
+print 'will save plots using option "'+drawopt+'" to '+outputlocation+filename
+if histograms: print 'will create histogram file '+outputlocation+hfilename
+if verbose and not debug: print 'verbose mode set'
+if debug: print 'debug mode set'
+print ''
 
 #-------assign layers, etc.---------#
 if(verbose): print "assigning layers... ",
 
-# subprocess.call(['makeplots_layer.py',
-sys.path.insert(0,pathtolayerfile)
-from makeplots_layer import L
 nLayers = len(L)
 nhpc=int(1)#actual value assigned below
 nCanvases=int(1)#actual value assigned below
+fL=bL=cL=int(0)#actual value assigned below
 for iLayer in L:
     #assign layers this is not an algorithm 
-    if(iLayer.name=="file"):
+    if(iLayer.name=="file" or iLayer.name=="chain"):
         fL=L.index(iLayer)
     elif(iLayer.name=="branch"):
         bL=L.index(iLayer)
@@ -47,7 +57,7 @@ for iLayer in L:
     if(iLayer.compared): nhpc *= iLayer.nL
     else: nCanvases *= iLayer.nL
 if(verbose): print "done"
-print "nFiles = "+repr(len(L[fL].element))+", nBranches = "+repr(len(L[bL].element))+", nCuts = "+repr(len(L[fL].element))
+print "nFiles = "+repr(len(L[fL].element))+", nBranches = "+repr(len(L[bL].element))+", nCuts = "+repr(len(L[cL].element))
 print "nLayers = "+repr(nLayers)+", nCanvases = "+repr(nCanvases)+", nhpc = "+repr(nhpc)
 #------------done-----------#
 
@@ -55,11 +65,12 @@ print "nLayers = "+repr(nLayers)+", nCanvases = "+repr(nCanvases)+", nhpc = "+re
 hfile = TFile() #declared here
 if(histograms):
     if(verbose): print "creating histogram file"+hfilename+"...",
+    placeholder=outputlocation+hfilename
     hfile = TFile(hfilename,"recreate")#assigned here
     if(verbose): print "done"
 #create necessary counters, canvases, legends, etc.
 if(verbose): print "\ncreating canvasy things... ",
-c = [TCanvas() for _ in range(nCanvases)] #each canvas holds one stack of histograms
+#c = [TCanvas() for _ in range(nCanvases)] #each canvas holds one stack of histograms
 cf = TCanvas("cf","combined") #canvas to hold everything
 sqnc = math.sqrt(nCanvases)
 sqncu = int(math.ceil(sqnc))
@@ -89,17 +100,15 @@ pli=int(0) #this counts the number of plots generated helps iterate L[i].Li
 if(verbose): print "done"
 print "\nstarting canvas loop..."
 #actual start of the loop
-for ci in c:
-    cistring = repr(c.index(ci))
+for ci_i in range(0,nCanvases): #ci in c:
+    cistring = repr(ci_i) #repr(c.index(ci))
     print "On canvas "+repr(int(cistring)+1)+" out of "+repr(nCanvases)
     #create necessary canvasy things
     placeholder = "c"+cistring
     ci = TCanvas(placeholder,placeholder,1200,800) #create the canvases
     ci.cd()
     ROOT.gStyle.SetOptStat("")
-    leg =  TLegend(0.75, 0.6, 1, 0.9)#create legend
-    # leg = TLegend(0.41, 0.7, 0.85, 0.9)#create legend
-    # leg = TLegend(0.65, 0.7, 1, 0.9)#create legend
+    leg = TLegend(legpars[0],legpars[1],legpars[2],legpars[3])
     placeholder = "hs"+cistring
     hs = THStack(placeholder,placeholder) #create the stack to hold the histograms
 
@@ -181,9 +190,10 @@ for ci in c:
     #draw stacked histograms
     if(verbose): print "drawing stack "+repr(int(cistring)+1)+": "+stacktitle+"... ",
     hs.SetTitle(stacktitle)
-    placeholder = "nostack "+drawopt
+    placeholder = "nostack"
+    if drawopt: placeholder+=" "+drawopt #turns out "nostack " is different than "nostack"...
     hs.Draw(placeholder)
-    if(leg.GetNRows()>0): leg.Draw()#you don't need a legend if nothing's compared
+    if(leg.GetNRows()>0): leg.Draw() #you don't need a legend if nothing's compared
     cf.cd(int(cistring)+1)
     ci.DrawClonePad()
     if(verbose): print "done"
@@ -204,4 +214,4 @@ cf.cd()
 placeholder = outputlocation+filename+")"
 cf.Print(placeholder)
 ROOT.gROOT.SetBatch(False)
-print "done"
+print "---------------------------done---------------------------"
