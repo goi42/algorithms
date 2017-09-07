@@ -18,7 +18,6 @@ class branch:
         if c: self.c=c #cuts to be applied to the branch
         self.associated_branch = None
         if associated_branch: self.associated_branch = associated_branch #branch() object that this will be plotted against, as <thisbranch>:<associated branch>
-        self.h = None #histogram
         # self.legxi = 0.3
         # self.legxf = 0.6
         # self.legyi = 0.7

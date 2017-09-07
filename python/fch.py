@@ -71,55 +71,6 @@ class fch: #abstract base class for file and chain classes
         for bname in bloop:
             self.bMaxes[bname] = self.GetMaximum(bname)
             self.bMins [bname] = self.GetMinimum(bname)
-    def make_histogram(self,thisbranch,linecolor=0): #create an empty histogram
-        assocbranch = thisbranch.associated_branch
-        if not thisbranch.nBins: thisbranch.nBins = 100 #set default binning if not specified
-        hilospec = False #is either loBin or hiBin non-0?
-        if thisbranch.loBin or thisbranch.hiBin: hilospec = True
-        binning_set = all([thisbranch.nBins,hilospec]) #is the binning completely specified now?
-        if assocbranch: #repeat for assocbranch
-            if not assocbranch.nBins: assocbranch.nBins = 100
-            hilospec = False #is either loBin or hiBin non-0?
-            if assocbranch.loBin or assocbranch.hiBin: hilospec = True
-            assocbinning_set = all([assocbranch.nBins,hilospec])
-            if not assocbranch:
-                h = TH1F(hname,thisbranch.name,thisbranch.nBins,thisbranch.loBin,thisbranch.hiBin)
-            else:
-                h = TH2F(hname,thisbranch.name+' vs. '+assocbranch.name,thisbranch.nBins,thisbranch.loBin,thisbranch.hiBin,assocbranch.nBins,assocbranch.loBin,assocbranch.hiBin)
-            if not assocbranch:
-                if(not binning_set or thisbranch.can_extend): h.SetCanExtend(TH1.kAllAxes)
-            else:
-                if(not binning_set or thisbranch.can_extend): h.SetCanExtend(TH1.kXaxis)
-                if(not assocbinning_set or assocbranch.can_extend): h.SetCanExtend(TH1.kYaxis)
-                h.GetXaxis().SetTitle(thisbranch.branch)
-                h.GetYaxis().SetTitle(assocbranch.branch)
-
-
     def Draw(self,thisbranch,acut="",opt="",return_hist=False):
         if self.can_Draw():
-            if not thisbranch.__class__.__name__ == 'branch': #if a string is passed
-                self.thething.Draw(varexp,acut,opt)
-            else: #if a branch object is passed
-                #draw histograms
-                if not assocbranch:
-                    h.SetLineColor(hi+1)
-                    if((hi+1==5) or (hi+1==10)): h.SetLineColor(hi+21)
-                    #if any branches have these options set, draw them that way:
-                    if(thisbranch.set_log_X): ci.SetLogx()
-                    if(thisbranch.set_log_Y): ci.SetLogy()
-                    placeholder = thisbranch.branch+">>"+hname
-                else:
-                    placeholder = assocbranch.branch+":"+thisbranch.branch+">>"+hname
-                    if(thisbranch.set_log_X):  ci.SetLogx()
-                    if(assocbranch.set_log_X): ci.SetLogy()
-                    if(thisbranch.set_log_Y or assocbranch.set_log_Y): ci.SetLogz()
-                try:
-                    thisfile.Draw(placeholder,thiscut.cut,drawopt)#one tree per file
-                except:
-                    print "Draw() failed for "+placeholder
-                    print "in file: "+thisfile.name
-                    print "with cut: "+thiscut.name
-                    print "Attempting to draw again..."
-                    h.SetCanExtend(TH1.kAllAxes)
-                    thisfile.Draw(placeholder,thiscut.cut,drawopt)#one tree per file
-                if(verbose): print "done"
+            self.thething.Draw(varexp,acut,opt)
