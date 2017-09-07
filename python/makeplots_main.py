@@ -13,10 +13,6 @@ It suffers from a need for all files to have the same number of branches and all
 Elements of its logic are very C++-like, an artifact from its original design. I haven't wanted to rethink the logic yet, nor have I needed to.
 '''
 #import
-import sys,os,math,subprocess
-import ROOT
-from ROOT import TLegend, TTree, TROOT, TRint, TFile, THStack, TH1, TH1F, TH2, TStyle, TCanvas, TVector3, TPaveStats, TString, TCut
-#import local
 from makeplots_parser import *
 from branch import *
 from cut import *
@@ -24,15 +20,21 @@ from file import *
 from chain import *
 from layer import *
 
+import sys,os,math,subprocess,progressbar,time
+import ROOT
+from ROOT import TLegend, TTree, TROOT, TRint, TFile, THStack, TH1, TH1F, TH2, TH2F, TStyle, TCanvas, TVector3, TPaveStats, TString, TCut
+
 ROOT.gROOT.SetBatch(True)
+ROOT.gErrorIgnoreLevel = ROOT.kWarning
 
 sys.path.insert(0,pathtolayerfile)
 from makeplots_layer import L
 
 print '---------------------------makeplots_main.py---------------------------'
+print 'starting at', time.asctime(time.localtime(time.time()))
 print 'using layer input from '+pathtolayerfile
-print 'will save plots using option "'+drawopt+'" to '+outputlocation+filename
-if histograms: print 'will create histogram file '+outputlocation+hfilename
+print 'will save plots using option "'+drawopt+'" to', os.path.join(outputlocation,filename)
+if histograms: print 'will create histogram file', os.path.join(outputlocation,hfilename)
 if verbose and not debug: print 'verbose mode set'
 if debug: print 'debug mode set'
 print ''
@@ -40,23 +42,31 @@ print ''
 #-------assign layers, etc.---------#
 if(verbose): print "assigning layers... ",
 
-nLayers = len(L)
-nhpc=int(1)#actual value assigned below
-nCanvases=int(1)#actual value assigned below
-fL=bL=cL=int(0)#actual value assigned below
-for iLayer in L:
-    #assign layers this is not an algorithm 
-    if(iLayer.name=="file" or iLayer.name=="chain"):
-        fL=L.index(iLayer)
-    elif(iLayer.name=="branch"):
-        bL=L.index(iLayer)
-    elif(iLayer.name=="cut"):
-        cL=L.index(iLayer)
-
-    #calculate nhpc and nCanvases
-    if(iLayer.compared): nhpc *= iLayer.nL
-    else: nCanvases *= iLayer.nL
+CutLayerExists = False
+while not CutLayerExists:
+    nhpc=nCanvases=int(1)#actual values assigned below
+    fL=bL=cL=int(0)#actual values assigned below
+    for iLayer in L:
+        #assign layers this is not an algorithm 
+        if(iLayer.name=="file" or iLayer.name=="chain"):
+            fL=L.index(iLayer)
+        elif(iLayer.name=="branch"):
+            bL=L.index(iLayer)
+        elif(iLayer.name=="cut"):
+            CutLayerExists = True
+            cL=L.index(iLayer)
+        #calculate nhpc and nCanvases
+        if(iLayer.compared): nhpc *= iLayer.nL
+        else: nCanvases *= iLayer.nL
+    if not CutLayerExists:
+        print 'No cut layer given. Generating...',
+        for ifile in L[fL].element:
+            for ibranch in ifile.b:
+                ibranch.c = [cut("","no additional cuts")]
+        L.append(layer(L[fL].element[0].b[0].c))
+        print 'done.'
 if(verbose): print "done"
+nLayers = len(L)
 print "nFiles = "+repr(len(L[fL].element))+", nBranches = "+repr(len(L[bL].element))+", nCuts = "+repr(len(L[cL].element))
 print "nLayers = "+repr(nLayers)+", nCanvases = "+repr(nCanvases)+", nhpc = "+repr(nhpc)
 #------------done-----------#
@@ -65,8 +75,7 @@ print "nLayers = "+repr(nLayers)+", nCanvases = "+repr(nCanvases)+", nhpc = "+re
 hfile = TFile() #declared here
 if(histograms):
     if(verbose): print "creating histogram file"+hfilename+"...",
-    placeholder=outputlocation+hfilename
-    hfile = TFile(hfilename,"recreate")#assigned here
+    hfile = TFile(os.path.join(outputlocation,hfilename),"recreate")#assigned here
     if(verbose): print "done"
 #create necessary counters, canvases, legends, etc.
 if(verbose): print "\ncreating canvasy things... ",
@@ -80,8 +89,8 @@ cf.Divide(sqncu,sqncd)#canvas divided to be able to hold all other canvases
 #calculate plL (product of lower layers) (helps iterate L[i].Li)
 #this name made more sense when the order layers were specified mattered
 #now, compared layers must iterate most frequently and non-compared less frequently
-#the if statements mean the user can specify what layers to use in any order
-#        instead of just iterating the last most frequently
+#(the if statements mean the user can specify what layers to use in any order
+#        instead of just iterating the last most frequently)
 #plLx (product of lower layers exclusive) helps determine which file we're using
 for i in xrange(0,nLayers): #the following is very C++, but I haven't rethought the logic yet
     for j in xrange(nLayers-1,i,-1):
@@ -100,20 +109,32 @@ pli=int(0) #this counts the number of plots generated helps iterate L[i].Li
 if(verbose): print "done"
 print "\nstarting canvas loop..."
 #actual start of the loop
+if not debug:
+    canbar = progressbar.ProgressBar( maxval=nCanvases,
+                                      widgets = 
+                                      [ progressbar.Bar('=','[',']'),' ', progressbar.Percentage() ]
+                                      )
 for ci_i in range(0,nCanvases): #ci in c:
     cistring = repr(ci_i) #repr(c.index(ci))
-    print "On canvas "+repr(int(cistring)+1)+" out of "+repr(nCanvases)
+    if debug: print "On canvas "+repr(int(cistring)+1)+" out of "+repr(nCanvases)
+    else:
+        if ci_i==0: canbar.start()
+        canbar.update(ci_i+1)
     #create necessary canvasy things
     placeholder = "c"+cistring
     ci = TCanvas(placeholder,placeholder,1200,800) #create the canvases
     ci.cd()
     ROOT.gStyle.SetOptStat("")
     leg = TLegend(legpars[0],legpars[1],legpars[2],legpars[3])
-    placeholder = "hs"+cistring
-    hs = THStack(placeholder,placeholder) #create the stack to hold the histograms
+    hs = THStack("hs"+cistring,"hs"+cistring) #create the stack to hold the histograms
 
     stacktitle=""
     #histogram loop
+    if nhpc>9 and not debug: #progress bar for long jobs
+        histbar = progressbar.ProgressBar( maxval=nhpc,
+                                           widgets = 
+                                           [ progressbar.Bar('=','[',']'),' ', progressbar.Percentage() ]
+                                           )
     for hi in xrange(0,nhpc):
         #decide which file to use
         file_num=0
@@ -127,32 +148,64 @@ for ci_i in range(0,nCanvases): #ci in c:
         #create convenient pointers
         thisfile = L[fL].element[file_num]
         thisbranch = thisfile.b[L[bL].Li]
+        assocbranch = thisbranch.associated_branch
+        if assocbranch and debug: print thisbranch.name+' has associated branch '+assocbranch.name
         thiscut = thisbranch.c[L[cL].Li]
         if(debug): print "done"
         #create histogram
-        if(verbose): print "creating histogram "+repr(hi+1)+"... ",
-        binning_set = any([thisbranch.nBins,thisbranch.loBin,thisbranch.hiBin]) #was the binning specified above?
-        if(not binning_set): #currently only considers whether all or no binning was specified could theoretically handle some
-            thisbranch.nBins = 100
-        h = TH1F(hname,thisbranch.name,thisbranch.nBins,thisbranch.loBin,thisbranch.hiBin)
-        if(not binning_set or thisbranch.can_extend): h.SetCanExtend(TH1.kAllAxes)
-        if(verbose): print "done"
+        if(debug): print "creating histogram "+repr(hi+1)+"... ",
+        if nhpc>9 and not debug:
+            if hi==0: histbar.start()
+            histbar.update(hi+1)
+        if not nofixbinning and hs.GetHists(): #adjust binning of this branch to match previous one #THStack.GetHists() returns null-pointer if no histograms have been added to the stack
+            lasthistaxis = hs.GetHists()[-1].GetXaxis()
+            thisbranch.nBins = lasthistaxis.GetNbins()
+            thisbranch.loBin = lasthistaxis.GetXmin()
+            thisbranch.hiBin = lasthistaxis.GetXmax()
+        if not thisbranch.nBins: thisbranch.nBins = 100 #set default binning if not specified
+        hilospec = False #is either loBin or hiBin non-0?
+        if thisbranch.loBin or thisbranch.hiBin: hilospec = True
+        binning_set = all([thisbranch.nBins,hilospec]) #is the binning completely specified now?
+        if assocbranch: #repeat for assocbranch
+            if not assocbranch.nBins: assocbranch.nBins = 100
+            hilospec = False #is either loBin or hiBin non-0?
+            if assocbranch.loBin or assocbranch.hiBin: hilospec = True
+            assocbinning_set = all([assocbranch.nBins,hilospec])
+        if not assocbranch:
+            h = TH1F(hname,thisbranch.name,thisbranch.nBins,thisbranch.loBin,thisbranch.hiBin)
+        else:
+            h = TH2F(hname,thisbranch.name+' vs. '+assocbranch.name,thisbranch.nBins,thisbranch.loBin,thisbranch.hiBin,assocbranch.nBins,assocbranch.loBin,assocbranch.hiBin)
+        if not assocbranch:
+            if(not binning_set or thisbranch.can_extend): h.SetCanExtend(TH1.kAllAxes)
+        else:
+            if(not binning_set or thisbranch.can_extend): h.SetCanExtend(TH1.kXaxis)
+            if(not assocbinning_set or assocbranch.can_extend): h.SetCanExtend(TH1.kYaxis)
+            h.GetXaxis().SetTitle(thisbranch.branch)
+            h.GetYaxis().SetTitle(assocbranch.branch)
+        if(verbose and nhpc<10): print "done"
         #draw histograms
         if(verbose): print "drawing histogram "+repr(hi+1)+"... ",
-        h.SetLineColor(hi+1)
-        if((hi+1==5) or (hi+1==10)): h.SetLineColor(hi+21)
-        if(thisbranch.set_log_Y): #if any branches have this option set, draw them that way.
-            ci.SetLogy()
-        placeholder = thisbranch.branch+">>"+hname
+        if not assocbranch:
+            h.SetLineColor(hi+1)
+            if((hi+1==5) or (hi+1==10)): h.SetLineColor(hi+21)
+            #if any branches have these options set, draw them that way:
+            if(thisbranch.set_log_X): ci.SetLogx()
+            if(thisbranch.set_log_Y): ci.SetLogy()
+            placeholder = thisbranch.branch+">>"+hname
+        else:
+            placeholder = assocbranch.branch+":"+thisbranch.branch+">>"+hname
+            if(thisbranch.set_log_X):  ci.SetLogx()
+            if(assocbranch.set_log_X): ci.SetLogy()
+            if(thisbranch.set_log_Y or assocbranch.set_log_Y): ci.SetLogz()
         try:
             thisfile.Draw(placeholder,thiscut.cut,drawopt)#one tree per file
         except:
-            print "Draw() failed for branch: "+thisbranch.name
+            print "Draw() failed for "+placeholder
             print "in file: "+thisfile.name
             print "with cut: "+thiscut.name
             print "Attempting to draw again..."
             h.SetCanExtend(TH1.kAllAxes)
-            thisfile.Draw(placeholder,thiscut.cut,drawopt)#one tree per file	
+            thisfile.Draw(placeholder,thiscut.cut,drawopt)#one tree per file
         if(verbose): print "done"
         pli+=1 #iterate the number of plots that have been drawn
 
@@ -171,12 +224,15 @@ for ci_i in range(0,nCanvases): #ci in c:
         leglabel=""
         for Li in L:
             #determine the name of the stack title
+            Ltitle = Li.element[Li.Li].name
+            if(Li.name == 'branch' and Li.element[Li.Li].associated_branch):
+                Ltitle += ' vs. '+Li.element[Li.Li].associated_branch.name
             if(Li.compared):#compared layers in the legend entry
                 if(leglabel!=""): leglabel+=", "
-                leglabel+= Li.element[Li.Li].name
+                leglabel+= Ltitle
             elif(hi==0): #since stacktitle reflects non-compared layers, it only needs to change per canvas
                 if(stacktitle!=""): stacktitle+=": "
-                stacktitle+= Li.element[Li.Li].name #non-compared goes in title
+                stacktitle+= Ltitle #non-compared goes in title
 
             #iterate layer counters
             if(Li.plL==1): Li.Li+=1 #if it's at the lowest hierarchy, iterate
@@ -184,34 +240,40 @@ for ci_i in range(0,nCanvases): #ci in c:
             if(Li.Li==Li.nL): Li.Li=0 #reset the iteration if it's reached the end
         #end layer loop
         #fill legends
-        leg.AddEntry(h,leglabel,"l")
+        if leglabel != "": leg.AddEntry(h,leglabel,"l") # no need for a legend if nothing is compared
         if(verbose): print "done"
     #end histogram loop
+    if not debug and nhpc>9: histbar.finish()
     #draw stacked histograms
     if(verbose): print "drawing stack "+repr(int(cistring)+1)+": "+stacktitle+"... ",
     hs.SetTitle(stacktitle)
     placeholder = "nostack"
     if drawopt: placeholder+=" "+drawopt #turns out "nostack " is different than "nostack"...
     hs.Draw(placeholder)
+    if assocbranch:
+        hs.GetXaxis().SetTitle(thisbranch.name)
+        hs.GetYaxis().SetTitle(assocbranch.name)
+        ci.Update()
     if(leg.GetNRows()>0): leg.Draw() #you don't need a legend if nothing's compared
     cf.cd(int(cistring)+1)
     ci.DrawClonePad()
     if(verbose): print "done"
     #save stuff:
     if(verbose): print "saving files... ",
-    placeholder = outputlocation+filename+"("#the closing page is added after the loop
+    placeholder = os.path.join(outputlocation,filename)
+    if nCanvases>1: placeholder+="("#the closing page is added after the loop
     ci.Print(placeholder)
     if(saveC):
-        placeholder = outputlocation+"c"+cistring+"_"+stacktitle+".C"
-        ci.SaveAs(placeholder)
+        ci.SaveAs(os.path.join(outputlocation,"c"+cistring+"_"+stacktitle+".C"))
     if(verbose): print "done\n"
 #end canvas loop
+if not debug: canbar.finish()
 if(histograms):
     if(verbose): print "closing histogram file "+hfilename+"...",
     hfile.Close()
     if(verbose): print "done"
 cf.cd()
-placeholder = outputlocation+filename+")"
-cf.Print(placeholder)
+if nCanvases>1: cf.Print(os.path.join(outputlocation,filename+")"))
 ROOT.gROOT.SetBatch(False)
-print "---------------------------done---------------------------"
+print 'finished at', time.asctime(time.localtime(time.time()))
+print "---------------------------done----------------------------------------"

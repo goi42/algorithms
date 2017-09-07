@@ -1,7 +1,7 @@
 class layer:
     def __init__(self,element):
         self.name=element[0].__class__.__name__ #this is the type of layer
-        self.element=element #this is what each element of the layer is called
+        self.element=element #element is a list of objects
         self.nL= len(self.element)
         self.Li = 0 #index indicating which element/comparison of the layer we are on should be iterated in code
         self.nLec=0 #should be set = element.size() or comparison.size()

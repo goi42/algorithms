@@ -2,32 +2,29 @@ import sys
 from cut import cut
 
 class branch:
-    def __init__(self,branch,name=None,nBins=None,loBin=None,hiBin=None,xlabel=None,ylabel=None):
-        binlist = (nBins,loBin,hiBin)
-        self.branch = branch
+    def __init__(self,branch,name=None,nBins=0,loBin=0,hiBin=0,xlabel="",ylabel="",set_log_X=False,set_log_Y=False,can_extend=False,c=None,associated_branch=None):
+        self.branch = branch #name of branch as it appears in the tree
         self.name = branch #nickname--usually what you want to appear on a plot
         if name: self.name = name
-        self.nBins = self.loBin = self.hiBin = 0
-        if all(binlist):
-            self.nBins = nb
-            self.loBin = lb
-            self.hiBin = hb
-        elif any(binlist) and not all(binlist):
-            print repr(self.name)+" not instantiated properly!"
-            print "must specify none or all of nBins, loBin, and hiBin when instantiating branch object!"
-            sys.exit()
-        self.xlabel = self.ylabel = ""
-        if xlabel: self.xlabel = xlabel
-        if ylabel: self.ylabel = ylabel
-        self.can_extend = False #do you want Draw to change the bin range?
-        self.set_log_Y = False #do you want a log scale?
-        self.c=[]#cuts to be applied to the branch
+        self.nBins = nBins
+        self.loBin = loBin
+        self.hiBin = hiBin
+        self.xlabel = xlabel
+        self.ylabel = ylabel
+        self.set_log_X = set_log_X #do you want a log scale?
+        self.set_log_Y = set_log_Y #do you want a log scale?
+        self.can_extend = can_extend #do you want Draw to change the bin range?
+        self.c = []
+        if c: self.c=c #cuts to be applied to the branch
+        self.associated_branch = None
+        if associated_branch: self.associated_branch = associated_branch #branch() object that this will be plotted against, as <thisbranch>:<associated branch>
+        self.h = None #histogram
         # self.legxi = 0.3
         # self.legxf = 0.6
         # self.legyi = 0.7
         # self.legyf = 0.9
         # self.legend = TLegend(self.legxi,self.legyi,self.legxf,self.legyf)
-    def binning(self,nBins,loBin,hiBin,can_extend=None):
+    def set_binning(self,nBins,loBin,hiBin,can_extend=False):
         if nBins<0 or loBin>hiBin:
             if nBins<0:
                 print "branch "+repr(self.name)+" cannot be assigned nBins = "+repr(nBins)+". nBins must be >=0!"
@@ -37,8 +34,9 @@ class branch:
         self.nBins=nBins
         self.loBin=loBin
         self.hiBin=hiBin
-        if can_extend:
-            self.can_extend = can_extend
-    def add_cut(self,Cut,name=None):
-        self.c.append(cut(Cut,name))
-  
+        self.can_extend = can_extend
+    def add_cut(self,*args,**kwargs):
+        if len(args)==1 and len(kwargs)==0 and args[0].__class__.__name__=='cut':
+            self.c.append(*args)
+        else:
+            self.c.append(cut(*args,**kwargs))
