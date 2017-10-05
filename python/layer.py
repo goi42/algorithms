@@ -1,5 +1,7 @@
 class layer:
     def __init__(self,element):
+        if len(element) == 0:
+            raise IndexError('can only create layers from not-empty lists')
         self.name=element[0].__class__.__name__ #this is the type of layer
         self.element=element #element is a list of objects
         self.nL= len(self.element)

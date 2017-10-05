@@ -16,4 +16,13 @@ class file(fch):
         self.t.append(temptree)
         self.tname.append(trname)
         if(self.check_tsize_1()):
-            self.thething = self.t[0]
+            self._thething = self.t[0]
+    def GetTree(self,trname=''):
+        if trname == '':
+            self.file_1tree_check('GetTree')
+            return self._thething
+        else:
+            for tr in self.t:
+                if trname == tr.GetName():
+                    return tr
+    

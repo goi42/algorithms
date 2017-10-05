@@ -12,7 +12,7 @@ class chain(fch):
         if quality: self.set_quality(quality)
         if lfiles: self.add_files(lfiles)
         self.locations = [] #list of locations of added files
-        self.thething = self.chain
+        self._thething = self.chain
     def add_tree(self,trname,recreate=False):
         print "chain.add_tree not yet implemented because it is not clear what it should do."
         sys.exit()
@@ -20,8 +20,7 @@ class chain(fch):
         self.chain.Add(floc)
         self.locations.append(floc)
         if not self.check_tsize_1():
-            print "chain::add_file only works if there is only 1 associated tree."
-            sys.exit()
+            raise ValueError("chain::add_file only works if there is only 1 associated tree.")
         self.t[0] = self.chain.GetTree()
     def add_files(self,lfiles,recreate=False):
         if recreate:
