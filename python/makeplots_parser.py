@@ -26,12 +26,14 @@ parser.add_argument('--legend',type=float,nargs=4,
                     metavar=('xlo','ylo','xhi','yhi'),
                     default=[0.75,0.6,1,0.9],
                     help='list of parameters for legend placement')
+parser.add_argument('--legendkey',default=None,choices=['topcenter'],
+                    help='shortcuts to certain legend configurations')
 # leg =  TLegend(0.3, 0.7, 0.6, 0.9)#create legend
 # leg =  TLegend(0.75, 0.6, 1, 0.9)#create legend
 # leg = TLegend(0.41, 0.7, 0.85, 0.9)#create legend
 # leg = TLegend(0.65, 0.7, 1, 0.9)#create legend
-parser.add_argument('--nofixbinning',action='store_true',
-                    help='by default, after the first histogram is drawn, all subsequent histograms on the same canvas are drawn with the same number of bins and same hi and lo bins. select this option to disable this behavior.')
+parser.add_argument('--fixbinning',action='store_true',
+                    help='after the first histogram is drawn, all subsequent histograms on the same canvas will be drawn with the same number of bins and same hi and lo bins.')
 
 # class modimport(argparse.Action):
 #     def __init__(self,option_strings,dest,nargs=None,**kwargs):
@@ -59,4 +61,6 @@ saveC = args.C
 histograms = args.hist
 hfilename=args.hfilename
 legpars = args.legend
-nofixbinning = args.nofixbinning
+if args.legendkey == 'topcenter':
+    legpars = [0.3,0.7,0.6,0.9]
+fixbinning = args.fixbinning
