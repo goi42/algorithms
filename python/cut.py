@@ -1,5 +1,4 @@
 from ROOT import TCut
-import warnings
 class cut:
     def __init__(self,cut,name=None):
         self.cut = TCut(cut)
@@ -35,7 +34,6 @@ class cut:
     def __add__(self, another):
         newcut,newname,ancut,anname = self._arithmetic('&&',another)
         if not self.cut.GetTitle().strip():
-            warnings.warn('adding to empty cut!')
             newcut = ancut
             if not self.name.strip():
                 newname = anname
@@ -44,7 +42,6 @@ class cut:
     def __sub__(self, another):
         newcut,newname,ancut,anname = self._arithmetic('&& !',another)
         if not self.cut.GetTitle().strip():
-            warnings.warn('subtracting from empty cut!')
             newcut = '!('+ancut+')'
             if not self.name.strip():
                 newname = '!('+anname+')'
