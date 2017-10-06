@@ -25,6 +25,7 @@ class branch:
         # self.legyi = 0.7
         # self.legyf = 0.9
         # self.legend = TLegend(self.legxi,self.legyi,self.legxf,self.legyf)
+        self.h = None
     def set_binning(self,nBins,loBin,hiBin,can_extend=False):
         if nBins<0 or loBin>hiBin:
             if nBins<0:
