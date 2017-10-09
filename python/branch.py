@@ -1,6 +1,6 @@
 import sys
 from cut import cut
-from ROOT import TH1F, TH1, TH2F
+from ROOT import TH1F, TH1, TH2F, TCut
 
 class branch:
     nh = 0 #number of created histograms for branches to avoid duplicate names and memory leaks, iterated in make_histogram() below
@@ -42,11 +42,20 @@ class branch:
             if len(args)==1 and len(kwargs)==0:
                 self.c.append(*args)
             elif len(args)==2 and isinstance(args[1],str):
-                self.c.append(cut(args[0].cut,args[1]))
+                self.add_cut(args[0].cut,args[1])
             elif all(isinstance(x, cut) for x in args):
                 self.c.extend(args)
             else:
                 raise TypeError
+        elif all(isinstance(x, list) for x in args):
+            for ar in args:
+                if all(isinstance(x, cut) for x in ar):
+                    self.c.extend(ar)
+                elif all(isinstance(x, (str,TCut)) for x in ar):
+                    for ct in ar:
+                        self.add_cut(ct)
+                else:
+                    raise TypeError
         else:
             self.c.append(cut(*args,**kwargs))
     def make_histogram(self,hname=None,linecolor=1,overwrite=False,return_histogram=True): #create an empty histogram
