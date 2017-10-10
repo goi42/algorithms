@@ -2,7 +2,7 @@ import sys
 from cut import cut
 from ROOT import TH1F, TH1, TH2F, TCut
 
-class branch:
+class branch(bfch):
     nh = 0 #number of created histograms for branches to avoid duplicate names and memory leaks, iterated in make_histogram() below
     def __init__(self,branch,name=None,nBins=0,loBin=0,hiBin=0,xlabel="",ylabel="",set_log_X=False,set_log_Y=False,can_extend=False,c=None,associated_branch=None):
         self.branch = branch #name of branch as it appears in the tree
@@ -16,8 +16,7 @@ class branch:
         self.set_log_X = set_log_X #do you want a log scale?
         self.set_log_Y = set_log_Y #do you want a log scale?
         self.can_extend = can_extend #do you want Draw to change the bin range?
-        self.c = []
-        if c: self.c=c #cuts to be applied to the branch
+        if c: self.c=c #cuts to be applied to the branch; c initialized in bfch
         self.associated_branch = None
         if associated_branch: self.associated_branch = associated_branch #branch() object that this will be plotted against, as <thisbranch>:<associated branch>
         # self.legxi = 0.3
@@ -37,27 +36,6 @@ class branch:
         self.loBin=loBin
         self.hiBin=hiBin
         self.can_extend = can_extend
-    def add_cut(self,*args,**kwargs):
-        if isinstance(args[0],cut):
-            if len(args)==1 and len(kwargs)==0:
-                self.c.append(*args)
-            elif len(args)==2 and isinstance(args[1],str):
-                self.add_cut(args[0].cut,args[1])
-            elif all(isinstance(x, cut) for x in args):
-                self.c.extend(args)
-            else:
-                raise TypeError
-        elif all(isinstance(x, list) for x in args):
-            for ar in args:
-                if all(isinstance(x, cut) for x in ar):
-                    self.c.extend(ar)
-                elif all(isinstance(x, (str,TCut)) for x in ar):
-                    for ct in ar:
-                        self.add_cut(ct)
-                else:
-                    raise TypeError
-        else:
-            self.c.append(cut(*args,**kwargs))
     def make_histogram(self,hname=None,linecolor=1,overwrite=False,return_histogram=True): #create an empty histogram
         if not hname:
             hname = 'h'+repr(branch.nh)

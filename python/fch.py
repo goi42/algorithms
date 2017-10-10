@@ -3,14 +3,13 @@ from branch import *
 from cut import *
 from ROOT import TCanvas
 
-class fch: #abstract base class for file and chain classes
+class fch(bfch): #abstract base class for file and chain classes
     def __init__(self):
         self.name="" #nickname for the file or chain
         self.quality = {} #handy for comparing files, e.g., quality["year"]="2015"
         self.t=[]
         self.tname=[]
         self.b=[]
-        self.c=[]#cuts to be applied to the file
         self._thething = None #should be set to a tree for file and the chain for chain
         self.bMaxes = {}
         self.bMins  = {}
@@ -28,12 +27,9 @@ class fch: #abstract base class for file and chain classes
                 self.b += args
         else:
             self.b.append(branch(*args,**kwargs))
-    def add_cut(self,*args,**kwargs):
-        self.c.append(cut(*args,**kwargs))
     def GetNtrees(self):
         if len(self.t) != len(self.tname):
-            print repr(self.name)+" has "+len(t)+" trees but "+len(tname)+" tree names. How did this happen?"
-            sys.exit()
+            raise ValueError(repr(self.name)+" has "+repr(len(t))+" trees but "+repr(len(tname))+" tree names. How did this happen?")
         return len(self.t)
     def check_tsize_1(self):
         if self.GetNtrees()==1:
@@ -68,6 +64,8 @@ class fch: #abstract base class for file and chain classes
     def GetbMaxMin(self,brlist=[]):
         self.file_1tree_check("GetMaxMin")
         bloop = []
+        if not isinstance(brlist,list):
+            raise TypeError("GetbMaxMin takes a _list_, not a "+brlist.__class__.__name__)
         if brlist:
             bloop = brlist
         elif self.b:
@@ -78,6 +76,16 @@ class fch: #abstract base class for file and chain classes
         for bname in bloop:
             self.bMaxes[bname] = self.GetMaximum(bname)
             self.bMins [bname] = self.GetMinimum(bname)
+    def GetEntries(self,selection):
+        if isinstance(selection,str):
+            p = selection
+        elif isinstance(selection,cut):
+            p = selection.cut.GetTitle()
+        elif isinstance(selection,TCut):
+            p = selection.GetTitle()
+        else:
+            raise TypeError('GetEntries requires a str, cut, or TCut, not a '+selection.__class__.__name__)
+        return self._thething.GetEntries(p)
     def Draw(self,thisbranch,thiscut="",opt="",canvas=None):
         if self.can_Draw():
             btypepassed = thisbranch.__class__.__name__
