@@ -25,10 +25,23 @@ class chain(fch):
     def add_files(self,lfiles,recreate=False):
         if recreate:
             if not self.check_tsize_1():
-                print "chain.add_files(...,recreate=True) requires 1 tree to avoid ambiguity."
-                sys.exit()
+                raise ValueError("chain.add_files(...,recreate=True) requires 1 tree to avoid ambiguity.")
             self.chain = TChain(tname[0],"")
         for ifile in lfiles:
             self.add_file(ifile)
-
+    def add_files_from(self,location,ignore_path='old',filemax=None,forcename=None):
+        '''walks down the specified directory, skipping all paths with the specified ignore_path string in them, and adds all files contained therein. If filemax is specified, only adds files until the number of added files reaches filemax. If forcename is specified, requires added files have the specified name.
+        '''
+        import os
+        for dirpath,dirnames,filenames in os.walk(location):
+            if 'old' in dirpath:
+                continue
+            for fl in filenames:
+                if filemax:
+                    if len(self.locations) >= filemax:
+                        return
+                if forcename:
+                    if fl != forcename:
+                        raise NameError(os.path.join(dirpath,fl)+" is not named "+forcename)
+                self.add_file(os.path.join(dirpath,fl))
 
