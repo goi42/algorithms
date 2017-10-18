@@ -1,10 +1,12 @@
 import sys
-from cut import cut
+from cut import *
+from bfch import *
 from ROOT import TH1F, TH1, TH2F, TCut
 
 class branch(bfch):
     nh = 0 #number of created histograms for branches to avoid duplicate names and memory leaks, iterated in make_histogram() below
     def __init__(self,branch,name=None,nBins=0,loBin=0,hiBin=0,xlabel="",ylabel="",set_log_X=False,set_log_Y=False,can_extend=False,c=None,associated_branch=None):
+        bfch.__init__(self,c=c)
         self.branch = branch #name of branch as it appears in the tree
         self.name = branch #nickname--usually what you want to appear on a plot
         if name: self.name = name
@@ -16,7 +18,6 @@ class branch(bfch):
         self.set_log_X = set_log_X #do you want a log scale?
         self.set_log_Y = set_log_Y #do you want a log scale?
         self.can_extend = can_extend #do you want Draw to change the bin range?
-        if c: self.c=c #cuts to be applied to the branch; c initialized in bfch
         self.associated_branch = None
         if associated_branch: self.associated_branch = associated_branch #branch() object that this will be plotted against, as <thisbranch>:<associated branch>
         # self.legxi = 0.3

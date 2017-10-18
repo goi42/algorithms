@@ -1,7 +1,13 @@
+from cut import *
 from ROOT import TCut
 class bfch: #abstract base class for branch and fch classes
-    def __init__(self):
+    def __init__(self,c=None):
         self.c = [] #cuts to be applied
+        if c:
+            if isinstance(c,list) and all(isinstance(x,cut) for x in c):
+                self.c=c
+            else:
+                raise TypeError('passed a '+c.__class__.__name__+' as "c" instead of a list.')
     def add_cut(self,*args,**kwargs):
         if isinstance(args[0],cut):
             if len(args)==1 and len(kwargs)==0:

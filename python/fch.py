@@ -1,10 +1,12 @@
 import sys
 from branch import *
 from cut import *
+from bfch import *
 from ROOT import TCanvas
 
 class fch(bfch): #abstract base class for file and chain classes
     def __init__(self):
+        bfch.__init__(self)
         self.name="" #nickname for the file or chain
         self.quality = {} #handy for comparing files, e.g., quality["year"]="2015"
         self.t=[]
@@ -38,7 +40,7 @@ class fch(bfch): #abstract base class for file and chain classes
             print repr(self.name)+" has a tree list with "+repr(self.GetNtrees())+" trees."
             return False
     def file_1tree_check(self,fname):
-        if self._thething.__class__.__name__=='file':
+        if self.__class__.__name__=='file':#this check is only necessary for files, not chains
             if not self.check_tsize_1():
                 raise NotImplementedError("file."+fname+" is only available for objects with only one tree.")
     def can_Draw(self):
@@ -76,7 +78,7 @@ class fch(bfch): #abstract base class for file and chain classes
         for bname in bloop:
             self.bMaxes[bname] = self.GetMaximum(bname)
             self.bMins [bname] = self.GetMinimum(bname)
-    def GetEntries(self,selection):
+    def GetEntries(self,selection=''):
         if isinstance(selection,str):
             p = selection
         elif isinstance(selection,cut):
