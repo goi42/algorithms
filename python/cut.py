@@ -12,7 +12,8 @@ class cut:
         self.nL=0
         self.nS=0
         self.nb=0
-
+    def __getattr__(self,name):
+        return getattr(self.cut,name)
     def _arithmetic(self,sym,another):
         if another.__class__.__name__ == self.__class__.__name__:
             ancut = another.cut.GetTitle()

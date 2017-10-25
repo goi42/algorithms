@@ -13,6 +13,8 @@ class chain(fch):
         if lfiles: self.add_files(lfiles)
         self.locations = [] #list of locations of added files
         self._thething = self.chain
+    def __getattr__(self,name):
+        return getattr(self.chain,name)
     def add_tree(self,trname,recreate=False):
         print "chain.add_tree not yet implemented because it is not clear what it should do."
         sys.exit()
@@ -44,4 +46,3 @@ class chain(fch):
                     if fl != forcename:
                         raise NameError(os.path.join(dirpath,fl)+" is not named "+forcename)
                 self.add_file(os.path.join(dirpath,fl))
-
