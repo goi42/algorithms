@@ -25,8 +25,8 @@ class fch(bfch): #abstract base class for file and chain classes
     def set_quality(self,quality):
         self.quality = quality
     def add_branch(self,*args,**kwargs):
-        if args[0].__class__.__name__=='branch':
-                self.b += args
+        if all(isinstance(x,branch) for x in args):
+            self.b += args
         else:
             self.b.append(branch(*args,**kwargs))
     def GetNtrees(self):
