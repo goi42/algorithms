@@ -3,9 +3,9 @@ from ROOT import TTree,TFile
 from fch import *
 
 class file(fch):
-    def __init__(self,location,name=None,tree=None,quality=None,):
+    def __init__(self,location,name=None,tree=None,quality=None,opencondition='READ'):
         fch.__init__(self)
-        self.file = TFile.Open(location)
+        self.file = TFile.Open(location,opencondition)
         self.location = location
         if name: self.set_name(name)
         if tree: self.add_tree(tree)
