@@ -4,7 +4,7 @@ from myfch import *
 
 class myfile(myfch):
     def __init__(self,location,name=None,tree=None,quality=None,opencondition='READ'):
-        myfch.__init__(self)
+        fch.__init__(self)
         self.file = TFile.Open(location,opencondition)
         self.location = location
         if name: self.set_name(name)
