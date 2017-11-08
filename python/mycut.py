@@ -1,5 +1,5 @@
 from ROOT import TCut
-class cut:
+class mycut:
     def __init__(self,cut,name=None):
         self.cut = TCut(cut)
         self.name = str(cut)
@@ -38,7 +38,7 @@ class cut:
             newcut = ancut
             if not self.name.strip():
                 newname = anname
-        return cut(newcut,newname)
+        return mycut(newcut,newname)
 
     def __sub__(self, another):
         newcut,newname,ancut,anname = self._arithmetic('&& !',another)
@@ -46,7 +46,7 @@ class cut:
             newcut = '!('+ancut+')'
             if not self.name.strip():
                 newname = '!('+anname+')'
-        return cut(newcut,newname)
+        return mycut(newcut,newname)
 
     def __str__(self):
         return self.cut.GetTitle()
