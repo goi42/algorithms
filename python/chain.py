@@ -1,8 +1,8 @@
 import sys
 from ROOT import TChain
-from myfch import *
+from fch import *
 
-class mychain(myfch):
+class chain(fch):
     def __init__(self,trname,name=None,quality=None,lfiles=None):
         fch.__init__(self)
         self.tname.append(trname)

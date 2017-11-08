@@ -14,11 +14,11 @@ Elements of its logic are very C++-like, an artifact from its original design. I
 '''
 #import
 from makeplots_parser import *
-from mybranch import *
-from mycut import *
-from myfile import *
-from mychain import *
-from mylayer import *
+from branch import *
+from cut import *
+from file import *
+from chain import *
+from layer import *
 
 import sys,os,math,subprocess,progressbar,time
 import ROOT
@@ -48,12 +48,12 @@ while not CutLayerExists:
     nhpc=nCanvases=int(1)#actual values assigned below
     fL=bL=cL=int(0)#actual values assigned below
     for iLayer in L:
-        #assign layers this is not an algorithm
-        if(iLayer.name=="myfile" or iLayer.name=="mychain"):
+        #assign layers this is not an algorithm 
+        if(iLayer.name=="file" or iLayer.name=="chain"):
             fL=L.index(iLayer)
-        elif(iLayer.name=="mybranch"):
+        elif(iLayer.name=="branch"):
             bL=L.index(iLayer)
-        elif(iLayer.name=="mycut"):
+        elif(iLayer.name=="cut"):
             CutLayerExists = True
             cL=L.index(iLayer)
         #calculate nhpc and nCanvases
@@ -63,8 +63,8 @@ while not CutLayerExists:
         print 'No cut layer given. Generating...',
         for ifile in L[fL].element:
             for ibranch in ifile.b:
-                ibranch.c = [mycut("","no additional cuts")]
-        L.append(mylayer(L[fL].element[0].b[0].c))
+                ibranch.c = [cut("","no additional cuts")]
+        L.append(layer(L[fL].element[0].b[0].c))
         print 'done.'
 if(verbose): print "done"
 nLayers = len(L)
@@ -97,22 +97,22 @@ for i in xrange(0,nLayers): #the following is very C++, but I haven't rethought 
     for j in xrange(nLayers-1,i,-1):
         if(not L[i].compared): #non-compared need product of all lower levels
             L[i].plL*=L[j].nL
-            if(not (L[j].name=="mycut" or L[j].name=="mybranch")): L[i].plLx*=L[j].nL
+            if(not (L[j].name=="cut" or L[j].name=="branch")): L[i].plLx*=L[j].nL
         elif(L[j].compared): #compared need product of all lower compared levels
             L[i].plL*=L[j].nL
-            if(not(L[j].name=="mycut" or L[j].name=="mybranch")): L[i].plLx*=L[j].nL
+            if(not(L[j].name=="cut" or L[j].name=="branch")): L[i].plLx*=L[j].nL
     if(not L[i].compared): #non-compared need product of all higher compared levels
         for k in xrange(0,i):
             if(L[k].compared):
                 L[i].plL*=L[k].nL
-                if(not (L[k].name=="mycut" or L[k].name=="mybranch")): L[i].plLx*=L[k].nL
+                if(not (L[k].name=="cut" or L[k].name=="branch")): L[i].plLx*=L[k].nL
 pli=int(0) #this counts the number of plots generated helps iterate L[i].Li
 if(verbose): print "done"
 print "\nstarting canvas loop..."
 #actual start of the loop
 if not debug and nCanvases>1:
     canbar = progressbar.ProgressBar( maxval=nCanvases,
-                                      widgets =
+                                      widgets = 
                                       [ progressbar.Bar('=','[',']'),' ', progressbar.Percentage() ]
                                       )
 for ci_i in range(0,nCanvases): #ci in c:
@@ -134,7 +134,7 @@ for ci_i in range(0,nCanvases): #ci in c:
     if nhpc>9 and not debug: #progress bar for long jobs
         print 'starting histogram loop...'
         histbar = progressbar.ProgressBar( maxval=nhpc,
-                                           widgets =
+                                           widgets = 
                                            [ progressbar.Bar('=','[',']'),' ', progressbar.Percentage() ]
                                            )
     for hi in xrange(0,nhpc):
@@ -144,7 +144,7 @@ for ci_i in range(0,nCanvases): #ci in c:
         #decide which file to use
         file_num=0
         for Li in L:
-            if(not (Li.name=="mycut" or Li.name=="mybranch")):#cuts and branches do not get their own files
+            if(not (Li.name=="cut" or Li.name=="branch")):#cuts and branches do not get their own files
                 file_num += Li.Li*Li.plLx
         if(debug): print "creating strings and pointers for histogram loop "+repr(hi+1)+"/"+repr(nhpc)+"... ",
         #create convenient strings
@@ -192,7 +192,7 @@ for ci_i in range(0,nCanvases): #ci in c:
         for Li in L:
             #determine the name of the stack title
             Ltitle = Li.element[Li.Li].name
-            if(Li.name == 'mybranch' and Li.element[Li.Li].associated_branch):
+            if(Li.name == 'branch' and Li.element[Li.Li].associated_branch):
                 Ltitle += ' vs. '+Li.element[Li.Li].associated_branch.name
             if(Li.compared):#compared layers in the legend entry
                 if(leglabel!=""): leglabel+=", "
