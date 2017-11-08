@@ -26,7 +26,7 @@ parser.add_argument('--legend',type=float,nargs=4,
                     metavar=('xlo','ylo','xhi','yhi'),
                     default=[0.75,0.6,1,0.9],
                     help='list of parameters for legend placement')
-parser.add_argument('--legendkey',default=None,choices=['topcenter'],
+parser.add_argument('--legendkey',default=None,choices=['topcenter','topleft'],
                     help='shortcuts to certain legend configurations')
 # leg =  TLegend(0.3, 0.7, 0.6, 0.9)#create legend
 # leg =  TLegend(0.75, 0.6, 1, 0.9)#create legend
@@ -63,4 +63,6 @@ hfilename=args.hfilename
 legpars = args.legend
 if args.legendkey == 'topcenter':
     legpars = [0.3,0.7,0.6,0.9]
+elif args.legendkey == 'topleft':
+    legpars = [0.1,0.7,0.3,0.9]
 fixbinning = args.fixbinning
