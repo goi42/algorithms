@@ -15,13 +15,13 @@ class mycut:
     def __getattr__(self,name):
         return getattr(self.cut,name)
     def _arithmetic(self,sym,another):
-        if isinstance(another,type(self)):
+        if another.__class__.__name__ == self.__class__.__name__:
             ancut = another.cut.GetTitle()
             anname = another.name
-        elif isinstance(another,str):
+        elif another.__class__.__name__ == 'str':
             ancut = another
             anname = another
-        elif isinstance(another,TCut):
+        elif another.__class__.__name__ == 'TCut':
             ancut = another.GetTitle()
             anname = another.GetName()
         else:
