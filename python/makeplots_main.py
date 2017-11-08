@@ -48,7 +48,7 @@ while not CutLayerExists:
     nhpc=nCanvases=int(1)#actual values assigned below
     fL=bL=cL=int(0)#actual values assigned below
     for iLayer in L:
-        #assign layers this is not an algorithm
+        #assign layers this is not an algorithm 
         if(iLayer.name=="file" or iLayer.name=="chain"):
             fL=L.index(iLayer)
         elif(iLayer.name=="branch"):
@@ -112,10 +112,9 @@ print "\nstarting canvas loop..."
 #actual start of the loop
 if not debug and nCanvases>1:
     canbar = progressbar.ProgressBar( maxval=nCanvases,
-                                      widgets =
+                                      widgets = 
                                       [ progressbar.Bar('=','[',']'),' ', progressbar.Percentage() ]
                                       )
-hs = []
 for ci_i in range(0,nCanvases): #ci in c:
     cistring = repr(ci_i) #repr(c.index(ci))
     if debug: print "On canvas "+repr(int(cistring)+1)+" out of "+repr(nCanvases)
@@ -128,15 +127,14 @@ for ci_i in range(0,nCanvases): #ci in c:
     ci.cd()
     ROOT.gStyle.SetOptStat("")
     leg = TLegend(legpars[0],legpars[1],legpars[2],legpars[3])
-    
-    hs.append(THStack("hs"+cistring,"hs"+cistring)) #create the stack to hold the histograms
+    hs = THStack("hs"+cistring,"hs"+cistring) #create the stack to hold the histograms
 
     stacktitle=""
     #histogram loop
     if nhpc>9 and not debug: #progress bar for long jobs
         print 'starting histogram loop...'
         histbar = progressbar.ProgressBar( maxval=nhpc,
-                                           widgets =
+                                           widgets = 
                                            [ progressbar.Bar('=','[',']'),' ', progressbar.Percentage() ]
                                            )
     for hi in xrange(0,nhpc):
@@ -163,9 +161,9 @@ for ci_i in range(0,nCanvases): #ci in c:
         if(debug): print "creating histogram "+repr(hi+1)+"... ",
         linecolor = hi+1
         if((hi+1==5) or (hi+1==10)): linecolor = hi+21
-        if hs[ci_i].GetHists() and fixbinning:
+        if hs.GetHists() and fixbinning:
             if debug: print 'forcing branch to match previous one...',
-            lasthistaxis = hs[ci_i].GetHists()[-1].GetXaxis()
+            lasthistaxis = hs.GetHists()[-1].GetXaxis()
             thisbranch.nBins = lasthistaxis.GetNbins()
             thisbranch.loBin = lasthistaxis.GetXmin()
             thisbranch.hiBin = lasthistaxis.GetXmax()
@@ -185,7 +183,7 @@ for ci_i in range(0,nCanvases): #ci in c:
             if(verbose): print "done"
             ci.cd()
         if(verbose): print "stacking histogram "+repr(hi+1)+"... ",
-        hs[ci_i].Add(h)#stack histograms
+        hs.Add(h)#stack histograms
         if(verbose): print "done"
 
         #loop over layers
@@ -215,13 +213,13 @@ for ci_i in range(0,nCanvases): #ci in c:
     if not debug and nhpc>9: histbar.finish()
     #draw stacked histograms
     if(verbose): print "drawing stack "+repr(int(cistring)+1)+": "+stacktitle+"... ",
-    hs[ci_i].SetTitle(stacktitle)
+    hs.SetTitle(stacktitle)
     placeholder = "nostack"
     if drawopt: placeholder+=" "+drawopt #turns out "nostack " is different than "nostack"...
-    hs[ci_i].Draw(placeholder)
+    hs.Draw(placeholder)
     if assocbranch:
-        hs[ci_i].GetXaxis().SetTitle(thisbranch.name)
-        hs[ci_i].GetYaxis().SetTitle(assocbranch.name)
+        hs.GetXaxis().SetTitle(thisbranch.name)
+        hs.GetYaxis().SetTitle(assocbranch.name)
         ci.Update()
     if(leg.GetNRows()>0): leg.Draw() #you don't need a legend if nothing's compared
     cf.cd(int(cistring)+1)
