@@ -25,7 +25,7 @@ class myfch(mybfch): #abstract base class for file and chain classes
     def set_quality(self,quality):
         self.quality = quality
     def add_branch(self,*args,**kwargs):
-        if all(isinstance(x,branch) for x in args):
+        if all(isinstance(x,mybranch) for x in args):
             self.b += args
         else:
             self.b.append(mybranch(*args,**kwargs))
@@ -81,7 +81,7 @@ class myfch(mybfch): #abstract base class for file and chain classes
     def GetEntries(self,selection=''):
         if isinstance(selection,str):
             p = selection
-        elif isinstance(selection,cut):
+        elif isinstance(selection,mycut):
             p = selection.cut.GetTitle()
         elif isinstance(selection,TCut):
             p = selection.GetTitle()
