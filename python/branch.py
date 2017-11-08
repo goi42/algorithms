@@ -1,4 +1,4 @@
-import sys
+import sys,copy
 from cut import *
 from bfch import *
 from ROOT import TH1F, TH1, TH2F, TCut
@@ -127,6 +127,28 @@ class branch(bfch):
         if self.associated_branch and another.associated_branch: associated_branch = self.associated_branch * another.associated_branch
         return branch(newbranch,newname,nBins,loBin,hiBin,xlabel,ylabel,set_log_X,set_log_Y,can_extend,c,associated_branch)
 
+    def __pow__(self, power): #special case; does not call _arithmetic
+        outbranch = copy.deepcopy(self)
+        if power == 0.5:
+            outbranch.branch = 'sqrt('+self.branch+')'
+            outbranch.name = '#sqrt{'+self.name+'}'
+            if self.xlabel: outbranch.xlabel = '#sqrt{'+self.xlabel+'}'
+            if self.ylabel: outbranch.ylabel = '#sqrt{'+self.ylabel+'}'
+        else:
+            outbranch.branch = 'pow('+self.branch+','+repr(power)+')'
+            outbranch.name = '('+self.name+')^{'+repr(power)+'}'
+            if self.xlabel: outbranch.xlabel = '('+self.xlabel+')^{'+repr(power)+'}'
+            if self.ylabel: outbranch.ylabel = '('+self.ylabel+')^{'+repr(power)+'}'
+        if not(self.hiBin-self.loBin==0):
+            binning_rate = float(self.nBins)/(self.hiBin-self.loBin)
+        else:
+            binning_rate = 0
+        outbranch.hiBin = self.hiBin ** power
+        outbranch.loBin = self.loBin ** power
+        outbranch.nBins = int(round(binning_rate*(outbranch.hiBin-outbranch.loBin)))
+        if outbranch.nBins == 0: outbranch.nBins = 100
+        return outbranch
+ 
     def __div__(self, another):
         newbranch,newname,binning_rate,xlabel,ylabel,set_log_X,set_log_Y,can_extend,c,associated_branch = self._arithmetic('/',another)
         if self.hiBin >=0 and another.hiBin >0 and self.loBin >=0 and another.loBin >0:
