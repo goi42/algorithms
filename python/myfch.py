@@ -2,7 +2,7 @@ import sys
 from mybranch import *
 from mycut import *
 from mybfch import *
-from ROOT import TCanvas
+from ROOT import TCanvas,TString
 
 class myfch(mybfch): #abstract base class for file and chain classes
     def __init__(self):
