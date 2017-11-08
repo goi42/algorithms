@@ -4,7 +4,7 @@ from myfch import *
 
 class mychain(myfch):
     def __init__(self,trname,name=None,quality=None,lfiles=None):
-        myfch.__init__(self)
+        fch.__init__(self)
         self.tname.append(trname)
         self.chain = TChain(trname,"")
         self.t.append(self.chain.GetTree())
