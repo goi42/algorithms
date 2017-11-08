@@ -1,8 +1,8 @@
 import sys
 from ROOT import TTree,TFile
-from myfch import *
+from fch import *
 
-class myfile(myfch):
+class file(fch):
     def __init__(self,location,name=None,tree=None,quality=None,opencondition='READ'):
         fch.__init__(self)
         self.file = TFile.Open(location,opencondition)

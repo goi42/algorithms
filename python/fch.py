@@ -1,12 +1,12 @@
 import sys
-from mybranch import *
-from mycut import *
-from mybfch import *
+from branch import *
+from cut import *
+from bfch import *
 from ROOT import TCanvas
 
-class myfch(mybfch): #abstract base class for file and chain classes
+class fch(bfch): #abstract base class for file and chain classes
     def __init__(self):
-        mybfch.__init__(self)
+        bfch.__init__(self)
         self.name="" #nickname for the file or chain
         self.quality = {} #handy for comparing files, e.g., quality["year"]="2015"
         self.t=[]
@@ -28,7 +28,7 @@ class myfch(mybfch): #abstract base class for file and chain classes
         if all(isinstance(x,branch) for x in args):
             self.b += args
         else:
-            self.b.append(mybranch(*args,**kwargs))
+            self.b.append(branch(*args,**kwargs))
     def GetNtrees(self):
         if len(self.t) != len(self.tname):
             raise ValueError(repr(self.name)+" has "+repr(len(t))+" trees but "+repr(len(tname))+" tree names. How did this happen?")
@@ -90,13 +90,15 @@ class myfch(mybfch): #abstract base class for file and chain classes
         return self._thething.GetEntries(p)
     def Draw(self,thisbranch,thiscut="",opt="",canvas=None):
         if self.can_Draw():
-            if isinstance(thiscut,mycut): acut = thiscut.cut
+            btypepassed = thisbranch.__class__.__name__
+            ctypepassed = thiscut.__class__.__name__
+            if ctypepassed == 'cut': acut = thiscut.cut
             else: acut = thiscut
 
-            if isinstance(thisbranch,(str,TString)): #if a string is passed
+            if btypepassed == 'str' or btypepassed == 'TString': #if a string is passed
                 self._thething.Draw(thisbranch,acut,opt)
 
-            elif isinstance(thisbranch,mybranch): #if a mybranch object is passed
+            elif btypepassed == 'branch': #if a branch object is passed
                 if not canvas: #make canvas
                     canvas = TCanvas(self.name,self.name,1200,800)
                     canvas.cd()
@@ -128,4 +130,4 @@ class myfch(mybfch): #abstract base class for file and chain classes
                 #     h.SetCanExtend(TH1.kAllAxes)
                 #     thisfile.Draw(placeholder,acut,drawopt)#one tree per file
             else:
-                raise TypeError('passed a '+thisbranch.__class__.__name__+' as a branch')
+                raise TypeError

@@ -1,4 +1,4 @@
-class mylayer:
+class layer:
     def __init__(self,element):
         if len(element) == 0:
             raise IndexError('can only create layers from not-empty lists')
