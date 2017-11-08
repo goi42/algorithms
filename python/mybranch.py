@@ -1,12 +1,12 @@
 import sys
-from cut import *
-from bfch import *
+from mycut import *
+from mybfch import *
 from ROOT import TH1F, TH1, TH2F, TCut
 
-class branch(bfch):
+class mybranch(mybfch):
     nh = 0 #number of created histograms for branches to avoid duplicate names and memory leaks, iterated in make_histogram() below
     def __init__(self,branch,name=None,nBins=0,loBin=0,hiBin=0,xlabel="",ylabel="",set_log_X=False,set_log_Y=False,can_extend=False,c=None,associated_branch=None):
-        bfch.__init__(self,c=c)
+        mybfch.__init__(self,c=c)
         self.branch = branch #name of branch as it appears in the tree
         self.name = branch #nickname--usually what you want to appear on a plot
         if name: self.name = name
@@ -39,8 +39,8 @@ class branch(bfch):
         self.can_extend = can_extend
     def make_histogram(self,hname=None,linecolor=1,overwrite=False,return_histogram=True): #create an empty histogram
         if not hname:
-            hname = 'h'+repr(branch.nh)
-            branch.nh+=1
+            hname = 'h'+repr(mybranch.nh)
+            mybranch.nh+=1
         if self.h and not overwrite:
             raise Exception(self.name+' has h already')
         elif overwrite: self.h = None
@@ -101,7 +101,7 @@ class branch(bfch):
         nBins = int(round(binning_rate*(hiBin-loBin)))
         if nBins == 0: nBins = 100
         if self.associated_branch and another.associated_branch: associated_branch = self.associated_branch + another.associated_branch
-        return branch(newbranch,newname,nBins,loBin,hiBin,xlabel,ylabel,set_log_X,set_log_Y,can_extend,c,associated_branch)
+        return mybranch(newbranch,newname,nBins,loBin,hiBin,xlabel,ylabel,set_log_X,set_log_Y,can_extend,c,associated_branch)
 
     def __sub__(self, another):
         newbranch,newname,binning_rate,xlabel,ylabel,set_log_X,set_log_Y,can_extend,c,associated_branch = self._arithmetic('-',another)
@@ -111,7 +111,7 @@ class branch(bfch):
         # if nBins == 0: nBins = 100
         hiBin = loBin = 0; nBins = 100
         if self.associated_branch and another.associated_branch: associated_branch = self.associated_branch - another.associated_branch
-        return branch(newbranch,newname,nBins,loBin,hiBin,xlabel,ylabel,set_log_X,set_log_Y,can_extend,c,associated_branch)
+        return mybranch(newbranch,newname,nBins,loBin,hiBin,xlabel,ylabel,set_log_X,set_log_Y,can_extend,c,associated_branch)
 
     def __mul__(self, another):
         newbranch,newname,binning_rate,xlabel,ylabel,set_log_X,set_log_Y,can_extend,c,associated_branch = self._arithmetic('*',another)
@@ -125,7 +125,7 @@ class branch(bfch):
             loBin = 0
             nBins = 100
         if self.associated_branch and another.associated_branch: associated_branch = self.associated_branch * another.associated_branch
-        return branch(newbranch,newname,nBins,loBin,hiBin,xlabel,ylabel,set_log_X,set_log_Y,can_extend,c,associated_branch)
+        return mybranch(newbranch,newname,nBins,loBin,hiBin,xlabel,ylabel,set_log_X,set_log_Y,can_extend,c,associated_branch)
 
     def __div__(self, another):
         newbranch,newname,binning_rate,xlabel,ylabel,set_log_X,set_log_Y,can_extend,c,associated_branch = self._arithmetic('/',another)
@@ -139,7 +139,7 @@ class branch(bfch):
             loBin = 0
             nBins = 100
         if self.associated_branch and another.associated_branch: associated_branch = self.associated_branch * another.associated_branch
-        return branch(newbranch,newname,nBins,loBin,hiBin,xlabel,ylabel,set_log_X,set_log_Y,can_extend,c,associated_branch)
+        return mybranch(newbranch,newname,nBins,loBin,hiBin,xlabel,ylabel,set_log_X,set_log_Y,can_extend,c,associated_branch)
 
     def __str__(self):
         return self.branch
