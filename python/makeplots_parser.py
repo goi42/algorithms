@@ -21,7 +21,7 @@ parser.add_argument('--C',action='store_true',
 parser.add_argument('--hist',action='store_true',
                     help='creates a file containing the generated histograms')
 parser.add_argument('--hfilename',default='histograms.root',
-                    help='file to store histograms if --hist option specified')
+                    help='file to store histograms if --hist option specified; ".root" added if not specified')
 parser.add_argument('--legend',type=float,nargs=4,
                     metavar=('xlo','ylo','xhi','yhi'),
                     default=[0.75,0.6,1,0.9],
@@ -60,6 +60,7 @@ drawopt = args.drawopt
 saveC = args.C
 histograms = args.hist
 hfilename=args.hfilename
+if not '.root' in hfilename: hfilename += '.root'
 legpars = args.legend
 if args.legendkey == 'topcenter':
     legpars = [0.3,0.7,0.6,0.9]
