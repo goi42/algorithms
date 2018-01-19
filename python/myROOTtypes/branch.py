@@ -33,12 +33,10 @@ class branch(bfch):
         self.h = None
 
     def set_binning(self, nBins, loBin, hiBin, can_extend=False):
-        if nBins < 0 or loBin > hiBin:
-            if nBins < 0:
-                print "branch " + repr(self.name) + " cannot be assigned nBins = " + repr(nBins) + ". nBins must be >=0!"
-            if loBin > hiBin:
-                print "branch " + repr(self.name) + " cannot be assigned loBin = " + repr(loBin) + " and hiBin = " + repr(hiBin) + " loBin must be <= hiBin!"
-            raise ValueError
+        if nBins < 0:
+            raise ValueError("branch {} cannot be assigned nBins = {}. nBins must be >=0!".format(repr(self.name), repr(nBins)))
+        if loBin > hiBin:
+            raise ValueError("branch {} cannot be assigned loBin = {} and hiBin = {} loBin must be <= hiBin!".format(repr(self.name), repr(loBin), repr(hiBin)))
         self.nBins = nBins
         self.loBin = loBin
         self.hiBin = hiBin
@@ -49,7 +47,7 @@ class branch(bfch):
             hname = 'h' + repr(branch.nh)
             branch.nh += 1
         if self.h and not overwrite:
-            raise Exception(self.name + ' has h already')
+            raise Exception('{} has h already'.format(self.name))
         elif overwrite:
             self.h = None
         assocbranch = self.associated_branch

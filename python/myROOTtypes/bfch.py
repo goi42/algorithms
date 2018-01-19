@@ -9,7 +9,7 @@ class bfch:  # abstract base class for branch and fch classes
             if isinstance(c, list) and all(isinstance(x, cut) for x in c):
                 self.c = c
             else:
-                raise TypeError('passed a ' + c.__class__.__name__ + ' as "c" instead of a list.')
+                raise TypeError('passed a {} as "c" instead of a list.'.format(c.__class__.__name__ ))
 
     def add_cut(self, *args, **kwargs):
         if isinstance(args[0], cut):

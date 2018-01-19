@@ -22,8 +22,7 @@ class chain(fch):
         return getattr(self.chain, name)
 
     def add_tree(self, trname, recreate=False):
-        print "chain.add_tree not yet implemented because it is not clear what it should do."
-        sys.exit()
+        raise Exception("chain.add_tree not yet implemented because it is not clear what it should do.")
 
     def add_file(self, floc):
         self.chain.Add(floc)
