@@ -1,5 +1,6 @@
 '''
 Command-line argument parser for makeplots_main.py. Handled here for elegance.
+makeplots_layer.py might also import arguments from here for convenience.
 '''
 import importlib
 import argparse
