@@ -1,6 +1,6 @@
 import sys
 from ROOT import TChain
-from fch import *
+from fch import fch
 
 
 class chain(fch):

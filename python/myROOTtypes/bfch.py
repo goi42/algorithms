@@ -1,4 +1,4 @@
-from cut import *
+from cut import cut
 from ROOT import TCut
 
 

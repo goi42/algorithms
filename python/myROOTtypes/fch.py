@@ -1,7 +1,7 @@
 import sys
-from branch import *
-from cut import *
-from bfch import *
+from branch import branch
+from cut import cut
+from bfch import bfch
 from ROOT import TCanvas
 
 

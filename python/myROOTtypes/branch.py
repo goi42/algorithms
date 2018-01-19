@@ -1,7 +1,7 @@
 import sys
 import copy
-from cut import *
-from bfch import *
+from cut import cut
+from bfch import bfch
 from ROOT import TH1F, TH1, TH2F, TCut
 
 

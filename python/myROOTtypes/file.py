@@ -1,6 +1,6 @@
 import sys
 from ROOT import TTree, TFile
-from fch import *
+from fch import fch
 
 
 class file(fch):
