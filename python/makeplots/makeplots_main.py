@@ -14,11 +14,11 @@ Elements of its logic are very C++-like, an artifact from its original design. I
 '''
 # import
 from makeplots_parser import *
-from branch import *
-from cut import *
-from file import *
-from chain import *
-from layer import *
+from myROOTtypes.branch import branch
+from myROOTtypes.cut import cut
+from myROOTtypes.file import file
+from myROOTtypes.chain import chain
+from myROOTtypes.layer import layer
 
 import sys
 from os.path import join as opj
