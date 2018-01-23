@@ -103,53 +103,51 @@ class fch(bfch):  # abstract base class for file and chain classes
         return self._thething.GetEntries(p)
 
     def Draw(self, thisbranch, thiscut="", opt="", canvas=None):
-        if self.can_Draw():
-            btypepassed = thisbranch.__class__.__name__
-            ctypepassed = thiscut.__class__.__name__
-            if ctypepassed == 'cut':
-                acut = thiscut.cut
-            else:
-                acut = thiscut
+        assert self.can_Draw()
+        btypepassed = thisbranch.__class__.__name__
+        ctypepassed = thiscut.__class__.__name__
+        if ctypepassed == 'cut':
+            acut = thiscut.cut
+        else:
+            acut = thiscut
 
-            if btypepassed == 'str' or btypepassed == 'TString':  # if a string is passed
-                self._thething.Draw(thisbranch, acut, opt)
+        if btypepassed == 'str' or btypepassed == 'TString':  # if a string is passed
+            self._thething.Draw(thisbranch, acut, opt)
 
-            elif btypepassed == 'branch':  # if a branch object is passed
-                if not canvas:  # make canvas
-                    canvas = TCanvas(self.name, self.name, 1200, 800)
-                    canvas.cd()
-                if not thisbranch.h:
-                    thisbranch.make_histogram()
-                thisbranch.h.Reset()
-                h = thisbranch.h
-                hname = h.GetName()
-                assocbranch = thisbranch.associated_branch
-                # draw histograms
-                if not assocbranch:
-                    # if any branches have these options set, draw them that way:
-                    if(thisbranch.set_log_X):
-                        canvas.SetLogx()
-                    if(thisbranch.set_log_Y):
-                        canvas.SetLogy()
-                    placeholder = thisbranch.branch + ">>" + hname
-                else:
-                    placeholder = assocbranch.branch + ":" + thisbranch.branch + ">>" + hname
-                    if(thisbranch.set_log_X):
-                        canvas.SetLogx()
-                    if(assocbranch.set_log_X):
-                        canvas.SetLogy()
-                    if(thisbranch.set_log_Y or assocbranch.set_log_Y):
-                        canvas.SetLogz()
-                # try:
-                self.Draw(placeholder, acut, opt)  # one tree per file
-                # except:
-                #     print "Draw() failed for "+placeholder
-                #     print "in file: "+self.name
-                #     if ctypepassed == 'cut': placeholder2 = thiscut.name
-                #     else: placeholder2 = thiscut
-                #     print "with cut: "+placeholder2
-                #     print "Attempting to draw again with extendable axes..."
-                #     h.SetCanExtend(TH1.kAllAxes)
-                #     thisfile.Draw(placeholder,acut,drawopt)#one tree per file
+        elif btypepassed == 'branch':  # if a branch object is passed
+            if not canvas:  # make canvas
+                canvas = TCanvas(self.name, self.name, 1200, 800)
+                canvas.cd()
+            if not thisbranch.h:
+                thisbranch.make_histogram()
+            thisbranch.h.Reset()
+            h = thisbranch.h
+            hname = h.GetName()
+            assocbranch = thisbranch.associated_branch
+            # draw histograms
+            if not assocbranch:
+                # if any branches have these options set, draw them that way:
+                if(thisbranch.set_log_X):
+                    canvas.SetLogx()
+                if(thisbranch.set_log_Y):
+                    canvas.SetLogy()
+                placeholder = thisbranch.branch + ">>" + hname
             else:
-                raise TypeError
+                placeholder = assocbranch.branch + ":" + thisbranch.branch + ">>" + hname
+                if(thisbranch.set_log_X):
+                    canvas.SetLogx()
+                if(assocbranch.set_log_X):
+                    canvas.SetLogy()
+                if(thisbranch.set_log_Y or assocbranch.set_log_Y):
+                    canvas.SetLogz()
+            # try:
+            self.Draw(placeholder, acut, opt)  # one tree per file
+            # except:
+            #     print "Draw() failed for "+placeholder
+            #     print "in file: "+self.name
+            #     if ctypepassed == 'cut': placeholder2 = thiscut.name
+            #     else: placeholder2 = thiscut
+            #     print "with cut: "+placeholder2
+            #     print "Attempting to draw again with extendable axes..."
+            #     h.SetCanExtend(TH1.kAllAxes)
+            #     thisfile.Draw(placeholder,acut,drawopt)#one tree per file
