@@ -118,8 +118,7 @@ class fch(bfch):  # abstract base class for file and chain classes
                     if tr.GetName() == trname:
                         return tr
 
-    def Draw(self, thisbranch, thiscut="", opt="", canvas=None):
-        assert self.can_Draw()
+    def Draw(self, thisbranch, thiscut="", opt="", canvas=None, treename=None):
         if isinstance(thiscut, cut):
             acut = thiscut.cut
         else:
@@ -129,7 +128,7 @@ class fch(bfch):  # abstract base class for file and chain classes
         canvas.cd()
 
         if isinstance(thisbranch, str) or isinstance(thisbranch, TString):  # if a string is passed
-            self._thething.Draw(thisbranch, acut, opt)
+            self.GetTree(treename).Draw(thisbranch, acut, opt)
 
         elif isinstance(thisbranch, branch):  # if a branch object is passed
             if not thisbranch.h:  # make histogram
@@ -155,7 +154,7 @@ class fch(bfch):  # abstract base class for file and chain classes
                 if(thisbranch.set_log_Y or assocbranch.set_log_Y):
                     canvas.SetLogz()
             # try:
-            self.Draw(placeholder, acut, opt, canvas)  # one tree per file
+            self.Draw(placeholder, acut, opt, canvas, treename)
             # except:
             #     print "Draw() failed for "+placeholder
             #     print "in file: "+self.name
