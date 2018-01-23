@@ -144,9 +144,9 @@ class fch(bfch):  # abstract base class for file and chain classes
                     canvas.SetLogx()
                 if(thisbranch.set_log_Y):
                     canvas.SetLogy()
-                placeholder = thisbranch.branch + ">>" + hname
+                StringToDraw = "{}>>{}".format(thisbranch.branch, hname)
             else:
-                placeholder = assocbranch.branch + ":" + thisbranch.branch + ">>" + hname
+                StringToDraw = "{}:{}>>{}".format(assocbranch.branch, thisbranch.branch, hname)
                 if(thisbranch.set_log_X):
                     canvas.SetLogx()
                 if(assocbranch.set_log_X):
@@ -154,7 +154,7 @@ class fch(bfch):  # abstract base class for file and chain classes
                 if(thisbranch.set_log_Y or assocbranch.set_log_Y):
                     canvas.SetLogz()
             # try:
-            self.Draw(placeholder, acut, opt, canvas, treename)
+            self.Draw(StringToDraw, acut, opt, canvas, treename)
             # except:
             #     print "Draw() failed for "+placeholder
             #     print "in file: "+self.name
