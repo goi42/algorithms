@@ -8,6 +8,7 @@ class file(fch):
         fch.__init__(self)
         self.file = TFile.Open(location, opencondition)
         self.location = location
+        self.t = []
         if name:
             self.set_name(name)
         if tree:
@@ -24,6 +25,9 @@ class file(fch):
         self.t.append(temptree)
         if(self.check_tsize_1()):
             self._thething = self.t[0]
+
+    def GetNtrees(self):
+        return len(self.t)
 
     def GetTree(self, trname=''):
         if trname == '':

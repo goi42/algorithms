@@ -10,7 +10,6 @@ class fch(bfch):  # abstract base class for file and chain classes
         bfch.__init__(self)
         self.name = ""  # nickname for the file or chain
         self.quality = {}  # handy for comparing files, e.g., quality["year"]="2015"
-        self.t = []
         self.b = []
         self._thething = None  # should be set to a tree for file and the chain for chain
         self.bMaxes = {}
@@ -31,9 +30,6 @@ class fch(bfch):  # abstract base class for file and chain classes
             self.b += args
         else:
             self.b.append(branch(*args, **kwargs))
-
-    def GetNtrees(self):
-        return len(self.t)
 
     def check_tsize_1(self):
         if self.GetNtrees() == 1:

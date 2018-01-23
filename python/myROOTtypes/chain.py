@@ -7,7 +7,6 @@ class chain(fch):
     def __init__(self, trname, name=None, quality=None, lfiles=None):
         fch.__init__(self)
         self.chain = TChain(trname, "")
-        self.t.append(self.chain.GetTree())
         if name:
             self.set_name(name)
         if quality:
@@ -28,13 +27,12 @@ class chain(fch):
         self.locations.append(floc)
         if not self.check_tsize_1():
             raise ValueError("chain::add_file only works if there is only 1 associated tree.")
-        self.t[0] = self.chain.GetTree()
 
     def add_files(self, lfiles, recreate=False):
         if recreate:
             if not self.check_tsize_1():
                 raise ValueError("chain.add_files(...,recreate=True) requires 1 tree to avoid ambiguity.")
-            self.chain = TChain(t[0].GetName(), "")
+            self.chain = TChain(self._thething.GetName(), "")
         for ifile in lfiles:
             self.add_file(ifile)
 
