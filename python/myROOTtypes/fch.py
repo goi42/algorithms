@@ -2,7 +2,7 @@ import sys
 from branch import branch
 from cut import cut
 from bfch import bfch
-from ROOT import TCanvas
+from ROOT import TCanvas, TString
 
 
 class fch(bfch):  # abstract base class for file and chain classes
@@ -104,21 +104,19 @@ class fch(bfch):  # abstract base class for file and chain classes
 
     def Draw(self, thisbranch, thiscut="", opt="", canvas=None):
         assert self.can_Draw()
-        btypepassed = thisbranch.__class__.__name__
-        ctypepassed = thiscut.__class__.__name__
-        if ctypepassed == 'cut':
+        if isinstance(thiscut, cut):
             acut = thiscut.cut
         else:
             acut = thiscut
 
-        if btypepassed == 'str' or btypepassed == 'TString':  # if a string is passed
+        if isinstance(thisbranch, str) or isinstance(thisbranch, TString):  # if a string is passed
             self._thething.Draw(thisbranch, acut, opt)
 
-        elif btypepassed == 'branch':  # if a branch object is passed
+        elif isinstance(thisbranch, branch):  # if a branch object is passed
             if not canvas:  # make canvas
                 canvas = TCanvas(self.name, self.name, 1200, 800)
                 canvas.cd()
-            if not thisbranch.h:
+            if not thisbranch.h:  # make histogram
                 thisbranch.make_histogram()
             thisbranch.h.Reset()
             h = thisbranch.h
