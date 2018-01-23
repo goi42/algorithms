@@ -23,7 +23,7 @@ class file(fch):
         temptree = TTree()
         self.file.GetObject(trname, temptree)
         self.t.append(temptree)
-        if(self.check_tsize_1()):
+        if(len(self.t) == 1):
             self._thething = self.t[0]
 
     def GetNtrees(self):
@@ -31,7 +31,7 @@ class file(fch):
 
     def GetTree(self, trname=''):
         if trname == '':
-            self.file_1tree_check('GetTree')
+            self.file_1tree('GetTree')
             return self._thething
         else:
             for tr in self.t:

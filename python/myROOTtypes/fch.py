@@ -31,45 +31,36 @@ class fch(bfch):  # abstract base class for file and chain classes
         else:
             self.b.append(branch(*args, **kwargs))
 
-    def check_tsize_1(self):
-        if self.GetNtrees() == 1:
-            return True
-        else:
-            print repr(self.name) + " has a tree list with " + repr(self.GetNtrees()) + " trees."
-            return False
-
-    def file_1tree_check(self, fname):
+    def file_1tree(self, fname):
         if self.__class__.__name__ == 'file':  # this check is only necessary for files, not chains
-            if not self.check_tsize_1():
-                raise NotImplementedError("file." + fname + " is only available for objects with only one tree.")
-
-    def can_Draw(self):
-        if self.check_tsize_1():
-            return True
+            if self.GetNtrees() == 1:  # class member declared in file class
+                return True
+            else:
+                raise NotImplementedError("file.{} is only available for objects with only one tree.".format(fname))
         else:
-            raise NotImplementedError("fch::Draw is only available for objects with just one associated tree.")
+            return True
 
     def GetListOfBranches(self):
-        self.file_1tree_check("GetListOfBranches")
+        assert self.file_1tree("GetListOfBranches")
         temp = []
         for nm in self._thething.GetListOfBranches():
             temp.append(nm.GetName())
         return temp
 
     def GetNbranches(self):
-        self.file_1tree_check("GetNbranches")
+        assert self.file_1tree("GetNbranches")
         return self._thething.GetNbranches()
 
     def GetMaximum(self, brname):
-        self.file_1tree_check("GetMaximum")
+        assert self.file_1tree("GetMaximum")
         return self._thething.GetMaximum(brname)
 
     def GetMinimum(self, brname):
-        self.file_1tree_check("GetMinimum")
+        assert self.file_1tree("GetMinimum")
         return self._thething.GetMinimum(brname)
 
     def GetbMaxMin(self, brlist=[]):
-        self.file_1tree_check("GetMaxMin")
+        assert self.file_1tree("GetMaxMin")
         bloop = []
         if not isinstance(brlist, list):
             raise TypeError("GetbMaxMin takes a _list_, not a " + brlist.__class__.__name__)

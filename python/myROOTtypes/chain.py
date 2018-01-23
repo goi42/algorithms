@@ -25,13 +25,9 @@ class chain(fch):
     def add_file(self, floc):
         self.chain.Add(floc)
         self.locations.append(floc)
-        if not self.check_tsize_1():
-            raise ValueError("chain::add_file only works if there is only 1 associated tree.")
 
     def add_files(self, lfiles, recreate=False):
         if recreate:
-            if not self.check_tsize_1():
-                raise ValueError("chain.add_files(...,recreate=True) requires 1 tree to avoid ambiguity.")
             self.chain = TChain(self._thething.GetName(), "")
         for ifile in lfiles:
             self.add_file(ifile)
