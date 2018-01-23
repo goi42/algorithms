@@ -42,7 +42,7 @@ class fch(bfch):  # abstract base class for file and chain classes
             
     def file_uniquetrees(self):
         if self.__class__.__name__ == 'file':  # this check is only necessary for files, not chains
-            if len(t) == len(set(t)):
+            if len(self.t) == len(set(self.t)):
                 return True
             else:
                 return False
