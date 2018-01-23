@@ -22,7 +22,6 @@ class file(fch):
         temptree = TTree()
         self.file.GetObject(trname, temptree)
         self.t.append(temptree)
-        self.tname.append(trname)
         if(self.check_tsize_1()):
             self._thething = self.t[0]
 
