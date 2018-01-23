@@ -124,14 +124,14 @@ class fch(bfch):  # abstract base class for file and chain classes
             acut = thiscut.cut
         else:
             acut = thiscut
+        if not canvas:  # make canvas
+            canvas = TCanvas(self.name, self.name, 1200, 800)
+        canvas.cd()
 
         if isinstance(thisbranch, str) or isinstance(thisbranch, TString):  # if a string is passed
             self._thething.Draw(thisbranch, acut, opt)
 
         elif isinstance(thisbranch, branch):  # if a branch object is passed
-            if not canvas:  # make canvas
-                canvas = TCanvas(self.name, self.name, 1200, 800)
-                canvas.cd()
             if not thisbranch.h:  # make histogram
                 thisbranch.make_histogram()
             thisbranch.h.Reset()
@@ -155,7 +155,7 @@ class fch(bfch):  # abstract base class for file and chain classes
                 if(thisbranch.set_log_Y or assocbranch.set_log_Y):
                     canvas.SetLogz()
             # try:
-            self.Draw(placeholder, acut, opt)  # one tree per file
+            self.Draw(placeholder, acut, opt, canvas)  # one tree per file
             # except:
             #     print "Draw() failed for "+placeholder
             #     print "in file: "+self.name
