@@ -39,6 +39,22 @@ class fch(bfch):  # abstract base class for file and chain classes
                 raise NotImplementedError("file.{} is only available for objects with only one tree.".format(fname))
         else:
             return True
+            
+    def file_uniquetrees(self):
+        if self.__class__.__name__ == 'file':  # this check is only necessary for files, not chains
+            if len(t) == len(set(t)):
+                return True
+            else:
+                return False
+            
+    def chain_istree(self, tname):
+        if self.__class__.__name__ == 'chain':  # this check is only necessary for chains, not files
+            if tname == self._thething.GetName():
+                return True
+            else:
+                return False
+        else:
+            return True
 
     def GetListOfBranches(self):
         assert self.file_1tree("GetListOfBranches")
@@ -85,6 +101,22 @@ class fch(bfch):  # abstract base class for file and chain classes
         else:
             raise TypeError('GetEntries requires a str, cut, or TCut, not a ' + selection.__class__.__name__)
         return self._thething.GetEntries(p)
+        
+    def GetTree(self, trname=None):
+        '''gets tree or chain as appropriate
+        '''
+        if not trname:
+            assert self.file_1tree('GetTree')
+            return self._thething
+        else:
+            if self.__class__.__name__ == 'chain':
+                assert self.chain_istree(trname)
+                return self._thething
+            elif self.__class__.__name__ == 'file':
+                assert self.file_uniquetrees()
+                for tr in self.t:
+                    if tr.GetName() == trname:
+                        return tr
 
     def Draw(self, thisbranch, thiscut="", opt="", canvas=None):
         assert self.can_Draw()

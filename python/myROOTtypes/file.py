@@ -28,12 +28,3 @@ class file(fch):
 
     def GetNtrees(self):
         return len(self.t)
-
-    def GetTree(self, trname=''):
-        if trname == '':
-            self.file_1tree('GetTree')
-            return self._thething
-        else:
-            for tr in self.t:
-                if trname == tr.GetName():
-                    return tr
