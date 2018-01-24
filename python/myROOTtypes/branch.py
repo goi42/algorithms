@@ -200,5 +200,20 @@ class branch(bfch):
             associated_branch = self.associated_branch * another.associated_branch
         return branch(newbranch, newname, nBins, loBin, hiBin, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch)
 
+    def __iadd__(self, another):
+        return self + another
+        
+    def __isub__(self, another):
+        return self - another
+        
+    def __imul__(self, another):
+        return self * another
+    
+    def __ipow__(self, power):
+        return self ** power
+        
+    def __idiv__(self, another):
+        return self / another
+
     def __str__(self):
         return self.branch

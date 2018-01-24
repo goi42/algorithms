@@ -53,5 +53,11 @@ class cut:
                 newname = '!(' + anname + ')'
         return cut(newcut, newname)
 
+    def __iadd__(self, another):
+        return self + another
+        
+    def __isub__(self, another):
+        return self - another
+
     def __str__(self):
         return self.cut.GetTitle()
