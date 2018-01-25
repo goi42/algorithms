@@ -52,12 +52,25 @@ class cut:
             if not self.name.strip():
                 newname = '!(' + anname + ')'
         return cut(newcut, newname)
+    
+    def __div__(self, another):
+        '''not actual division--a wonky way to do OR
+        '''
+        newcut, newname, ancut, anname = self._arithmetic('||', another)
+        if not self.cut.GetTitle().strip():
+            newcut = ancut
+            if not self.name.strip():
+                newname = anname
+        return cut(newcut, newname)
 
     def __iadd__(self, another):
         return self + another
         
     def __isub__(self, another):
         return self - another
+
+    def __idiv__(self, another):
+        return self / another
 
     def __str__(self):
         return self.cut.GetTitle()
