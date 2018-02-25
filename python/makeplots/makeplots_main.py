@@ -283,8 +283,8 @@ for ci_i in range(0, nCanvases):  # ci in c:
                 placeholder += ' {}'.format(thisbranch.units)
             hs[ci_i].GetYaxis().SetTitle(placeholder)
         ci.Update()
-    if(leg.GetNRows() > 0):
-        leg.Draw()  # you don't need a legend if nothing's compared
+    if not nolegend and leg.GetNRows() > 0:  # you don't need a legend if nothing's compared
+        leg.Draw()
     cf.cd(int(cistring) + 1)
     ci.DrawClonePad()
     if(verbose):

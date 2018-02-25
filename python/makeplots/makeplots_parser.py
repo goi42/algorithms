@@ -40,6 +40,8 @@ parser.add_argument('--labelaxes', action='store_true',
                     help='turn on x- and y- axis labels (done automatically for 2D plots)')
 parser.add_argument('--notitle', action='store_true',
                     help='turn off plot titles')
+parser.add_argument('--nolegend', action='store_true',
+                    help='turn off the legend')
 
 # class modimport(argparse.Action):
 #     def __init__(self,option_strings,dest,nargs=None,**kwargs):
@@ -77,3 +79,4 @@ elif args.legendkey == 'topleft':
 fixbinning = args.fixbinning
 labelaxes = args.labelaxes
 notitle = args.notitle
+nolegend = args.nolegend
