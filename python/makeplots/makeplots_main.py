@@ -261,13 +261,27 @@ for ci_i in range(0, nCanvases):  # ci in c:
     if(verbose):
         print "drawing stack " + repr(int(cistring) + 1) + ": " + stacktitle + "... ",
     hs[ci_i].SetTitle(stacktitle)
+    if notitle:
+        hs[ci_i].SetTitle('')
     placeholder = "nostack"
     if drawopt:
         placeholder += " " + drawopt  # turns out "nostack " is different than "nostack"...
     hs[ci_i].Draw(placeholder)
-    if assocbranch:
-        hs[ci_i].GetXaxis().SetTitle(thisbranch.name)
-        hs[ci_i].GetYaxis().SetTitle(assocbranch.name)
+    if assocbranch or labelaxes:
+        placeholder = thisbranch.name
+        if thisbranch.units:
+            placeholder += ' ({})'.format(thisbranch.units)
+        hs[ci_i].GetXaxis().SetTitle(placeholder)
+        if assocbranch:
+            placeholder = assocbranch.name
+            if assocbranch.units:
+                placeholder += ' ({})'.format(assocbranch.units)
+            hs[ci_i].GetYaxis().SetTitle(placeholder)
+        else:
+            placeholder = 'Events / {}'.format(thisbranch.get_bin_width())
+            if thisbranch.units:
+                placeholder += ' {}'.format(thisbranch.units)
+            hs[ci_i].GetYaxis().SetTitle(placeholder)
         ci.Update()
     if(leg.GetNRows() > 0):
         leg.Draw()  # you don't need a legend if nothing's compared

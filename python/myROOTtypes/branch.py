@@ -8,7 +8,7 @@ from ROOT import TH1F, TH1, TH2F, TCut
 class branch(bfch):
     nh = 0  # number of created histograms for branches to avoid duplicate names and memory leaks, iterated in make_histogram() below
 
-    def __init__(self, branch, name=None, nBins=0, loBin=0, hiBin=0, xlabel="", ylabel="", set_log_X=False, set_log_Y=False, can_extend=False, c=None, associated_branch=None):
+    def __init__(self, branch, name=None, nBins=0, loBin=0, hiBin=0, units=None, xlabel="", ylabel="", set_log_X=False, set_log_Y=False, can_extend=False, c=None, associated_branch=None):
         bfch.__init__(self, c=c)
         self.branch = branch  # name of branch as it appears in the tree
         self.name = branch  # nickname--usually what you want to appear on a plot
@@ -17,6 +17,7 @@ class branch(bfch):
         self.nBins = nBins
         self.loBin = loBin
         self.hiBin = hiBin
+        self.units = units
         self.xlabel = xlabel
         self.ylabel = ylabel
         self.set_log_X = set_log_X  # do you want a log scale?
@@ -41,6 +42,9 @@ class branch(bfch):
         self.loBin = loBin
         self.hiBin = hiBin
         self.can_extend = can_extend
+        
+    def get_bin_width(self):
+        return (float(self.hiBin) - float(self.loBin)) / float(self.nBins)
 
     def make_histogram(self, hname=None, linecolor=1, overwrite=False, return_histogram=True):  # create an empty histogram
         if not hname:

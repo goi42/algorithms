@@ -36,6 +36,10 @@ parser.add_argument('--legendkey', default=None, choices=['topcenter', 'topleft'
 # leg = TLegend(0.65, 0.7, 1, 0.9)#create legend
 parser.add_argument('--fixbinning', action='store_true',
                     help='after the first histogram is drawn, all subsequent histograms on the same canvas will be drawn with the same number of bins and same hi and lo bins.')
+parser.add_argument('--labelaxes', action='store_true',
+                    help='turn on x- and y- axis labels (done automatically for 2D plots)')
+parser.add_argument('--notitle', action='store_true',
+                    help='turn off plot titles')
 
 # class modimport(argparse.Action):
 #     def __init__(self,option_strings,dest,nargs=None,**kwargs):
@@ -71,3 +75,5 @@ if args.legendkey == 'topcenter':
 elif args.legendkey == 'topleft':
     legpars = [0.1, 0.7, 0.3, 0.9]
 fixbinning = args.fixbinning
+labelaxes = args.labelaxes
+notitle = args.notitle
