@@ -58,7 +58,7 @@ def shim_thickness(start, stop, subtract):
     return out_value
 
 
-def randmoney(hival=10.00, loval=0.00):
+def randmoney(hival=10.00, loval=1.00):
     '''returns random monetary value
     loval <= output < hival
     '''
