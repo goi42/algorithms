@@ -56,3 +56,13 @@ def shim_thickness(start, stop, subtract):
         out_value += i
     out_value -= subtract
     return out_value
+
+
+def randmoney(hival=10.00, loval=0.00):
+    '''returns random monetary value
+    loval <= output < hival
+    '''
+    from random import randrange
+    hi, lo = hival * 100, loval * 100
+    v = randrange(lo, hi, 1)
+    print '${}'.format(round(float(v) / 100, 2))  # float and round to make sure
