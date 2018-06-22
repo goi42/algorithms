@@ -57,6 +57,19 @@ def shim_thickness(start, stop, subtract):
         out_value += i
     out_value -= subtract
     return out_value
+    
+
+def print_thicknesses(*args):
+    '''prints table of thicknesses (calculated using `shim_thickness`) ready for emailing.
+    enter side A, then side C measurements for as many positions as you like, e.g.,
+    `start1A, stop1A, subtract1A, start1C, stop1C, subtract1C, start2A, stop2A, subtract2A, start2C, stop2C, subtract2C`
+    and so on.
+    '''
+    assert len(args) % 2 == 0 and len(args) % 3 == 0 and all(isinstance(x, int) for x in args)
+
+    for irowt, ((Astart, Astop, Asubtract), (Cstart, Cstop, Csubtract)) in enumerate(zip(*[iter(zip(*[iter(args)] * 3))] * 2)):  # split and loop over undifferentiated argument list
+        irow = irowt + 1
+        print 'A{}:'.format(irow), shim_thickness(Astart, Astop, Asubtract), '\tC{}:'.format(irow), shim_thickness(Cstart, Cstop, Csubtract)
 
 
 def randmoney(hival=10.00, loval=1.00):
