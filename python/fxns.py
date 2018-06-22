@@ -1,5 +1,5 @@
 def invmass(*args):
-    '''returns the invariant mass of an arbitrary number of strings by using '_PE', '_PX', '_PY', '_PZ' (or 'P_E' if 'TRUE in the name')
+    '''returns the invariant mass of an arbitrary number of strings by using '_PE', '_PX', '_PY', '_PZ' (or 'P_E' if 'TRUE' in the name)
     '''
     kvars = ('_PE', '_PX', '_PY', '_PZ')
     outstr = 'sqrt('
