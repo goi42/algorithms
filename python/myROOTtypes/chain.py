@@ -7,14 +7,14 @@ class chain(fch):
     def __init__(self, trname, name=None, quality=None, lfiles=None):
         fch.__init__(self)
         self.chain = TChain(trname, "")
+        self._thething = self.chain
+        self.locations = []  # list of locations of added files
         if name:
             self.set_name(name)
         if quality:
             self.set_quality(quality)
         if lfiles:
             self.add_files(lfiles)
-        self.locations = []  # list of locations of added files
-        self._thething = self.chain
 
     def __getattr__(self, name):
         return getattr(self.chain, name)
