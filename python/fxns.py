@@ -22,8 +22,10 @@ def invmass(*args):
 
 def replE(ps, ms, *args):
     '''replaces one mass hypothesis with another by recalculating the energy with the presumed mass
+    returns an invariant mass string
     `ps` is a list of particles
     `ms` is a list of their desired mass hypotheses
+    args are the names of other particles to include in the invariant mass
     '''
     assert type(ps) == list and type(ms) == list and len(ps) == len(ms)
     kvars = ('_PX', '_PY', '_PZ')
