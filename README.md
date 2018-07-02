@@ -1,3 +1,3 @@
-# algorithms_lxplus
-Repository for the "algorithms" directory on lxplus
-These are functions I find useful, usually for working with Root. As such, they can be used by copying them to the directory you're working in and including the the line '#include "<algorithm>"'.
+These are scripts and functions I find useful for all kinds of things.
+They are generally designed to be project-independent and flexible for all kinds of things so that they can be imported and used by any project.
+They are sorted into subdirectories based on script-type.
