@@ -82,3 +82,25 @@ def randmoney(hival=10.00, loval=1.00):
     hi, lo = hival * 100, loval * 100
     v = randrange(lo, hi, 1)
     return '${}'.format(round(float(v) / 100, 2))  # float and round to make sure
+
+
+def divsquare(num):
+    '''returns rows, columns
+    '''
+    import math
+    sqnc = math.sqrt(num)
+    sqncu = int(math.ceil(sqnc))
+    sqncd = int(math.floor(sqnc))
+    while(sqncu * sqncd < num):
+        sqncu += 1
+    return sqncu, sqncd
+
+
+def makedirsif(adir):
+    '''makes directory tree if it doesn't already exist
+    '''
+    try:
+        os.makedirs(adir)
+    except OSError as e:
+        if '[Errno 17]' in str(e):
+            pass
