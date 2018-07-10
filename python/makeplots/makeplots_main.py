@@ -34,7 +34,9 @@ ROOT.gROOT.SetBatch(True)
 if not debug:
     ROOT.gErrorIgnoreLevel = ROOT.kWarning
 
-L = load_source('L', opj(pathtolayerfile, 'makeplots_layer.py')).L
+sys.path.append(pathtolayerfile)
+from makeplots_layer import L
+# L = load_source('L', opj(pathtolayerfile, 'makeplots_layer.py')).L
 
 print '---------------------------makeplots_main.py---------------------------'
 print 'starting at', time.asctime(time.localtime(time.time()))
