@@ -1,8 +1,10 @@
 from ROOT import TCut
+from cbfch import cbfch
 
 
-class cut:
+class cut(cbfch):
     def __init__(self, cut, name=None):
+        cbfch.__init__(self)
         self.cut = TCut(cut)
         self.name = str(cut)
         if name:

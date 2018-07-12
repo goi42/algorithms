@@ -1,9 +1,11 @@
 from cut import cut
 from ROOT import TCut
+from cbfch import cbfch
 
 
-class bfch:  # abstract base class for branch and fch classes
+class bfch(cbfch):  # abstract base class for branch and fch classes
     def __init__(self, c=None):
+        cbfch.__init__(self)
         self.c = []  # cuts to be applied
         if c:
             if isinstance(c, list) and all(isinstance(x, cut) for x in c):
