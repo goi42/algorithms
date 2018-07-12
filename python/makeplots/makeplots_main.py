@@ -253,7 +253,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
         # end layer loop
         # fill legends
         if leglabel != "":
-            leg.AddEntry(h, leglabel, "l")  # no need for a legend if nothing is compared
+            leg.AddEntry(h, leglabel)  # no need for a legend if nothing is compared
         if(verbose):
             print "done"
     # end histogram loop
