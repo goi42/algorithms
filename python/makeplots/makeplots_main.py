@@ -265,7 +265,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
     hs[ci_i].SetTitle(stacktitle)
     if notitle:
         hs[ci_i].SetTitle('')
-    placeholder = "nostack"
+    placeholder = '' if yesstack else 'nostack'
     if drawopt:
         placeholder += " " + drawopt  # turns out "nostack " is different than "nostack"...
     hs[ci_i].Draw(placeholder)

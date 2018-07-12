@@ -42,6 +42,8 @@ parser.add_argument('--notitle', action='store_true',
                     help='turn off plot titles')
 parser.add_argument('--nolegend', action='store_true',
                     help='turn off the legend')
+parser.add_argument('--yesstack', action='store_true',
+                    help='stack histograms')
 
 # class modimport(argparse.Action):
 #     def __init__(self,option_strings,dest,nargs=None,**kwargs):
@@ -80,3 +82,4 @@ fixbinning = args.fixbinning
 labelaxes = args.labelaxes
 notitle = args.notitle
 nolegend = args.nolegend
+yesstack = args.yesstack
