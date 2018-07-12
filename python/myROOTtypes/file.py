@@ -28,3 +28,8 @@ class file(fch):
 
     def GetNtrees(self):
         return len(self.t)
+    
+    def add_all_trees(self):
+        for ikey in self.GetListOfKeys():
+            if isinstance(ikey.ReadObj(), TTree):
+                self.add_tree(ikey.GetName())
