@@ -46,7 +46,16 @@ class branch(bfch):
     def get_bin_width(self):
         return (float(self.hiBin) - float(self.loBin)) / float(self.nBins)
 
-    def make_histogram(self, hname=None, linecolor=1, overwrite=False, return_histogram=True):  # create an empty histogram
+    def make_histogram(self, hname=None, linecolor=None, fillcolor=None, fillstyle=None, overwrite=False, return_histogram=True):  # create an empty histogram
+        if linecolor is None and self.linecolor is None:
+            linecolor = 1
+        elif linecolor is None:
+            linecolor = self.linecolor
+        if fillcolor is None:
+            fillcolor = self.fillcolor
+        if fillstyle is None:
+            fillstyle = self.fillstyle
+            
         if not hname:
             hname = 'h' + repr(branch.nh)
             branch.nh += 1
@@ -73,6 +82,10 @@ class branch(bfch):
             if(not binning_set or self.can_extend):
                 h.SetCanExtend(TH1.kAllAxes)
             h.SetLineColor(linecolor)
+            if fillcolor is not None:
+                h.SetFillColor(fillcolor)
+            if fillstyle is not None:
+                h.SetFillStyle(fillstyle)
         else:
             h = TH2F(hname, self.name + ' vs. ' + assocbranch.name, self.nBins, self.loBin, self.hiBin, assocbranch.nBins, assocbranch.loBin, assocbranch.hiBin)
             if(not binning_set or self.can_extend):

@@ -42,6 +42,8 @@ parser.add_argument('--notitle', action='store_true',
                     help='turn off plot titles')
 parser.add_argument('--nolegend', action='store_true',
                     help='turn off the legend')
+parser.add_argument('--filllinecolors', action='store_true',
+                    help='use linecolor as fillcolor')
 parser.add_argument('--yesstack', action='store_true',
                     help='stack histograms')
 
@@ -82,4 +84,5 @@ fixbinning = args.fixbinning
 labelaxes = args.labelaxes
 notitle = args.notitle
 nolegend = args.nolegend
+filllinecolors = args.filllinecolors
 yesstack = args.yesstack

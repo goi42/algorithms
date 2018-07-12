@@ -188,9 +188,40 @@ for ci_i in range(0, nCanvases):  # ci in c:
         # create histogram
         if(debug):
             print "creating histogram " + repr(hi + 1) + "... ",
-        linecolor = hi + 1
-        if((hi + 1 == 5) or (hi + 1 == 10)):
-            linecolor = hi + 21
+        listofthings = (thiscut, thisbranch, thisfile)
+        if any(x.linecolor is not None for x in listofthings):
+            foundlc = False
+            for th in listofthings:
+                if th.linecolor and not foundlc:
+                    linecolor = th.linecolor
+                    foundlc = True
+                elif th.linecolor and not foundlc:
+                    raise ValueError('cannot assign a linecolor for multiple types of things!')
+        else:
+            linecolor = hi + 1
+            if((hi + 1 == 5) or (hi + 1 == 10)):
+                linecolor = hi + 21
+        fillcolor = None
+        if filllinecolors:
+            fillcolor = linecolor
+        elif any(x.fillcolor is not None for x in listofthings):
+            foundfc = False
+            for th in listofthings:
+                if th.fillcolor and not foundfc:
+                    fillcolor = th.fillcolor
+                    foundfc = True
+                elif th.fillcolor and not foundfc:
+                    raise ValueError('cannot assign a fillcolor for multiple types of things!')
+        fillstyle = None
+        if any(x.fillstyle is not None for x in listofthings):
+            foundfs = False
+            for th in listofthings:
+                if th.fillstyle and not foundfs:
+                    fillstyle = th.fillstyle
+                    foundfs = True
+                elif th.fillstyle and not foundfs:
+                    raise ValueError('cannot assign a fillstyle for multiple types of things!')
+        
         if hs[ci_i].GetHists() and fixbinning:
             if debug:
                 print 'forcing branch to match previous one...',
@@ -200,7 +231,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
             thisbranch.hiBin = lasthistaxis.GetXmax()
             if debug:
                 print 'done'
-        h = thisbranch.make_histogram(hname, linecolor, True, True)  # linecolor is ignored for 2D histograms by make_histogram
+        h = thisbranch.make_histogram(hname=hname, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, overwrite=True, return_histogram=True)  # linecolor is ignored for 2D histograms by make_histogram
         if(verbose and nhpc < 10):
             print "done"
         # draw histograms
