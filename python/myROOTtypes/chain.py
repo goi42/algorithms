@@ -34,7 +34,7 @@ class chain(fch):
         for ifile in lfiles:
             self.add_file(ifile)
 
-    def add_files_from(self, location, ignore_path='old', filemax=None, forcename=None, inclname):
+    def add_files_from(self, location, ignore_path='old', filemax=None, forcename=None, inclname=None):
         '''walks down the specified directory, skipping all paths with the specified ignore_path string in them, and adds all files contained therein.
         If filemax is specified, only adds files until the number of added files reaches filemax.
         If forcename is specified, requires added files have the specified name.
