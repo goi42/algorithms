@@ -36,7 +36,7 @@ def usageString():
 if __name__ == "__main__":
     removeRoot = True
 
-    if len(sys.argv) & lt
+    if len(sys.argv)
     1:
         print "Not enough arguments"
         sys.exit(usageString())
