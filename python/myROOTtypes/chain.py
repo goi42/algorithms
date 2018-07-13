@@ -37,7 +37,7 @@ class chain(fch):
         '''
         import os
         for dirpath, dirnames, filenames in os.walk(location):
-            if 'old' in dirpath:
+            if ignore_path in dirpath:
                 continue
             for fl in filenames:
                 if filemax is not None:
