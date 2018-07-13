@@ -1,6 +1,7 @@
 import sys
 from ROOT import TChain
 from fch import fch
+from file import file
 
 
 class chain(fch):
@@ -24,17 +25,31 @@ class chain(fch):
     def add_tree(self, trname, recreate=False):
         raise Exception("chain.add_tree not yet implemented because it is not clear what it should do.")
 
-    def add_file(self, floc):
-        self.chain.Add(floc)
-        self.locations.append(floc)
+    def add_file(self, floc, check_tree=False, insist_tree=False):
+        'adds file. check_tree will check whether the specified tree exists before adding it (may slow performance) and raises an error if insist_tree.'
+        if insist_tree and not check_tree:
+            raise IOError('cannot use insist_tree without check_tree')
+        addtree = True
+        if check_tree:
+            trname = self.chain.GetName()
+            f = file(floc)  # myROOTtypes.file
+            if not f.Get(trname):
+                addtree = False
+                if insist_tree:
+                    raise IOError('{0} does not contain {1}'.format(floc, trname))
+            f.Close()
+            del f
+        if addtree:
+            self.chain.Add(floc)
+            self.locations.append(floc)
 
-    def add_files(self, lfiles, recreate=False):
+    def add_files(self, lfiles, recreate=False, check_tree=False, insist_tree=False):
         if recreate:
             self.chain = TChain(self._thething.GetName(), "")
         for ifile in lfiles:
-            self.add_file(ifile)
+            self.add_file(ifile, check_tree=check_tree, insist_tree=insist_tree)
 
-    def add_files_from(self, location, ignore_path='old', filemax=None, forcename=None, inclname=None):
+    def add_files_from(self, location, ignore_path='old', filemax=None, forcename=None, inclname=None, check_tree=False, insist_tree=False):
         '''walks down the specified directory, skipping all paths with the specified ignore_path string in them, and adds all files contained therein.
         If filemax is specified, only adds files until the number of added files reaches filemax.
         If forcename is specified, requires added files have the specified name.
@@ -57,4 +72,4 @@ class chain(fch):
                     if inclname not in fl:
                         continue
                         # raise NameError("{} does not include {}".format(opj(dirpath, fl), forcename))
-                self.add_file(opj(dirpath, fl))
+                self.add_file(opj(dirpath, fl), check_tree=check_tree, insist_tree=insist_tree)
