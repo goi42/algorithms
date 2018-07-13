@@ -4,7 +4,7 @@ from fch import fch
 
 
 class chain(fch):
-    def __init__(self, trname, name=None, quality=None, lfiles=None):
+    def __init__(self, trname, name=None, quality=None, lfiles=None, add_files_from=None):
         fch.__init__(self)
         self.chain = TChain(trname, "")
         self._thething = self.chain
@@ -15,6 +15,8 @@ class chain(fch):
             self.set_quality(quality)
         if lfiles is not None:
             self.add_files(lfiles)
+        if add_files_from is not None:
+            self.add_files_from(*add_files_from)
 
     def __getattr__(self, name):
         return getattr(self.chain, name)
