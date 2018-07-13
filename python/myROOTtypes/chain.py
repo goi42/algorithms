@@ -34,10 +34,14 @@ class chain(fch):
         for ifile in lfiles:
             self.add_file(ifile)
 
-    def add_files_from(self, location, ignore_path='old', filemax=None, forcename=None):
-        '''walks down the specified directory, skipping all paths with the specified ignore_path string in them, and adds all files contained therein. If filemax is specified, only adds files until the number of added files reaches filemax. If forcename is specified, requires added files have the specified name.
+    def add_files_from(self, location, ignore_path='old', filemax=None, forcename=None, inclname):
+        '''walks down the specified directory, skipping all paths with the specified ignore_path string in them, and adds all files contained therein.
+        If filemax is specified, only adds files until the number of added files reaches filemax.
+        If forcename is specified, requires added files have the specified name.
+        If inclname is specified, requires added files include the specified string in their name.
         '''
         import os
+        from os.path import join as opj
         for dirpath, dirnames, filenames in os.walk(location):
             if ignore_path in dirpath:
                 continue
@@ -47,5 +51,10 @@ class chain(fch):
                         return
                 if forcename is not None:
                     if fl != forcename:
-                        raise NameError(os.path.join(dirpath, fl) + " is not named " + forcename)
-                self.add_file(os.path.join(dirpath, fl))
+                        continue
+                        # raise NameError("{} is not named {}".format(opj(dirpath, fl), forcename))
+                if inclname is not None:
+                    if inclname not in fl:
+                        continue
+                        # raise NameError("{} does not include {}".format(opj(dirpath, fl), forcename))
+                self.add_file(opj(dirpath, fl))
