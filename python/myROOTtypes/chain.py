@@ -9,11 +9,11 @@ class chain(fch):
         self.chain = TChain(trname, "")
         self._thething = self.chain
         self.locations = []  # list of locations of added files
-        if name:
+        if name is not None:
             self.set_name(name)
-        if quality:
+        if quality is not None:
             self.set_quality(quality)
-        if lfiles:
+        if lfiles is not None:
             self.add_files(lfiles)
 
     def __getattr__(self, name):
@@ -40,10 +40,10 @@ class chain(fch):
             if 'old' in dirpath:
                 continue
             for fl in filenames:
-                if filemax:
+                if filemax is not None:
                     if len(self.locations) >= filemax:
                         return
-                if forcename:
+                if forcename is not None:
                     if fl != forcename:
                         raise NameError(os.path.join(dirpath, fl) + " is not named " + forcename)
                 self.add_file(os.path.join(dirpath, fl))
