@@ -17,7 +17,9 @@ class chain(fch):
         if lfiles is not None:
             self.add_files(lfiles)
         if add_files_from is not None:
-            self.add_files_from(*add_files_from)
+            if not isinstance(add_files_from, dict):
+                raise TypeError('add_files_from must be a keyword dictionary')
+            self.add_files_from(**add_files_from)
 
     def __getattr__(self, name):
         return getattr(self.chain, name)
