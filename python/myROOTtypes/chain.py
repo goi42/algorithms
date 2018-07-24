@@ -60,7 +60,7 @@ class chain(fch):
         import os
         from os.path import join as opj
         for dirpath, dirnames, filenames in os.walk(location):
-            if ignore_path in dirpath:
+            if ignore_path is not None and ignore_path in dirpath:
                 continue
             for fl in filenames:
                 if filemax is not None:
