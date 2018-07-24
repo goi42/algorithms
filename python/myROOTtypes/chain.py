@@ -59,6 +59,8 @@ class chain(fch):
         '''
         import os
         from os.path import join as opj
+        if not os.path.isdir(location):
+            raise IOError('{0} is not a directory!'.format(location))
         for dirpath, dirnames, filenames in os.walk(location):
             if ignore_path is not None and ignore_path in dirpath:
                 continue
