@@ -63,15 +63,12 @@ class chain(fch):
             if ignore_path is not None and ignore_path in dirpath:
                 continue
             for fl in filenames:
-                if filemax is not None:
-                    if len(self.locations) >= filemax:
-                        return
-                if forcename is not None:
-                    if fl != forcename:
-                        continue
-                        # raise NameError("{} is not named {}".format(opj(dirpath, fl), forcename))
-                if inclname is not None:
-                    if inclname not in fl:
-                        continue
-                        # raise NameError("{} does not include {}".format(opj(dirpath, fl), forcename))
+                if filemax is not None and len(self.locations) >= filemax:
+                    return
+                if forcename is not None and fl != forcename:
+                    continue
+                    # raise NameError("{} is not named {}".format(opj(dirpath, fl), forcename))
+                if inclname is not None and inclname not in fl:
+                    continue
+                    # raise NameError("{} does not include {}".format(opj(dirpath, fl), forcename))
                 self.add_file(opj(dirpath, fl), check_tree=check_tree, insist_tree=insist_tree)
