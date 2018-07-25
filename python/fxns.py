@@ -104,3 +104,10 @@ def makedirsif(adir):
     except OSError as e:
         if '[Errno 17]' in str(e):
             pass
+
+
+def getRTDtemp(R, R0=100.0, T0=0.0, a=0.00385):
+    ''' Return temperature given an RTD's resistance in Ohms. Uses formula R = R0*(1+a*(T-T0)). Bashed on email from Ivan:
+    The RTD's in sub-basement lab are standard Pt100 ones. Their resistance depends on temperature as R = R0*(1+a*(T-T0)), where T0 = 0C, R0 = 100 Ohm, a = 0.00385 1/C.
+    '''
+    return (((R / R0) - 1) / a) + T0
