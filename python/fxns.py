@@ -106,15 +106,27 @@ def makedirsif(adir):
             pass
 
 
-def getRTDtemp(R, R0=100.0, T0=0.0, a=0.00385):
-    ''' Return temperature in Celcius given an RTD's resistance in Ohms. Uses formula R = R0*(1+a*(T-T0)). Based on email from Ivan:
+def getRTDtemp(R, R0=100.0, T0=0.0, a=3.9083E-3, b=-5.7750E-7):
+    ''' Return temperature in Celcius given an RTD's resistance in Ohms. Uses formula R = R0*(1+a*(T-T0)+b*(T-T0)**2). Only valid for T>=0.
+    Originally based on email from Ivan:
     The RTD's in sub-basement lab are standard Pt100 ones. Their resistance depends on temperature as R = R0*(1+a*(T-T0)), where T0 = 0C, R0 = 100 Ohm, a = 0.00385 1/C.
+    modified for greater precision according to the equation at https://techoverflow.net/2016/01/02/accurate-calculation-of-pt100pt1000-temperature-from-resistance/
     '''
-    return (((R / R0) - 1) / a) + T0
+    from math import sqrt
+    T = T0 + (sqrt(a**2 + 4 * b * (R / R0 - 1)) - a) / (2 * b)
+    if T < 0:
+        raise ValueError('negative T calculated: T = {}. Formula not valid for T < 0.'.format(T))
+    return T
 
 
-def getRTDres(T, R0=100.0, T0=0.0, a=0.00385):
-    ''' Return resistance in ohms an RTD should have for a given temperature in Celcius. Uses formula R = R0*(1+a*(T-T0)). Based on email from Ivan:
+def getRTDres(T, R0=100.0, T0=0.0, a=3.9083E-3, b=-5.7750E-7, c=None):
+    ''' Return resistance in ohms an RTD should have for a given temperature in Celcius. Uses formula R = R0*(1+a*(T-T0)+b*(T-T0)**2+c*(T-T0-100)*(T-T0)**3).
+    Careful assigning c. Calculated internally if not assigned. T-dependent in calculation (0 for T>=0).
+    Originally based on email from Ivan:
     The RTD's in sub-basement lab are standard Pt100 ones. Their resistance depends on temperature as R = R0*(1+a*(T-T0)), where T0 = 0C, R0 = 100 Ohm, a = 0.00385 1/C.
+    modified for greater precision according to the equation at https://techoverflow.net/2016/01/02/accurate-calculation-of-pt100pt1000-temperature-from-resistance/
     '''
-    return R0 * (1 + a * (T - T0))
+    if c is None:
+        c = 0 if T >= 0 else -4.1830E-12
+    R = R0 * (1 + a * (T - T0) + b * (T - T0)**2 + c * (T - T0 - 100) * (T - T0)**3)
+    return R
