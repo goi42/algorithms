@@ -20,11 +20,10 @@ def invmass(*args):
     return outstr
 
 
-def declength(nm):
-    '''returns a string representing the decay length of the given parameter name in C++ by finding the length of the vector between ORIGINVERTEX and ENDVERTEX. Be sure to include '_TRUE' in nm if using truth value.
+def truedeclength(nm):
+    '''returns a string representing the decay length of the given parameter name in C++ by finding the length of the vector between TRUEORIGINVERTEX and TRUEENDVERTEX.
     '''
-    varname = nm if 'TRUE' in nm else nm + '_'
-    return 'sqrt(pow({VARNAME}ENDVERTEX_X - {VARNAME}ORIGINVERTEX_X, 2) + pow({VARNAME}ENDVERTEX_Y - {VARNAME}ORIGINVERTEX_Y, 2) + pow({VARNAME}ENDVERTEX_Z - {VARNAME}ORIGINVERTEX_Z, 2))'.format(VARNAME=varname)
+    return 'sqrt(pow({NM}_TRUEENDVERTEX_X - {NM}_TRUEORIGINVERTEX_X, 2) + pow({NM}_TRUEENDVERTEX_Y - {NM}_TRUEORIGINVERTEX_Y, 2) + pow({NM}_TRUEENDVERTEX_Z - {NM}_TRUEORIGINVERTEX_Z, 2))'.format(NM=nm)
 
 
 def replE(ps, ms, *args):
