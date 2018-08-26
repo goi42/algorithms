@@ -18,6 +18,18 @@ def invmass(*args):
             outstr += ' - '
     outstr += ')'
     return outstr
+    
+
+def pseudorapidity(nm):
+    '''returns a string representing the pseudorapidity of nm (using atanh) by using '_PZ' and '_P' (or using 'P_Z' and calculating P with 'P_X', 'P_Y', 'P_Z' [using sqrt and pow] if 'TRUE' in nm): artanh(p_Z / abs(p)) == -ln(tan(theta / 2))
+    '''
+    if 'TRUE' in nm:
+        p = 'sqrt(pow({NM}P_X, 2) + pow({NM}P_Y, 2) + pow({NM}P_Z, 2))'.format(NM=nm)
+        pZ = '{NM}P_Z'.format(NM=nm)
+    else:
+        p = '{NM}_P'.format(NM=nm)
+        pZ = '{NM}_PZ'.format(NM=nm)
+    return 'artanh({PZ} / {P})'.format(PZ=pZ, P=p)
 
 
 def truedeclength(nm):
