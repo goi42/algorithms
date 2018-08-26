@@ -29,7 +29,7 @@ def pseudorapidity(nm):
     else:
         p = '{NM}_P'.format(NM=nm)
         pZ = '{NM}_PZ'.format(NM=nm)
-    return 'artanh({PZ} / {P})'.format(PZ=pZ, P=p)
+    return 'atanh({PZ} / {P})'.format(PZ=pZ, P=p)
 
 
 def truedeclength(nm):
