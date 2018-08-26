@@ -1,5 +1,5 @@
 def invmass(*args):
-    '''returns a string representing the invariant mass of an arbitrary number of strings in C++ by using '_PE', '_PX', '_PY', '_PZ' (or 'P_E' if 'TRUE' in the name)
+    '''returns a string representing the invariant mass of an arbitrary number of strings (using pow and sqrt) by using '_PE', '_PX', '_PY', '_PZ' (or 'P_E' if 'TRUE' in the name)
     '''
     kvars = ('_PE', '_PX', '_PY', '_PZ')
     outstr = 'sqrt('
@@ -21,7 +21,7 @@ def invmass(*args):
 
 
 def truedeclength(nm):
-    '''returns a string representing the decay length of the given parameter name in C++ by finding the length of the vector between TRUEORIGINVERTEX and TRUEENDVERTEX.
+    '''returns a string representing the decay length of the given parameter name (using pow and sqrt) by finding the length of the vector between TRUEORIGINVERTEX and TRUEENDVERTEX.
     '''
     return 'sqrt(pow({NM}_TRUEENDVERTEX_X - {NM}_TRUEORIGINVERTEX_X, 2) + pow({NM}_TRUEENDVERTEX_Y - {NM}_TRUEORIGINVERTEX_Y, 2) + pow({NM}_TRUEENDVERTEX_Z - {NM}_TRUEORIGINVERTEX_Z, 2))'.format(NM=nm)
 
