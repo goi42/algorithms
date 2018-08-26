@@ -148,3 +148,10 @@ def getRTDres(T, R0=100.0, T0=0.0, a=3.9083E-3, b=-5.7750E-7, c=None):
         c = 0 if T >= 0 else -4.1830E-12
     R = R0 * (1 + a * (T - T0) + b * (T - T0)**2 + c * (T - T0 - 100) * (T - T0)**3)
     return R
+
+
+def progbar_makestart(maxval):
+    import progressbar
+    thebar = progressbar.ProgressBar(maxval=maxval, widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+    thebar.start()
+    return thebar
