@@ -18,7 +18,29 @@ def invmass(*args):
             outstr += ' - '
     outstr += ')'
     return outstr
-    
+
+
+def momentum(*args):
+    '''returns a string representing the magnitude of the momentum of an arbitrary number of strings (using pow and sqrt) by using '_PX', '_PY', '_PZ' (or 'P_X' if 'TRUE' in the name)
+    '''
+    kvars = ('_PX', '_PY', '_PZ')
+    outstr = 'sqrt('
+    for ikv, kv in enumerate(kvars):
+        outstr += 'pow('
+        for i, p in enumerate(args):
+            if 'TRUE' in p:
+                use_kv = kv.replace('_P', 'P_')
+            else:
+                use_kv = kv
+            outstr += p + use_kv
+            if not i == len(args) - 1:
+                outstr += ' + '
+        outstr += ', 2)'
+        if not ikv == len(kvars) - 1:
+            outstr += ' + '
+    outstr += ')'
+    return outstr
+
 
 def pseudorapidity(nm):
     '''returns a string representing the pseudorapidity of nm (using atanh) by using '_PZ' and '_P' (or using 'P_Z' and calculating P with 'P_X', 'P_Y', 'P_Z' [using sqrt and pow] if 'TRUE' in nm): artanh(p_Z / abs(p)) == -ln(tan(theta / 2))
