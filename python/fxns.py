@@ -177,3 +177,241 @@ def progbar_makestart(maxval):
     thebar = progressbar.ProgressBar(maxval=maxval, widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
     thebar.start()
     return thebar
+
+
+def save_plot_fit_4D(filetag, x, data, totalPdf, yields, outdir, binning=30, savevalues=False):
+    def outtext(outputtext):
+        print outputtext
+        return outputtext + '\n'
+    
+    import ROOT
+
+    textf = outtext('\n' + filetag + "_" + data.GetTitle() + "_" + x.GetName() + ":")
+    valdict = {}
+
+    # make frame
+    print 'save_plot_fit_4D(): making ' + x.GetName() + ' frame'
+    framex = x.frame()
+    # plot data
+    print 'save_plot_fit_4D(): plotting data'
+    data.plotOn(framex, ROOT.RooFit.Name("Hist"), ROOT.RooFit.MarkerColor(ROOT.kBlack), ROOT.RooFit.LineColor(ROOT.kBlack), ROOT.RooFit.DataError(ROOT.RooAbsData.SumW2), ROOT.RooFit.Binning(binning))
+    # plot totalPdf
+    print 'save_plot_fit_4D(): plotting the total PDF'
+    totalPdf.plotOn(framex, ROOT.RooFit.Normalization(1.0, ROOT.RooAbsReal.RelativeExpected), ROOT.RooFit.LineColor(ROOT.kBlue), ROOT.RooFit.Name("curvetot"))
+    # create legend
+    print 'save_plot_fit_4D(): creating legend'
+    # leg = ROOT.TLegend(0.2, 0.5, .4, .9)
+    # leg = ROOT.TLegend(0.2, 0.02, .4, .42)
+    # leg = ROOT.TLegend(0.75, 0.5, 1, .9)
+    leg = ROOT.TLegend(0.6, 0.5, 0.85, .9)
+    # leg = ROOT.TLegend(0.3, 0.6, 0.6, .9)
+    leg.SetTextSize(0.06)
+    leg.AddEntry(framex.findObject("curvetot"), "Total PDF", "l")
+    # iterate over totalPdf components
+    print 'save_plot_fit_4D(): plotting components'
+    icol = 0  # color index
+    itertPC = totalPdf.getComponents().createIterator()
+    vartPC  = itertPC.Next()
+    while vartPC:
+        # check if this shape is based on ROOT.RooRealVar x
+        isx = False
+        it = vartPC.getVariables().createIterator()
+        v = it.Next()
+        while v:
+            vname = v.GetName()
+            xname = x.GetName()
+            if(vname == xname):
+                isx = True
+            v = it.Next()
+        if 'totalPdf' in vartPC.GetName() or 'Projection' in vartPC.GetName() or not isx or ":" in vartPC.GetTitle() or "@" in vartPC.GetTitle():
+            # skip totalPdf itself, plotted above
+            # only for non-sub-shapes
+            vartPC = itertPC.Next()
+            continue
+        print 'save_plot_fit_4D(): getting parameters for ' + vartPC.GetTitle()
+        itercompPars = vartPC.getParameters(data).createIterator()  # set of the parameters of the component the loop is on
+        varcompPars = itercompPars.Next()
+        while varcompPars:
+            # write and print mean, sig, etc. of sub-shapes
+            hi = varcompPars.getErrorHi()
+            varerrorstring = "[exact]"
+            if(hi != -1):
+                lo = varcompPars.getErrorLo()
+                varerror = ROOT.TMath.Max(ROOT.TMath.Abs(lo), hi)
+                varerrorstring = repr(round(varerror, 3))
+
+            outputtext = varcompPars.GetTitle() + " = " + repr(round(varcompPars.getVal(), 3)) + " +/- " + varerrorstring
+            textf += outtext(outputtext)
+
+            valdict[varcompPars.GetName()] = varcompPars.getVal()
+
+            varcompPars = itercompPars.Next()
+        # plot sub-shapes and add to legend
+        while icol in [0, 10, 4, 1, 5] + range(10, 28):
+            icol += 1  # avoid white and blue and black and yellow and horribleness
+        print 'save_plot_fit_4D(): plotting ' + vartPC.GetTitle()
+        totalPdf.plotOn(framex,
+                        ROOT.RooFit.Normalization(1.0, ROOT.RooAbsReal.RelativeExpected),
+                        ROOT.RooFit.Name(vartPC.GetName()),
+                        ROOT.RooFit.LineStyle(ROOT.kDashed),
+                        ROOT.RooFit.LineColor(icol),
+                        ROOT.RooFit.Components(vartPC.GetName())
+                        )
+        leg.AddEntry(framex.findObject(vartPC.GetName()), vartPC.GetTitle(), "l")
+        icol += 1
+        vartPC = itertPC.Next()
+        itercompPars.Reset()  # make sure it's ready for the next vartPC
+
+    # Calculate chi2/ndf
+    print 'save_plot_fit_4D(): calculating chi2'
+    floatpar = totalPdf.getParameters(data)
+    floatpars = (floatpar.selectByAttrib("Constant", ROOT.kFALSE)).getSize()
+    chi2 = framex.chiSquare("curvetot", "Hist", floatpars)
+    chi2string = repr(round(chi2, 3))
+    outputtext = "#chi^{2}/N_{DoF} = " + chi2string
+    textf += outtext(outputtext)
+
+    # Print stuff
+    print 'save_plot_fit_4D(): getting yields'
+    Y = []
+    E = []  # holds yields and associated errors
+    YS = []
+    ES = []  # holds strings of the corresponding yields
+    j = 0  # count list position
+    iteryields = yields.createIterator()
+    varyields = iteryields.Next()
+    while varyields:  # loop over yields
+        varval = varyields.getVal()
+        Y.append(varval)
+        lo = varyields.getErrorLo()
+        hi = varyields.getErrorHi()
+        E.append(ROOT.TMath.Max(ROOT.TMath.Abs(lo), hi))
+        YS.append(repr(round(Y[j], 3)))
+        ES.append(repr(round(E[j], 3)))
+
+        outputtext = varyields.GetTitle() + " = " + YS[j] + " +/- " + ES[j]
+        textf += outtext(outputtext)
+
+        j += 1
+        varyields = iteryields.Next()
+
+    # Create canvas and pads, set style
+    print 'save_plot_fit_4D(): creating canvas'
+    c1 = ROOT.TCanvas("c1", "data fits", 1200, 800)
+    pad1 = ROOT.TPad("pad1", "pad1", 0.0, 0.3, 1.0, 1.0)
+    pad2 = ROOT.TPad("pad2", "pad2", 0.0, 0.0, 1.0, 0.3)
+    pad1.SetBottomMargin(0)
+    pad2.SetTopMargin(0)
+    pad2.SetBottomMargin(0.5)
+    pad2.SetBorderMode(0)
+    pad1.SetBorderMode(0)
+    c1.SetBorderMode(0)
+    pad2.Draw()
+    pad1.Draw()
+    pad1.cd()
+    # framex.SetMinimum(1)
+    # framex.SetMaximum(7500)
+
+    framex.addObject(leg)  # add legend to frame
+
+    ROOT.gPad.SetTopMargin(0.06)
+    # pad1.SetLogy()
+    # pad1.Range(4100,0,6100,0.0005)
+    pad1.Update()
+    print 'save_plot_fit_4D(): drawing'
+    framex.Draw()
+
+    # Pull distribution
+    framex2 = x.frame()
+    hpull = framex.pullHist("Hist", "curvetot")
+    framex2.addPlotable(hpull, "P")
+    hpull.SetLineColor(ROOT.kBlack)
+    hpull.SetMarkerColor(ROOT.kBlack)
+    framex2.SetTitle("")
+    framex2.GetYaxis().SetTitle("Pull")
+    framex2.GetYaxis().SetTitleSize(0.15)
+    framex2.GetYaxis().SetLabelSize(0.15)
+    framex2.GetXaxis().SetTitleSize(0.2)
+    framex2.GetXaxis().SetLabelSize(0.15)
+    framex2.GetYaxis().CenterTitle()
+    framex2.GetYaxis().SetTitleOffset(0.45)
+    framex2.GetXaxis().SetTitleOffset(1.1)
+    framex2.GetYaxis().SetNdivisions(505)
+    framex2.GetYaxis().SetRangeUser(-8.8, 8.8)
+    pad2.cd()
+    framex2.Draw()
+
+    return c1, textf, valdict
+
+
+def save_plot_fit_4D_main(filetag, variables, dtys, outdir, plot2D=False, savevalues=False, binning=34):
+    '''
+    filetag is used for filenaming
+    variables is a list of RooRealVars
+    dtys is a list of tuples, e.g., [(dataRS,totalPdfRS,yieldsRS),(dataWS,totalPdfWS,yieldsWS)]
+    '''
+    import os
+    from os.path import join as opj
+    if plot2D and not len(variables) == 2:
+        raise ValueError('plot2D with ' + str(len(variables)) + '?')
+    if not os.path.exists(opj(outdir, "cfiles")):
+        os.makedirs(opj(outdir, "cfiles"))
+    tstring = ""
+    if savevalues:
+        valfile = file(opj(outdir, 'fit' + filetag + '_dictionaries.py'), 'w')
+    for data, totalPdf, yields in dtys:
+        if savevalues:
+            valfile.write(data.GetName() + "_" + totalPdf.GetName() + "_dict = {\n")
+
+        for var in variables:
+            print "save_plot_fit_4D(" + var.GetName() + "," + data.GetName() + ")..."
+
+            c, t, v = save_plot_fit_4D(filetag, var, data, totalPdf, yields, outdir, binning=binning, savevalues=savevalues)
+
+            tstring += t
+
+            if var == variables[0] and (data, totalPdf, yields) == dtys[0] and not (len(variables) == 1 and len(dtys) == 1):
+                endm = "("
+            elif var == variables[-1] and (data, totalPdf, yields) == dtys[-1] and not (len(variables) == 1 and len(dtys) == 1):
+                endm = ")"
+            else:
+                endm = ""
+            c.Print(opj(outdir, "fit" + filetag + ".pdf" + endm))
+            c.SaveAs(opj(outdir, "cfiles", "fit" + filetag + "_" + data.GetTitle() + "_" + var.GetName() + ".C"))
+
+            if savevalues:
+                for key, val in v.iteritems():
+                    valfile.write("'" + key + "':" + repr(val) + ',\n')
+
+            print "done"
+        if savevalues:
+            valfile.write('}\n')
+
+    with open(opj(outdir, "fit" + filetag + ".txt"), 'w') as tfile:
+        # tfile.write(tstring)
+        tlines = tstring.split('\n')
+        lines_seen = []
+        for line in tlines:
+            if line not in lines_seen:
+                tfile.write(line + '\n')
+                if line != '':
+                    lines_seen.append(line)
+
+    if(plot2D):
+        import ROOT
+        for data, totalPdf, yields in dtys:
+            print "making 2D histogram..."
+            x = variables[0]
+            y = variables[1]
+            h2D = totalPdf.createHistogram("h2D", x, ROOT.RooFit.YVar(y))
+            h2Dd = data    .createHistogram(x, y, 48, 36)
+            c = ROOT.TCanvas("c", "2D histogram", 1200, 800)
+            c.Divide(2)
+            c.cd(1)
+            h2Dd.Draw("lego")
+            c.cd(2)
+            h2D .Draw("surf")
+            usefiletag = filetag + "_" + data.GetTitle()
+            c.SaveAs(opj(outdir, "fit" + usefiletag + "_2D.pdf"))
+            c.SaveAs(opj(outdir, "cfiles", "fit" + usefiletag + "_2D.C"  ))
+            print "done"
