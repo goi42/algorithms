@@ -18,19 +18,22 @@ class fch(bfch):  # abstract base class for file and chain classes
     #     return self
     # def __exit__(self, exc_type, exc_value, traceback):
     #     self._thething.Delete()
-
+    
+    def __getattr__(self, name):
+        return getattr(self._thething, name)
+    
     def set_name(self, name):
         self.name = name
-
+    
     def set_quality(self, quality):
         self.quality = quality
-
+    
     def add_branch(self, *args, **kwargs):
         if all(isinstance(x, branch) for x in args):
             self.b += args
         else:
             self.b.append(branch(*args, **kwargs))
-
+    
     def file_1tree(self, fname):
         if self.__class__.__name__ == 'file':  # this check is only necessary for files, not chains
             if self.GetNtrees() == 1:  # class member declared in file class
@@ -39,14 +42,14 @@ class fch(bfch):  # abstract base class for file and chain classes
                 raise NotImplementedError("file.{} is only available for objects with only one tree.".format(fname))
         else:
             return True
-            
+        
     def file_uniquetrees(self):
         if self.__class__.__name__ == 'file':  # this check is only necessary for files, not chains
             if len(self.t) == len(set(self.t)):
                 return True
             else:
                 return False
-            
+    
     def chain_istree(self, tname):
         if self.__class__.__name__ == 'chain':  # this check is only necessary for chains, not files
             if tname == self._thething.GetName():
@@ -55,26 +58,26 @@ class fch(bfch):  # abstract base class for file and chain classes
                 return False
         else:
             return True
-
+    
     def GetListOfBranches(self):
         assert self.file_1tree("GetListOfBranches")
         temp = []
         for nm in self._thething.GetListOfBranches():
             temp.append(nm.GetName())
         return temp
-
+    
     def GetNbranches(self):
         assert self.file_1tree("GetNbranches")
         return self._thething.GetNbranches()
-
+    
     def GetMaximum(self, brname):
         assert self.file_1tree("GetMaximum")
         return self._thething.GetMaximum(brname)
-
+    
     def GetMinimum(self, brname):
         assert self.file_1tree("GetMinimum")
         return self._thething.GetMinimum(brname)
-
+    
     def GetbMaxMin(self, brlist=[]):
         assert self.file_1tree("GetMaxMin")
         bloop = []
@@ -90,7 +93,7 @@ class fch(bfch):  # abstract base class for file and chain classes
         for bname in bloop:
             self.bMaxes[bname] = self.GetMaximum(bname)
             self.bMins[bname] = self.GetMinimum(bname)
-
+    
     def GetEntries(self, selection=''):
         if isinstance(selection, str):
             p = selection
@@ -101,7 +104,7 @@ class fch(bfch):  # abstract base class for file and chain classes
         else:
             raise TypeError('GetEntries requires a str, cut, or TCut, not a ' + selection.__class__.__name__)
         return self._thething.GetEntries(p)
-        
+    
     def GetTree(self, trname=None):
         '''gets tree or chain as appropriate
         '''
@@ -117,7 +120,7 @@ class fch(bfch):  # abstract base class for file and chain classes
                 for tr in self.t:
                     if tr.GetName() == trname:
                         return tr
-
+    
     def Draw(self, thisbranch, thiscut="", opt="", canvas=None, treename=None):
         if isinstance(thiscut, cut):
             acut = thiscut.cut

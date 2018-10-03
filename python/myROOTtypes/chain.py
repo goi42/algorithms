@@ -21,9 +21,6 @@ class chain(fch):
                 raise TypeError('add_files_from must be a keyword dictionary')
             self.add_files_from(**add_files_from)
 
-    def __getattr__(self, name):
-        return getattr(self.chain, name)
-
     def add_tree(self, trname, recreate=False):
         raise Exception("chain.add_tree not yet implemented because it is not clear what it should do.")
 

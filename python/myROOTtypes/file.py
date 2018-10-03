@@ -16,9 +16,6 @@ class file(fch):
         if quality:
             self.set_quality(quality)
 
-    def __getattr__(self, name):
-        return getattr(self.file, name)
-
     def add_tree(self, trname):
         temptree = TTree()
         self.file.GetObject(trname, temptree)
