@@ -11,16 +11,14 @@ class fch(bfch):  # abstract base class for file and chain classes
         self.name = ""  # nickname for the file or chain
         self.quality = {}  # handy for comparing files, e.g., quality["year"]="2015"
         self.b = []
-        self._thething = None  # should be set to a tree for file and the chain for chain
+        self._thething = None  # should be set to a TTree for file and the TChain for chain
+        self._theotherthing = None  # should be set to the TFile for file and the TChain for chain
         self.bMaxes = {}
         self.bMins  = {}
     # def __enter__(self):
     #     return self
     # def __exit__(self, exc_type, exc_value, traceback):
     #     self._thething.Delete()
-    
-    def __getattr__(self, name):
-        return getattr(self._thething, name)
     
     def set_name(self, name):
         self.name = name
@@ -167,3 +165,9 @@ class fch(bfch):  # abstract base class for file and chain classes
             #     print "Attempting to draw again with extendable axes..."
             #     h.SetCanExtend(TH1.kAllAxes)
             #     thisfile.Draw(placeholder,acut,drawopt)#one tree per file
+    
+    def __getattr__(self, name):
+        try:
+            return getattr(self._thething, name)
+        except AttributeError:
+            return getattr(self._theotherthing, name)

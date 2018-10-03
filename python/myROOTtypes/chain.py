@@ -9,6 +9,7 @@ class chain(fch):
         fch.__init__(self)
         self.chain = TChain(trname, "")
         self._thething = self.chain
+        self._theotherthing = self.chain
         self.locations = []  # list of locations of added files
         if name is not None:
             self.set_name(name)

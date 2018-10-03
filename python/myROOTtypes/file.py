@@ -7,6 +7,7 @@ class file(fch):
     def __init__(self, location, name=None, tree=None, quality=None, opencondition='READ'):
         fch.__init__(self)
         self.file = TFile.Open(location, opencondition)
+        self._theotherthing = self.file
         self.location = location
         self.t = []
         if name:
@@ -30,6 +31,3 @@ class file(fch):
         for ikey in self.GetListOfKeys():
             if isinstance(ikey.ReadObj(), TTree):
                 self.add_tree(ikey.GetName())
-    
-    def Get(self, *args, **kwargs):
-        return self.file.Get(*args, **kwargs)
