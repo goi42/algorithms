@@ -30,3 +30,6 @@ class file(fch):
         for ikey in self.GetListOfKeys():
             if isinstance(ikey.ReadObj(), TTree):
                 self.add_tree(ikey.GetName())
+    
+    def Get(self, *args, **kwargs):
+        return self.file.Get(*args, **kwargs)
