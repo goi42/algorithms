@@ -130,7 +130,6 @@ class fch(bfch):  # abstract base class for file and chain classes
 
         if isinstance(thisbranch, str) or isinstance(thisbranch, TString):  # if a string is passed
             self.GetTree(treename).Draw(thisbranch, acut, opt)
-
         elif isinstance(thisbranch, branch):  # if a branch object is passed
             if not thisbranch.h:  # make histogram
                 thisbranch.make_histogram()
@@ -165,6 +164,8 @@ class fch(bfch):  # abstract base class for file and chain classes
             #     print "Attempting to draw again with extendable axes..."
             #     h.SetCanExtend(TH1.kAllAxes)
             #     thisfile.Draw(placeholder,acut,drawopt)#one tree per file
+        else:
+            raise TypeError('cannot draw object of type {}'.format(type(thisbranch)))
     
     def __getattr__(self, name):
         try:
