@@ -32,7 +32,7 @@ class cut(cbfch):
             ancut = another.GetTitle()
             anname = another.GetName()
         else:
-            raise TypeError('cannot add object of class "' + another.__class__.__name__ + '" to object of class "cut"')
+            raise TypeError('cannot perform arithmetic on object of class "' + another.__class__.__name__ + '" with object of class "cut"')
 
         newcut = '(' + self.cut.GetTitle() + ')' + sym + '(' + ancut + ')'
         newname = '(' + self.name + ') ' + sym + ' (' + anname + ')'
@@ -55,6 +55,16 @@ class cut(cbfch):
                 newname = '!(' + anname + ')'
         return cut(newcut, newname)
     
+    def __mul__(self, another):
+        '''useful for combining weights
+        '''
+        newcut, newname, ancut, anname = self._arithmetic('*', another)
+        if not self.cut.GetTitle().strip():
+            newcut = ancut
+            if not self.name.strip():
+                newname = anname
+        return cut(newcut, newname)
+
     def __div__(self, another):
         '''not actual division--a wonky way to do OR
         '''
@@ -70,6 +80,9 @@ class cut(cbfch):
         
     def __isub__(self, another):
         return self - another
+
+    def __imul__(self, another):
+        return self * another
 
     def __idiv__(self, another):
         return self / another
