@@ -171,6 +171,11 @@ class fch(bfch):  # abstract base class for file and chain classes
         else:
             raise TypeError('cannot draw object of type {}'.format(type(thisbranch)))
     
+    def EntryPasses(self, anentry, acut, abranch=None, **kwargs):
+        if abranch is None:
+            abranch = self.GetListOfBranches()[0]
+        return self.Draw(abranch, acut, 'goff', nentries=1, firstentry=anentry, **kwargs)
+    
     def __getattr__(self, name):
         try:
             return getattr(self._thething, name)
