@@ -415,3 +415,14 @@ def save_plot_fit_4D_main(filetag, variables, dtys, outdir, plot2D=False, saveva
             c.SaveAs(opj(outdir, "fit" + usefiletag + "_2D.pdf"))
             c.SaveAs(opj(outdir, "cfiles", "fit" + usefiletag + "_2D.C"  ))
             print "done"
+
+
+def makeRooList(itm):
+    'calls itm.createIterator() and loops it into a list'
+    retlist = []
+    itritm = itm.createIterator()
+    v = itritm.Next()
+    while v:
+        retlist.append(v)
+        v = itritm.Next()
+    return retlist
