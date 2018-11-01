@@ -119,17 +119,21 @@ class fch(bfch):  # abstract base class for file and chain classes
                     if tr.GetName() == trname:
                         return tr
     
-    def Draw(self, thisbranch, thiscut="", opt="", canvas=None, treename=None):
+    def Draw(self, thisbranch, thiscut="", opt="", nentries=None, firstentry=0, canvas=None, treename=None):
         if isinstance(thiscut, cut):
             acut = thiscut.cut
         else:
             acut = thiscut
-        if not canvas:  # make canvas
+        if nentries is None:
+            nentries = self._thething.kMaxEntries
+        if canvas is None:  # make canvas
             canvas = TCanvas(self.name, self.name, 1200, 800)
+        if not isinstance(canvas, TCanvas):
+            raise TypeError('canvas must be TCanvas or None')
         canvas.cd()
-
+        
         if isinstance(thisbranch, str) or isinstance(thisbranch, TString):  # if a string is passed
-            self.GetTree(treename).Draw(thisbranch, acut, opt)
+            return self.GetTree(treename).Draw(thisbranch, acut, opt, nentries, firstentry)
         elif isinstance(thisbranch, branch):  # if a branch object is passed
             if not thisbranch.h:  # make histogram
                 thisbranch.make_histogram()
@@ -154,7 +158,7 @@ class fch(bfch):  # abstract base class for file and chain classes
                 if(thisbranch.set_log_Y or assocbranch.set_log_Y):
                     canvas.SetLogz()
             # try:
-            self.Draw(StringToDraw, acut, opt, canvas, treename)
+            self.Draw(StringToDraw, acut, opt, nentries, firstentry, canvas, treename)
             # except:
             #     print "Draw() failed for "+placeholder
             #     print "in file: "+self.name

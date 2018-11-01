@@ -237,7 +237,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
         # draw histograms
         if(verbose):
             print "drawing histogram " + repr(hi + 1) + "... ",
-        thisfile.Draw(thisbranch, thiscut, drawopt, ci)
+        thisfile.Draw(thisbranch, thiscut, drawopt, canvas=ci)
         if(verbose):
             print "done"
         pli += 1  # iterate the number of plots that have been drawn
