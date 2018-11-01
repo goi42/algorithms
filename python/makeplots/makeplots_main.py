@@ -149,7 +149,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
     placeholder = "c" + cistring
     ci = TCanvas(placeholder, placeholder, 1200, 800)  # create the canvases
     ci.cd()
-    ROOT.gStyle.SetOptStat("")
+    ROOT.gStyle.SetOptStat(setoptstat)
     leg = TLegend(legpars[0], legpars[1], legpars[2], legpars[3])
 
     hs.append(THStack("hs" + cistring, "hs" + cistring))  # create the stack to hold the histograms

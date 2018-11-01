@@ -46,6 +46,8 @@ parser.add_argument('--filllinecolors', action='store_true',
                     help='use linecolor as fillcolor')
 parser.add_argument('--yesstack', action='store_true',
                     help='stack histograms')
+parser.add_argument('--setoptstat', default='',
+                    help='string to pass to gStyle.SetOptStat')
 
 # class modimport(argparse.Action):
 #     def __init__(self,option_strings,dest,nargs=None,**kwargs):
@@ -86,3 +88,4 @@ notitle = args.notitle
 nolegend = args.nolegend
 filllinecolors = args.filllinecolors
 yesstack = args.yesstack
+setoptstat = args.setoptstat
