@@ -4,8 +4,8 @@ from contextlib import contextmanager
 
 
 def invmass(*args):
-    '''returns a string representing the invariant mass of an arbitrary number of strings (using pow and sqrt) by using '_PE', '_PX', '_PY', '_PZ' (or 'P_E' if 'TRUE' in the name)
-    '''
+    """returns a string representing the invariant mass of an arbitrary number of strings (using pow and sqrt) by using '_PE', '_PX', '_PY', '_PZ' (or 'P_E' if 'TRUE' in the name)
+    """
     kvars = ('_PE', '_PX', '_PY', '_PZ')
     outstr = 'sqrt('
     for ikv, kv in enumerate(kvars):
@@ -26,8 +26,8 @@ def invmass(*args):
 
 
 def momentum(*args):
-    '''returns a string representing the magnitude of the momentum of an arbitrary number of strings (using pow and sqrt) by using '_PX', '_PY', '_PZ' (or 'P_X' if 'TRUE' in the name)
-    '''
+    """returns a string representing the magnitude of the momentum of an arbitrary number of strings (using pow and sqrt) by using '_PX', '_PY', '_PZ' (or 'P_X' if 'TRUE' in the name)
+    """
     kvars = ('_PX', '_PY', '_PZ')
     outstr = 'sqrt('
     for ikv, kv in enumerate(kvars):
@@ -48,8 +48,8 @@ def momentum(*args):
 
 
 def rapidity(nm):
-    '''returns a string representing the rapidity y of nm (using atanh) by using '_PZ' and '_P' (or using 'P_Z' and calculating P with 'P_X', 'P_Y', 'P_Z' [using sqrt and pow] if 'TRUE' in nm): y = artanh(p_Z / abs(p)) ~= -ln(tan(theta / 2)) = eta = psuedorapidity
-    '''
+    """returns a string representing the rapidity y of nm (using atanh) by using '_PZ' and '_P' (or using 'P_Z' and calculating P with 'P_X', 'P_Y', 'P_Z' [using sqrt and pow] if 'TRUE' in nm): y = artanh(p_Z / abs(p)) ~= -ln(tan(theta / 2)) = eta = psuedorapidity
+    """
     if 'TRUE' in nm:
         p = momentum(nm)
         pZ = '{NM}P_Z'.format(NM=nm)
@@ -60,18 +60,18 @@ def rapidity(nm):
 
 
 def truedeclength(nm):
-    '''returns a string representing the decay length of the given parameter name (using pow and sqrt) by finding the length of the vector between TRUEORIGINVERTEX and TRUEENDVERTEX.
-    '''
+    """returns a string representing the decay length of the given parameter name (using pow and sqrt) by finding the length of the vector between TRUEORIGINVERTEX and TRUEENDVERTEX.
+    """
     return 'sqrt(pow({NM}_TRUEENDVERTEX_X - {NM}_TRUEORIGINVERTEX_X, 2) + pow({NM}_TRUEENDVERTEX_Y - {NM}_TRUEORIGINVERTEX_Y, 2) + pow({NM}_TRUEENDVERTEX_Z - {NM}_TRUEORIGINVERTEX_Z, 2))'.format(NM=nm)
 
 
 def replE(ps, ms, *args):
-    '''replaces one mass hypothesis with another by recalculating the energy with the presumed mass
+    """replaces one mass hypothesis with another by recalculating the energy with the presumed mass
     returns an invariant mass string
     `ps` is a list of particles
     `ms` is a list of their desired mass hypotheses
     args are the names of other particles to include in the invariant mass
-    '''
+    """
     assert type(ps) == list and type(ms) == list and len(ps) == len(ms)
     kvars = ('_PX', '_PY', '_PZ')
     parts = ps + list(args)
@@ -95,9 +95,9 @@ def replE(ps, ms, *args):
 
 
 def shim_thickness(start, stop, subtract):
-    ''' sums from start to stop (inclusive) and subtracts subtract
+    """ sums from start to stop (inclusive) and subtracts subtract
     start, stop, subtract, and output given in thousandths of an inch (no fractions)
-    '''
+    """
     assert stop > start
     out_value = 0
     for i in xrange(start, stop + 1):
@@ -107,11 +107,11 @@ def shim_thickness(start, stop, subtract):
     
 
 def print_thicknesses(*args):
-    '''prints table of thicknesses (calculated using `shim_thickness`) ready for emailing.
+    """prints table of thicknesses (calculated using `shim_thickness`) ready for emailing.
     enter side A, then side C measurements for as many positions as you like, e.g.,
     `start1A, stop1A, subtract1A, start1C, stop1C, subtract1C, start2A, stop2A, subtract2A, start2C, stop2C, subtract2C`
     and so on.
-    '''
+    """
     assert len(args) % 2 == 0 and len(args) % 3 == 0 and all(isinstance(x, int) for x in args)
 
     for irowt, ((Astart, Astop, Asubtract), (Cstart, Cstop, Csubtract)) in enumerate(zip(*[iter(zip(*[iter(args)] * 3))] * 2)):  # split and loop over undifferentiated argument list
@@ -120,9 +120,9 @@ def print_thicknesses(*args):
 
 
 def randmoney(hival=10.00, loval=1.00):
-    '''returns random monetary value (string)
+    """returns random monetary value (string)
     loval <= output < hival
-    '''
+    """
     from random import randrange
     hi, lo = hival * 100, loval * 100
     v = randrange(lo, hi, 1)
@@ -130,8 +130,8 @@ def randmoney(hival=10.00, loval=1.00):
 
 
 def divsquare(num):
-    '''returns rows, columns
-    '''
+    """returns rows, columns
+    """
     import math
     sqnc = math.sqrt(num)
     sqncu = int(math.ceil(sqnc))
@@ -142,8 +142,8 @@ def divsquare(num):
 
 
 def makedirsif(adir):
-    '''makes directory tree if it doesn't already exist
-    '''
+    """makes directory tree if it doesn't already exist
+    """
     try:
         os.makedirs(adir)
     except OSError as e:
@@ -152,11 +152,11 @@ def makedirsif(adir):
 
 
 def getRTDtemp(R, R0=100.0, T0=0.0, a=3.9083E-3, b=-5.7750E-7):
-    ''' Return temperature in Celcius given an RTD's resistance in Ohms. Uses formula R = R0*(1+a*(T-T0)+b*(T-T0)**2). Only valid for T>=0.
+    """ Return temperature in Celcius given an RTD's resistance in Ohms. Uses formula R = R0*(1+a*(T-T0)+b*(T-T0)**2). Only valid for T>=0.
     Originally based on email from Ivan:
     The RTD's in sub-basement lab are standard Pt100 ones. Their resistance depends on temperature as R = R0*(1+a*(T-T0)), where T0 = 0C, R0 = 100 Ohm, a = 0.00385 1/C.
     modified for greater precision according to the equation at https://techoverflow.net/2016/01/02/accurate-calculation-of-pt100pt1000-temperature-from-resistance/
-    '''
+    """
     from math import sqrt
     T = T0 + (sqrt(a**2 + 4 * b * (R / R0 - 1)) - a) / (2 * b)
     if T < 0:
@@ -165,12 +165,12 @@ def getRTDtemp(R, R0=100.0, T0=0.0, a=3.9083E-3, b=-5.7750E-7):
 
 
 def getRTDres(T, R0=100.0, T0=0.0, a=3.9083E-3, b=-5.7750E-7, c=None):
-    ''' Return resistance in ohms an RTD should have for a given temperature in Celcius. Uses formula R = R0*(1+a*(T-T0)+b*(T-T0)**2+c*(T-T0-100)*(T-T0)**3).
+    """ Return resistance in ohms an RTD should have for a given temperature in Celcius. Uses formula R = R0*(1+a*(T-T0)+b*(T-T0)**2+c*(T-T0-100)*(T-T0)**3).
     Careful assigning c. Calculated internally if not assigned. T-dependent in calculation (0 for T>=0).
     Originally based on email from Ivan:
     The RTD's in sub-basement lab are standard Pt100 ones. Their resistance depends on temperature as R = R0*(1+a*(T-T0)), where T0 = 0C, R0 = 100 Ohm, a = 0.00385 1/C.
     modified for greater precision according to the equation at https://techoverflow.net/2016/01/02/accurate-calculation-of-pt100pt1000-temperature-from-resistance/
-    '''
+    """
     if c is None:
         c = 0 if T >= 0 else -4.1830E-12
     R = R0 * (1 + a * (T - T0) + b * (T - T0)**2 + c * (T - T0 - 100) * (T - T0)**3)
@@ -350,11 +350,11 @@ def save_plot_fit_4D(filetag, x, data, totalPdf, yields, outdir, binning=30, sav
 
 
 def save_plot_fit_4D_main(filetag, variables, dtys, outdir, plot2D=False, savevalues=False, binning=34):
-    '''
+    """
     filetag is used for filenaming
     variables is a list of RooRealVars
     dtys is a list of tuples, e.g., [(dataRS,totalPdfRS,yieldsRS),(dataWS,totalPdfWS,yieldsWS)]
-    '''
+    """
     import os
     from os.path import join as opj
     if plot2D and not len(variables) == 2:
@@ -443,9 +443,9 @@ def fileno(file_or_fd):
 
 @contextmanager
 def stdout_redirected(to=os.devnull, stdout=None):
-    '''redirects 'stdout' to 'to'
+    """redirects 'stdout' to 'to'
     see https://stackoverflow.com/a/22434728/4655426
-    '''
+    """
     if stdout is None:
         stdout = sys.stdout
 
@@ -469,9 +469,9 @@ def stdout_redirected(to=os.devnull, stdout=None):
 
 
 def merged_stderr_stdout():  # $ exec 2>&1
-    '''Useage:
+    """Useage:
     with stdout_redirected(to="file.log"), merged_stderr_stdout():
         <do something>
     see https://stackoverflow.com/a/22434728/4655426
-    '''
+    """
     return stdout_redirected(to=sys.stdout, stdout=sys.stderr)
