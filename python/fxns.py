@@ -475,3 +475,25 @@ def merged_stderr_stdout():  # $ exec 2>&1
     see https://stackoverflow.com/a/22434728/4655426
     """
     return stdout_redirected(to=sys.stdout, stdout=sys.stderr)
+
+
+class addsyspath:
+    """Useage:
+    with addsyspath(path):
+        from x import y
+    
+    adds path to sys.path, enabling module imports
+    based on https://stackoverflow.com/a/47518468/4655426
+    """
+    import sys
+    
+    def __init__(self, path):
+        self.path = path
+        self.index = None
+    
+    def __enter__(self):
+        sys.path.append(self.path)
+        self.index = len(sys.path) - 1
+    
+    def __exit__(self, *args):
+        sys.path.pop(self.index)
