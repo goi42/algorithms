@@ -497,3 +497,17 @@ class addsyspath:
     
     def __exit__(self, *args):
         sys.path.pop(self.index)
+
+
+def printcans(outfilename, clist):
+    'creates a multi-page PDF of the canvases in clist'
+    for c in clist:
+        if len(clist) == 1:
+            app = ''
+        elif c is clist[0]:
+            app = '('
+        elif c is clist[-1]:
+            app = ')'
+        else:
+            app = ''
+        c.Print(outfilename + app)
