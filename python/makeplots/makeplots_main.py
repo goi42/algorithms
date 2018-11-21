@@ -51,7 +51,7 @@ print ''
 
 # -------assign layers, etc.---------#
 if(verbose):
-    print "assigning layers... ",
+    print "assigning layers...",
 
 CutLayerExists = False
 while not CutLayerExists:
@@ -83,27 +83,18 @@ if(verbose):
 nLayers = len(L)
 print "nFiles = " + repr(len(L[fL].element)) + ", nBranches = " + repr(len(L[bL].element)) + ", nCuts = " + repr(len(L[cL].element))
 print "nLayers = " + repr(nLayers) + ", nCanvases = " + repr(nCanvases) + ", nhpc = " + repr(nhpc)
-# ------------done-----------#
 
-# ------------------------------------canvas loop-----------------------------#
-hfile = TFile()  # declared here
 if(histograms):
     if(verbose):
-        print "creating histogram file" + hfilename + "...",
+        print "creating histogram file {0}...".format(hfilename),
     hfile = TFile(opj(outputlocation, hfilename), "recreate")  # assigned here
     if(verbose):
         print "done"
 # create necessary counters, canvases, legends, etc.
 if(verbose):
-    print "\ncreating canvasy things... ",
-# c = [TCanvas() for _ in range(nCanvases)] #each canvas holds one stack of histograms
+    print "\ncreating canvasy things...",
 cf = TCanvas("cf", "combined")  # canvas to hold everything
-sqnc = math.sqrt(nCanvases)
-sqncu = int(math.ceil(sqnc))
-sqncd = int(math.floor(sqnc))
-while(sqncu * sqncd < nCanvases):
-    sqncu += 1
-cf.Divide(sqncu, sqncd)  # canvas divided to be able to hold all other canvases
+cf.DivideSquare(nCanvases)  # canvas divided to be able to hold all other canvases
 # calculate plL (product of lower layers) (helps iterate L[i].Li)
 # this name made more sense when the order layers were specified mattered
 # now, compared layers must iterate most frequently and non-compared less frequently
@@ -129,6 +120,9 @@ for i in xrange(0, nLayers):  # the following is very C++, but I haven't rethoug
 pli = int(0)  # this counts the number of plots generated helps iterate L[i].Li
 if(verbose):
     print "done"
+# ------------done-----------#
+
+# ------------------------------------canvas loop-----------------------------#
 print "\nstarting canvas loop..."
 # actual start of the loop
 if not debug and nCanvases > 1:
@@ -171,7 +165,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
             if(not (Li.name == "cut" or Li.name == "branch")):  # cuts and branches do not get their own files
                 file_num += Li.Li * Li.plLx
         if(debug):
-            print "creating strings and pointers for histogram loop " + repr(hi + 1) + "/" + repr(nhpc) + "... ",
+            print "creating strings and pointers for histogram loop " + repr(hi + 1) + "/" + repr(nhpc) + "...",
         # create convenient strings
         histring = repr(hi)
         hname = "h" + cistring + histring
@@ -186,7 +180,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
             print "done"
         # create histogram
         if(debug):
-            print "creating histogram " + repr(hi + 1) + "... ",
+            print "creating histogram " + repr(hi + 1) + "...",
         listofthings = (thiscut, thisbranch, thisfile)
         if any(x.linecolor is not None for x in listofthings):
             foundlc = False
@@ -235,7 +229,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
             print "done"
         # draw histograms
         if(verbose):
-            print "drawing histogram " + repr(hi + 1) + "... ",
+            print "drawing histogram " + repr(hi + 1) + "...",
         thisfile.Draw(thisbranch, thiscut, drawopt, canvas=ci)
         if(verbose):
             print "done"
@@ -250,14 +244,14 @@ for ci_i in range(0, nCanvases):  # ci in c:
                 print "done"
             ci.cd()
         if(verbose):
-            print "stacking histogram " + repr(hi + 1) + "... ",
+            print "stacking histogram " + repr(hi + 1) + "...",
         hs[ci_i].Add(h)  # stack histograms
         if(verbose):
             print "done"
 
         # loop over layers
         if(verbose):
-            print "creating legend " + repr(hi + 1) + "... ",
+            print "creating legend " + repr(hi + 1) + "...",
         leglabel = ""
         for Li in L:
             # determine the name of the stack title
@@ -291,7 +285,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
         histbar.finish()
     # draw stacked histograms
     if(verbose):
-        print "drawing stack " + repr(int(cistring) + 1) + ": " + stacktitle + "... ",
+        print "drawing stack " + repr(int(cistring) + 1) + ": " + stacktitle + "...",
     hs[ci_i].SetTitle(stacktitle)
     if notitle:
         hs[ci_i].SetTitle('')
@@ -323,7 +317,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
         print "done"
     # save stuff:
     if(verbose):
-        print "saving files... ",
+        print "saving files...",
     placeholder = opj(outputlocation, filename)
     if nCanvases > 1:
         placeholder += "("  # the closing page is added after the loop
