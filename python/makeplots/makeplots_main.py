@@ -13,30 +13,29 @@ It suffers from a need for all files to have the same number of branches and all
 Elements of its logic are very C++-like, an artifact from its original design. I haven't wanted to rethink the logic yet, nor have I needed to.
 '''
 # import
-from makeplots_parser import *
-from myROOTtypes.branch import branch
-from myROOTtypes.cut import cut
-from myROOTtypes.file import file
-from myROOTtypes.chain import chain
-from myROOTtypes.layer import layer
-
 import sys
 from os.path import join as opj
 import math
 import subprocess
 import progressbar
 import time
+
 import ROOT
-from ROOT import TLegend, TTree, TROOT, TRint, TFile, THStack, TH1, TH1F, TH2, TH2F, TStyle, TCanvas, TVector3, TPaveStats, TString, TCut
-from imp import load_source
+from ROOT import TLegend, TFile, THStack, TCanvas
+from myROOTtypes.branch import branch
+from myROOTtypes.cut import cut
+from myROOTtypes.file import file
+from myROOTtypes.chain import chain
+from myROOTtypes.layer import layer
+from fxns import addsyspath
+
+from makeplots_parser import *
+with addsyspath(pathtolayerfile):
+    from makeplots_layer import L
 
 ROOT.gROOT.SetBatch(True)
 if not debug:
     ROOT.gErrorIgnoreLevel = ROOT.kWarning
-
-sys.path.append(pathtolayerfile)
-from makeplots_layer import L
-# L = load_source('L', opj(pathtolayerfile, 'makeplots_layer.py')).L
 
 print '---------------------------makeplots_main.py---------------------------'
 print 'starting at', time.asctime(time.localtime(time.time()))
