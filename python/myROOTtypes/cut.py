@@ -17,10 +17,6 @@ class cut(cbfch):
         self.nL = 0
         self.nS = 0
         self.nb = 0
-
-    def __getattr__(self, name):
-        return getattr(self.cut, name)
-
     def _arithmetic(self, sym, another):
         if another.__class__.__name__ == self.__class__.__name__:
             ancut = another.cut.GetTitle()
@@ -38,7 +34,7 @@ class cut(cbfch):
         newname = '(' + self.name + ') ' + sym + ' (' + anname + ')'
 
         return newcut, newname, ancut, anname
-
+    
     def __add__(self, another):
         newcut, newname, ancut, anname = self._arithmetic('&&', another)
         if not self.cut.GetTitle().strip():
@@ -46,7 +42,7 @@ class cut(cbfch):
             if not self.name.strip():
                 newname = anname
         return cut(newcut, newname)
-
+    
     def __sub__(self, another):
         newcut, newname, ancut, anname = self._arithmetic('&& !', another)
         if not self.cut.GetTitle().strip():
@@ -64,7 +60,7 @@ class cut(cbfch):
             if not self.name.strip():
                 newname = anname
         return cut(newcut, newname)
-
+    
     def __div__(self, another):
         '''not actual division--a wonky way to do OR
         '''
@@ -74,18 +70,21 @@ class cut(cbfch):
             if not self.name.strip():
                 newname = anname
         return cut(newcut, newname)
-
+    
     def __iadd__(self, another):
         return self + another
-        
+    
     def __isub__(self, another):
         return self - another
-
+    
     def __imul__(self, another):
         return self * another
-
+    
     def __idiv__(self, another):
         return self / another
-
+    
     def __str__(self):
         return self.cut.GetTitle()
+    
+    def __getattr__(self, name):
+        return getattr(self.cut, name)
