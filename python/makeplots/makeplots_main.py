@@ -27,7 +27,7 @@ from myROOTtypes.cut import cut
 from myROOTtypes.file import file
 from myROOTtypes.chain import chain
 from myROOTtypes.layer import layer
-from fxns import addsyspath
+from fxns import addsyspath, progbar_makestart
 
 from makeplots_parser import *
 with addsyspath(pathtolayerfile):
@@ -126,27 +126,21 @@ if(verbose):
 print "\nstarting canvas loop..."
 # actual start of the loop
 if not debug and nCanvases > 1:
-    canbar = progressbar.ProgressBar(maxval=nCanvases,
-                                     widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage() ]
-                                     )
+    canbar = progbar_makestart(nCanvases)
 hs = []
 for ci_i in range(0, nCanvases):  # ci in c:
     cistring = repr(ci_i)  # repr(c.index(ci))
     if debug:
         print "On canvas " + repr(int(cistring) + 1) + " out of " + repr(nCanvases)
-    elif nCanvases > 1:
-        if ci_i == 0:
-            canbar.start()
-        canbar.update(ci_i + 1)
     # create necessary canvasy things
     placeholder = "c" + cistring
     ci = TCanvas(placeholder, placeholder, 1200, 800)  # create the canvases
     ci.cd()
     ROOT.gStyle.SetOptStat(setoptstat)
     leg = TLegend(legpars[0], legpars[1], legpars[2], legpars[3])
-
+    
     hs.append(THStack("hs" + cistring, "hs" + cistring))  # create the stack to hold the histograms
-
+    
     stacktitle = ""
     # histogram loop
     if nhpc > 9 and not debug:  # progress bar for long jobs
@@ -234,7 +228,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
         if(verbose):
             print "done"
         pli += 1  # iterate the number of plots that have been drawn
-
+        
         if(histograms):
             if(verbose):
                 print "saving histogram" + repr(hi + 1) + "...",
@@ -326,6 +320,8 @@ for ci_i in range(0, nCanvases):  # ci in c:
         ci.SaveAs(opj(outputlocation, "c" + cistring + "_" + stacktitle + ".C"))
     if(verbose):
         print "done\n"
+    if not debug and nCanvases > 1:
+        canbar.update(ci_i)
 # end canvas loop
 if not debug and nCanvases > 1:
     canbar.finish()
