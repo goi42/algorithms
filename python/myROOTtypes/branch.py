@@ -58,7 +58,7 @@ class branch(bfch):
         if self.associated_branch:
             self.associated_branch.prep_for_histogram()
     
-    def make_histogram(self, hname=None, linecolor=None, fillcolor=None, fillstyle=None, overwrite=False, return_histogram=True):  # create an empty histogram
+    def make_histogram(self, hname=None, linecolor=None, fillcolor=None, fillstyle=None, sumw2=True, overwrite=False, return_histogram=True):  # create an empty histogram
         if linecolor is None and self.linecolor is None:
             linecolor = 1
         elif linecolor is None:
@@ -94,6 +94,8 @@ class branch(bfch):
                 h.SetCanExtend(TH1.kYaxis)
             h.GetXaxis().SetTitle(self.branch)
             h.GetYaxis().SetTitle(assocbranch.branch)
+        if sumw2:
+            h.Sumw2()
         self.h = h
         if return_histogram:
             return h
