@@ -129,57 +129,19 @@ if(verbose):
     print "done"
 # ------------done-----------#
 
-# ---------------declare and fill histograms (maybe)---------------#
-if not doDraw:
-    print '\nstarting histogram declaration loop...'
-    hbar = progbar_makestart(nFiles * nBranches * nCuts)
-    i = 0
-    for ifile in L[fL].element:
-        for ibranch in ifile.b:
-            for icut in ibranch.c:
-                icut.make_histogram(ifile, ibranch, return_histogram=False)
-                icut.format_histogram(b=ibranch, sumw2=not nosumw2)  # preliminary stuff here, more below
-                i += 1
-                hbar.update(i)
-    hbar.finish()
-    
-    class myThread(threading.Thread):
-        def __init__(self, f):
-            threading.Thread.__init__(self)
-            self.f = f
-            self.Nents = f.GetEntries()
-            self.prog = 0
-        
-        def run(self):
-            for ievt, evt in enumerate(self.f.GetTree()):
-                for ibranch in self.f.b:
-                    for icut in ibranch.c:
-                        icut.fill_histogram(evt, ibranch)
-                self.prog = ievt + 1
-    
-    print '\ngetting entries...'
-    threads = []
-    for ifile in L[fL].element:
-        threads.append(myThread(ifile))
-    nEntries = sum(x.Nents for x in threads)
-    print 'starting histogram fill loops over {} entries...'.format(nEntries)
-    fillbar = progbar_makestart(nEntries)
-    Nth_at_once = len(threads) if len(threads) < 5 else 5
-    startedthreads = []
-    while len(startedthreads) < len(threads) or any(  # start all threads
-        [th.isAlive() for th in threads]  # wait for them to finish
-    ):
-        for th in [x for x in threads if x not in startedthreads]:
-            runningthreads = [x for x in threads if x.isAlive()]
-            if len(runningthreads) < Nth_at_once:
-                th.start()
-                startedthreads.append(th)
-            else:
-                break
-        fillbar.update(sum(x.prog for x in threads))
-        time.sleep(0.001)
-    fillbar.finish()
-# ---------------done----------------------------------------------#
+# ---------------declare histograms---------------#
+print '\nstarting histogram declaration loop...'
+hbar = progbar_makestart(nFiles * nBranches * nCuts)
+i = 0
+for ifile in L[fL].element:
+    for ibranch in ifile.b:
+        # ibranch.add_column(ifile)
+        for icut in ibranch.c:
+            icut.make_histogram(ifile, ibranch, return_histogram=False)
+            i += 1
+            hbar.update(i)
+hbar.finish()
+# ---------------done-----------------------------#
 
 # ------------------------------------canvas loop-----------------------------#
 print "\nstarting canvas loop..."
@@ -224,6 +186,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
         if(assocbranch and debug):
             print thisbranch.name, 'has associated branch', assocbranch.name
         thiscut = thisbranch.c[L[cL].Li]
+        thish = thiscut.h
         if(debug):
             print "done"
         # create histogram
@@ -278,36 +241,28 @@ for ci_i in range(0, nCanvases):  # ci in c:
             if(debug):
                 print 'forcing branch to match previous one...',
             lasthistaxis = hs[ci_i].GetHists()[-1].GetXaxis()
-            thisbranch.nBins = lasthistaxis.GetNbins()
-            thisbranch.loBin = lasthistaxis.GetXmin()
-            thisbranch.hiBin = lasthistaxis.GetXmax()
+            thish.GetXaxis().Set(
+                lasthistaxis.GetNbins(),
+                lasthistaxis.GetXmin(),
+                lasthistaxis.GetXmax()
+            )
             if(debug):
                 print 'done'
-        if doDraw:
-            thish = thisbranch.make_histogram(thisfile, thiscut, linecolor=linecolor, markercolor=markercolor, fillcolor=fillcolor, fillstyle=fillstyle, overwrite=True, return_histogram=True, sumw2=not nosumw2)  # linecolor is ignored for 2D histograms by make_histogram
-            # draw histograms
-            if(verbose):
-                print "drawing histogram {i}...".format(i=hi + 1),
-            thisfile.Draw(thisbranch, thiscut, drawopt, canvas=ci)
-            if(verbose):
-                print "done"
+        thiscut.format_histogram(linecolor=linecolor, markercolor=markercolor, fillcolor=fillcolor, fillstyle=fillstyle, b=thisbranch, sumw2=not nosumw2)  # linecolor is ignored for 2D histograms by format_histogram
+        if(thiscut.hdims == 1):
+            if(thisbranch.set_log_X):
+                ci.SetLogx()
+            if(thisbranch.set_log_Y):
+                ci.SetLogy()
+        elif(thiscut.hdims == 2):
+            if(thisbranch.set_log_X):
+                ci.SetLogx()
+            if(assocbranch.set_log_X):
+                ci.SetLogy()
+            if(thisbranch.set_log_Y or assocbranch.set_log_Y):
+                ci.SetLogz()
         else:
-            thiscut.format_histogram(linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, b=thisbranch, sumw2=False, set_can_extend=False)  # linecolor is ignored for 2D histograms by format_histogram
-            thish = thiscut.h
-            if(thiscut.hdims == 1):
-                if(thisbranch.set_log_X):
-                    ci.SetLogx()
-                if(thisbranch.set_log_Y):
-                    ci.SetLogy()
-            elif(thiscut.hdims == 2):
-                if(thisbranch.set_log_X):
-                    ci.SetLogx()
-                if(assocbranch.set_log_X):
-                    ci.SetLogy()
-                if(thisbranch.set_log_Y or assocbranch.set_log_Y):
-                    ci.SetLogz()
-            else:
-                raise Exception('{0} has neither 1 nor 2 hdims?'.format(thiscut.name))
+            raise Exception('{0} has neither 1 nor 2 hdims?'.format(thiscut.name))
         
         # clone histograms
         if(verbose):
