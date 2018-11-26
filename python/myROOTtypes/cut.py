@@ -35,7 +35,9 @@ class cut(cbfch):
             raise Exception('h already exists!')
         
         # add potentially missing items
+        b.add_column(f)
         b.prep_for_histogram()
+        filterdframe = f.add_filtered_dframe(self)
         
         # declare title and name
         if hname is None:
@@ -55,18 +57,19 @@ class cut(cbfch):
         # declare parameters for histogram creation
         hargs = [hname, htit, b.nBins, b.loBin, b.hiBin]  # base histogram arguments
         if b.associated_branch is None:
-            thehcomm = getattr(ROOT, 'TH1' + b.datatype)
+            passlist = [tuple(hargs), b.uniquenm]
+            thehcomm = filterdframe.Histo1D
             self.hdims = 1
         else:
             ab = b.associated_branch
-            hargs += [ab.nBins, ab.loBin, ab.hiBin]
-            if b.datatype != ab.datatype:
-                raise TypeError('cannot combine branches with different datatype!')
-            thehcomm = getattr(ROOT, 'TH2' + b.datatype)
+            passlist = [tuple(hargs + [ab.nBins, ab.loBin, ab.hiBin]), b.uniquenm, ab.uniquenm]
+            thehcomm = filterdframe.Histo2D
             self.hdims = 2
+        if self.weight is not None:
+            passlist += [self.weight if isinstance(self.weight, str) else self.weight.GetTitle()]
         
         # create histogram
-        theh = thehcomm(*hargs)
+        theh = thehcomm(*passlist)
         
         cbfch.nh += 1
         
