@@ -44,6 +44,20 @@ class branch(bfch):
     def get_bin_width(self):
         return (float(self.hiBin) - float(self.loBin)) / float(self.nBins)
     
+    def prep_for_histogram(self):
+        'make sure properties are set properly for histogram creation'
+        
+        if self.nBins is None:
+            self.nBins = 100  # set default binning if not specified
+        hilospec = False  # is either loBin or hiBin non-0?
+        if self.loBin or self.hiBin:
+            hilospec = True
+        binning_set = all([self.nBins, hilospec])  # is the binning completely specified now?
+        if not binning_set:
+            self.can_extend = True
+        if self.associated_branch:
+            self.associated_branch.prep_for_histogram()
+    
     def make_histogram(self, hname=None, linecolor=None, fillcolor=None, fillstyle=None, overwrite=False, return_histogram=True):  # create an empty histogram
         if linecolor is None and self.linecolor is None:
             linecolor = 1
@@ -62,22 +76,10 @@ class branch(bfch):
         elif overwrite:
             self.h = None
         assocbranch = self.associated_branch
-        if not self.nBins:
-            self.nBins = 100  # set default binning if not specified
-        hilospec = False  # is either loBin or hiBin non-0?
-        if self.loBin or self.hiBin:
-            hilospec = True
-        binning_set = all([self.nBins, hilospec])  # is the binning completely specified now?
-        if assocbranch:  # repeat for assocbranch
-            if not assocbranch.nBins:
-                assocbranch.nBins = 100
-            hilospec = False  # is either loBin or hiBin non-0?
-            if assocbranch.loBin or assocbranch.hiBin:
-                hilospec = True
-            assocbinning_set = all([assocbranch.nBins, hilospec])
+        self.prep_for_histogram()
         if not assocbranch:
             h = TH1F(hname, self.name, self.nBins, self.loBin, self.hiBin)
-            if(not binning_set or self.can_extend):
+            if(self.can_extend):
                 h.SetCanExtend(TH1.kAllAxes)
             h.SetLineColor(linecolor)
             if fillcolor is not None:
@@ -86,9 +88,9 @@ class branch(bfch):
                 h.SetFillStyle(fillstyle)
         else:
             h = TH2F(hname, self.name + ' vs. ' + assocbranch.name, self.nBins, self.loBin, self.hiBin, assocbranch.nBins, assocbranch.loBin, assocbranch.hiBin)
-            if(not binning_set or self.can_extend):
+            if(self.can_extend):
                 h.SetCanExtend(TH1.kXaxis)
-            if(not assocbinning_set or assocbranch.can_extend):
+            if(assocbranch.can_extend):
                 h.SetCanExtend(TH1.kYaxis)
             h.GetXaxis().SetTitle(self.branch)
             h.GetYaxis().SetTitle(assocbranch.branch)
