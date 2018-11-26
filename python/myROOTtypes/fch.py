@@ -10,9 +10,9 @@ class fch(bfch):  # abstract base class for file and chain classes
         bfch.__init__(self)
         self.name = ""  # nickname for the file or chain
         self.quality = {}  # handy for comparing files, e.g., quality["year"]="2015"
-        self.b = []
         self._thething = None  # should be set to a TTree for file and the TChain for chain
         self._theotherthing = None  # should be set to the TFile for file and the TChain for chain
+        self.b = []
         self.bMaxes = {}
         self.bMins  = {}
     # def __enter__(self):
