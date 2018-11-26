@@ -10,6 +10,7 @@ class fch(bfch):  # abstract base class for file and chain classes
         bfch.__init__(self, linecolor=linecolor, markercolor=markercolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname)
         self.name = ""  # nickname for the file or chain
         self.quality = {}  # handy for comparing files, e.g., quality["year"]="2015"
+        self.dframedict = None
         self._thething = None  # should be set to a TTree for file and the TChain for chain
         self._theotherthing = None  # should be set to the TFile for file and the TChain for chain
         self.b = []
@@ -25,6 +26,29 @@ class fch(bfch):  # abstract base class for file and chain classes
     
     def set_quality(self, quality):
         self.quality = quality
+    
+    def make_dframedict(self, overwrite=False):
+        'initializes dframedict if it does not exist (or `overwrite` specified)'
+        if self.dframedict is None or overwrite:
+            from ROOT import RDataFrame
+            self.dframedict = {
+                '': RDataFrame(self.GetTree())
+            }
+        
+        return self.dframedict
+    
+    def add_filtered_dframe(self, c, overwrite=False):
+        if isinstance(c, str):
+            ctit = c
+        else:
+            ctit = c.GetTitle()
+        
+        self.make_dframedict()
+        
+        if ctit not in self.dframedict or overwrite:
+            self.dframedict[ctit] = self.dframedict[''].Filter(ctit)
+        
+        return self.dframedict[ctit]
     
     def add_branch(self, *args, **kwargs):
         if all(isinstance(x, branch) for x in args):
