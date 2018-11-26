@@ -3,8 +3,8 @@ from cbfch import cbfch
 
 
 class cut(cbfch):
-    def __init__(self, cut, name=None):
-        cbfch.__init__(self)
+    def __init__(self, cut, name=None, linecolor=None, fillcolor=None, fillstyle=None, hname=None):
+        cbfch.__init__(self, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname)
         self.cut = TCut(cut)
         self.name = str(cut)
         if name:
