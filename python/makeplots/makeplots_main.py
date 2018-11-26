@@ -13,6 +13,8 @@ It suffers from a need for all files to have the same number of branches and all
 Elements of its logic are very C++-like, an artifact from its original design. I haven't wanted to rethink the logic yet, nor have I needed to.
 '''
 # import
+from makeplots_parser import *  # up here to make sure --help works
+
 import sys
 from os.path import join as opj
 import math
@@ -29,7 +31,6 @@ from myROOTtypes.chain import chain
 from myROOTtypes.layer import layer
 from fxns import addsyspath, progbar_makestart
 
-from makeplots_parser import *
 with addsyspath(pathtolayerfile):
     from makeplots_layer import L
 
