@@ -29,8 +29,7 @@ class branch(bfch):
         # self.legyi = 0.7
         # self.legyf = 0.9
         # self.legend = TLegend(self.legxi,self.legyi,self.legxf,self.legyf)
-        self.h = None
-
+    
     def set_binning(self, nBins, loBin, hiBin, can_extend=False):
         if nBins < 0:
             raise ValueError("branch {} cannot be assigned nBins = {}. nBins must be >=0!".format(repr(self.name), repr(nBins)))
@@ -40,7 +39,7 @@ class branch(bfch):
         self.loBin = loBin
         self.hiBin = hiBin
         self.can_extend = can_extend
-        
+    
     def get_bin_width(self):
         return (float(self.hiBin) - float(self.loBin)) / float(self.nBins)
     
@@ -99,7 +98,7 @@ class branch(bfch):
         self.h = h
         if return_histogram:
             return h
-
+    
     def _arithmetic(self, sym, another):
         newbranch = '(' + self.branch + ') ' + sym + ' (' + another.branch + ')'
         newname = '(' + self.name + ') ' + sym + ' (' + another.name + ')'
@@ -136,7 +135,7 @@ class branch(bfch):
         else:
             associated_branch = None
         return newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch
-
+    
     def __add__(self, another):
         newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch = self._arithmetic('+', another)
         hiBin = self.hiBin + another.hiBin
@@ -147,7 +146,7 @@ class branch(bfch):
         if self.associated_branch and another.associated_branch:
             associated_branch = self.associated_branch + another.associated_branch
         return branch(newbranch, newname, nBins, loBin, hiBin, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch)
-
+    
     def __sub__(self, another):
         newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch = self._arithmetic('-', another)
         # hiBin = self.hiBin - another.hiBin
@@ -159,7 +158,7 @@ class branch(bfch):
         if self.associated_branch and another.associated_branch:
             associated_branch = self.associated_branch - another.associated_branch
         return branch(newbranch, newname, nBins, loBin, hiBin, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch)
-
+    
     def __mul__(self, another):
         newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch = self._arithmetic('*', another)
         if self.hiBin >= 0 and another.hiBin >= 0 and self.loBin >= 0 and another.loBin >= 0:
@@ -175,7 +174,7 @@ class branch(bfch):
         if self.associated_branch and another.associated_branch:
             associated_branch = self.associated_branch * another.associated_branch
         return branch(newbranch, newname, nBins, loBin, hiBin, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch)
-
+    
     def __pow__(self, power):  # special case; does not call _arithmetic
         outbranch = copy.deepcopy(self)
         if power == 0.5:
@@ -202,7 +201,7 @@ class branch(bfch):
         if outbranch.nBins == 0:
             outbranch.nBins = 100
         return outbranch
-
+    
     def __div__(self, another):
         newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch = self._arithmetic('/', another)
         if self.hiBin >= 0 and another.hiBin > 0 and self.loBin >= 0 and another.loBin > 0:
@@ -218,21 +217,21 @@ class branch(bfch):
         if self.associated_branch and another.associated_branch:
             associated_branch = self.associated_branch * another.associated_branch
         return branch(newbranch, newname, nBins, loBin, hiBin, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch)
-
+    
     def __iadd__(self, another):
         return self + another
-        
+    
     def __isub__(self, another):
         return self - another
-        
+    
     def __imul__(self, another):
         return self * another
     
     def __ipow__(self, power):
         return self ** power
-        
+    
     def __idiv__(self, another):
         return self / another
-
+    
     def __str__(self):
         return self.branch

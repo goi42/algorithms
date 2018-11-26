@@ -6,3 +6,4 @@ class cbfch:  # abstract base class for cut, branch, and fch classes
         self.fillcolor = fillcolor
         self.fillstyle = fillstyle
         self.hname = hname
+        self.h = None
