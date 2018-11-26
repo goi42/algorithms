@@ -77,6 +77,14 @@ class branch(bfch):
     def get_bin_width(self):
         return (float(self.hiBin) - float(self.loBin)) / float(self.nBins)
     
+    def add_column(self, ifile):
+        ifile.make_dframedict()  # only makes it if it doesn't already exist
+        for c in ifile.dframedict.iterkeys():
+            if self.uniquenm not in ifile.dframedict[c].GetColumnNames():
+                ifile.dframedict[c] = ifile.dframedict[c].Define(self.uniquenm, str(self))
+            if self.associated_branch:
+                self.associated_branch.add_column(ifile)
+    
     def prep_for_histogram(self):
         'make sure properties are set properly for histogram creation'
         
