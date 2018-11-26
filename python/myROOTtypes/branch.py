@@ -1,13 +1,12 @@
 import sys
 import copy
 from cut import cut
+from cbfch import cbfch
 from bfch import bfch
 from ROOT import TH1F, TH1, TH2F, TCut
 
 
 class branch(bfch):
-    nh = 0  # number of created histograms for branches to avoid duplicate names and memory leaks, iterated in make_histogram() below
-
     def __init__(self, branch, name=None, nBins=0, loBin=0, hiBin=0, units=None, xlabel="", ylabel="", set_log_X=False, set_log_Y=False, can_extend=False, c=None, associated_branch=None, uniquenm=None):
         bfch.__init__(self, c=c)
         self.branch = branch  # name of branch as it appears in the tree
@@ -44,7 +43,7 @@ class branch(bfch):
         
     def get_bin_width(self):
         return (float(self.hiBin) - float(self.loBin)) / float(self.nBins)
-
+    
     def make_histogram(self, hname=None, linecolor=None, fillcolor=None, fillstyle=None, overwrite=False, return_histogram=True):  # create an empty histogram
         if linecolor is None and self.linecolor is None:
             linecolor = 1
@@ -56,8 +55,8 @@ class branch(bfch):
             fillstyle = self.fillstyle
             
         if not hname:
-            hname = 'h' + repr(branch.nh)
-            branch.nh += 1
+            hname = 'h' + repr(cbfch.nh)
+            cbfch.nh += 1
         if self.h and not overwrite:
             raise Exception('{} has h already'.format(self.name))
         elif overwrite:
