@@ -23,9 +23,7 @@ class branch(bfch):
         self.set_log_X = set_log_X  # do you want a log scale?
         self.set_log_Y = set_log_Y  # do you want a log scale?
         self.can_extend = can_extend  # do you want Draw to change the bin range?
-        self.associated_branch = None
-        if associated_branch:
-            self.associated_branch = associated_branch  # branch() object that this will be plotted against, as <thisbranch>:<associated branch>
+        self.associated_branch = associated_branch if associated_branch is not None else None  # branch() object that this will be plotted against, as <thisbranch>:<associated branch>
         self.uniquenm = self.branch if uniquenm is None else uniquenm
         # self.legxi = 0.3
         # self.legxf = 0.6
