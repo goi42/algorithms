@@ -252,7 +252,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
             # determine the name of the stack title
             Ltitle = Li.element[Li.Li].name
             if(Li.name == 'branch' and Li.element[Li.Li].associated_branch):
-                Ltitle += ' vs. ' + Li.element[Li.Li].associated_branch.name
+                Ltitle = Li.element[Li.Li].associated_branch.name + ' vs. ' + Ltitle
             if(Li.compared):  # compared layers in the legend entry
                 if(leglabel != ""):
                     leglabel += ", "
