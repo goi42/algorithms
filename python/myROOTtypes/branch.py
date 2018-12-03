@@ -151,12 +151,13 @@ class branch(bfch):
     
     def __sub__(self, another):
         newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, newhname, newuniquenm = self._arithmetic('-', another, '_minus_')
-        # hiBin = self.hiBin - another.hiBin
-        # loBin = self.loBin - another.loBin
-        # nBins = int(round(binning_rate*(hiBin-loBin)))
-        # if nBins == 0: nBins = 100
-        hiBin = loBin = 0
-        nBins = 100
+        hiBin = self.hiBin - another.loBin
+        loBin = self.loBin - another.hiBin
+        nBins = int(round(binning_rate * (hiBin - loBin)))
+        if nBins == 0:
+            nBins = 100
+        # hiBin = loBin = 0
+        # nBins = 100
         if self.associated_branch and another.associated_branch:
             associated_branch = self.associated_branch - another.associated_branch
         return branch(newbranch, newname, nBins, loBin, hiBin, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, hname=newhname, uniquenm=newuniquenm)
