@@ -4,6 +4,7 @@ makeplots_layer.py might also import arguments from here for convenience.
 '''
 import importlib
 import argparse
+import os
 # parse arguments
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--verbose', action='store_true',
@@ -22,8 +23,8 @@ parser.add_argument('--C', action='store_true',
                     help='saves .C files')
 parser.add_argument('--hist', action='store_true',
                     help='creates a file containing the generated histograms')
-parser.add_argument('--hfilename', default='histograms.root',
-                    help='file to store histograms if --hist option specified; ".root" added if not specified')
+parser.add_argument('--hfilename', default=None,
+                    help='file to store histograms if --hist option specified; uses filename with ".root" extension by default')
 parser.add_argument('--legend', type=float, nargs=4,
                     metavar=('xlo', 'ylo', 'xhi', 'yhi'),
                     default=[0.75, 0.6, 1, 0.9],
@@ -76,7 +77,7 @@ if '.' not in filename:
 drawopt = args.drawopt
 saveC = args.C
 histograms = args.hist
-hfilename = args.hfilename
+hfilename = os.path.splitext(args.filename)[0] + '.root' if args.hfilename is None else args.hfilename
 if '.root' not in hfilename:
     hfilename += '.root'
 legpars = args.legend
