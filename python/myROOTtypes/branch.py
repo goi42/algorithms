@@ -102,7 +102,7 @@ class branch(bfch):
     def _arithmetic(self, sym, another):
         newbranch = '(' + self.branch + ') ' + sym + ' (' + another.branch + ')'
         newname = '(' + self.name + ') ' + sym + ' (' + another.name + ')'
-        if not(self.hiBin - self.loBin == 0 or another.hiBin - another.loBin):
+        if not(self.hiBin - self.loBin == 0 or another.hiBin - another.loBin == 0):
             binning_rate = max(float(self.nBins) / (self.hiBin - self.loBin), float(another.nBins) / (another.hiBin - another.loBin))
         else:
             binning_rate = 0
