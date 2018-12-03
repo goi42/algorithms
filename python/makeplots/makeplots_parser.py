@@ -48,6 +48,8 @@ parser.add_argument('--yesstack', action='store_true',
                     help='stack histograms')
 parser.add_argument('--setoptstat', default='',
                     help='string to pass to gStyle.SetOptStat')
+parser.add_argument('--nosumw2', action='store_true',
+                    help='do not call Sumw2 on histograms')
 
 # class modimport(argparse.Action):
 #     def __init__(self,option_strings,dest,nargs=None,**kwargs):
@@ -89,3 +91,4 @@ nolegend = args.nolegend
 filllinecolors = args.filllinecolors
 yesstack = args.yesstack
 setoptstat = args.setoptstat
+nosumw2 = args.nosumw2

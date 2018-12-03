@@ -219,7 +219,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
             thisbranch.hiBin = lasthistaxis.GetXmax()
             if debug:
                 print 'done'
-        h = thisbranch.make_histogram(hname=hname, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, overwrite=True, return_histogram=True)  # linecolor is ignored for 2D histograms by make_histogram
+        h = thisbranch.make_histogram(hname=hname, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, overwrite=True, return_histogram=True, sumw2=not nosumw2)  # linecolor is ignored for 2D histograms by make_histogram
         if(verbose and nhpc < 10):
             print "done"
         # draw histograms
