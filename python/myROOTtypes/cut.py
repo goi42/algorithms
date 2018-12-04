@@ -6,9 +6,7 @@ class cut(cbfch):
     def __init__(self, cut, name=None, linecolor=None, fillcolor=None, fillstyle=None, hname=None):
         cbfch.__init__(self, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname)
         self.cut = TCut(cut)
-        self.name = str(cut)
-        if name:
-            self.name = str(name)
+        self.name = str(name) if name is not None else str(cut)
     
     def _arithmetic(self, sym, another, altsym='_'):
         if another.__class__.__name__ == self.__class__.__name__:
