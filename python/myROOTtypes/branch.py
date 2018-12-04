@@ -40,6 +40,12 @@ class branch(bfch):
         self.hiBin = hiBin
         self.can_extend = can_extend
     
+    def calc_nBins(self, binsize):
+        nBins = float(self.hiBin - self.loBin) / float(binsize)
+        if nBins != int(nBins):
+            raise ValueError('binsize incompatible with range')
+        self.nBins = int(nBins)
+    
     def get_bin_width(self):
         return (float(self.hiBin) - float(self.loBin)) / float(self.nBins)
     
