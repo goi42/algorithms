@@ -10,7 +10,7 @@ class cut(cbfch):
         if name:
             self.name = str(name)
     
-    def _arithmetic(self, sym, another):
+    def _arithmetic(self, sym, another, altsym='_'):
         if another.__class__.__name__ == self.__class__.__name__:
             ancut = another.cut.GetTitle()
             anname = another.name
@@ -22,47 +22,48 @@ class cut(cbfch):
             anname = another.GetName()
         else:
             raise TypeError('cannot perform arithmetic on object of class "' + another.__class__.__name__ + '" with object of class "cut"')
-
+        
         newcut = '(' + self.cut.GetTitle() + ')' + sym + '(' + ancut + ')'
         newname = '(' + self.name + ') ' + sym + ' (' + anname + ')'
-
-        return newcut, newname, ancut, anname
+        newhname = self.hname + altsym + another.hname if self.hname is not None and another.hname is not None else None
+        
+        return newcut, newname, ancut, anname, newhname
     
     def __add__(self, another):
-        newcut, newname, ancut, anname = self._arithmetic('&&', another)
+        newcut, newname, ancut, anname, newhname = self._arithmetic('&&', another, '_and_')
         if not self.cut.GetTitle().strip():
             newcut = ancut
             if not self.name.strip():
                 newname = anname
-        return cut(newcut, newname)
+        return cut(newcut, newname, hname=newhname)
     
     def __sub__(self, another):
-        newcut, newname, ancut, anname = self._arithmetic('&& !', another)
+        newcut, newname, ancut, anname, newhname = self._arithmetic('&& !', another, '_and_not_')
         if not self.cut.GetTitle().strip():
             newcut = '!(' + ancut + ')'
             if not self.name.strip():
                 newname = '!(' + anname + ')'
-        return cut(newcut, newname)
+        return cut(newcut, newname, hname=newhname)
     
     def __mul__(self, another):
         '''useful for combining weights
         '''
-        newcut, newname, ancut, anname = self._arithmetic('*', another)
+        newcut, newname, ancut, anname, newhname = self._arithmetic('*', another, '_times_')
         if not self.cut.GetTitle().strip():
             newcut = ancut
             if not self.name.strip():
                 newname = anname
-        return cut(newcut, newname)
+        return cut(newcut, newname, hname=newhname)
     
     def __div__(self, another):
         '''not actual division--a wonky way to do OR
         '''
-        newcut, newname, ancut, anname = self._arithmetic('||', another)
+        newcut, newname, ancut, anname, newhname = self._arithmetic('||', another, '_or_')
         if not self.cut.GetTitle().strip():
             newcut = ancut
             if not self.name.strip():
                 newname = anname
-        return cut(newcut, newname)
+        return cut(newcut, newname, hname=newhname)
     
     def __iadd__(self, another):
         return self + another
