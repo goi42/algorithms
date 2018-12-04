@@ -511,3 +511,8 @@ def printcans(outfilename, clist):
         else:
             app = ''
         c.Print(outfilename + app)
+
+
+def logical_combine(one, sym, two):
+    'combines `one` and `two` using parentheses to enable logically consistent combination chains'
+    return '({one}) {sym} ({two})'.format(one=one, sym=sym, two=two)

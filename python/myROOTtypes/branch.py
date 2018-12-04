@@ -106,15 +106,16 @@ class branch(bfch):
             return h
     
     def _arithmetic(self, sym, another, altsym='_'):
-        newbranch = '(' + self.branch + ') ' + sym + ' (' + another.branch + ')'
-        newname = '(' + self.name + ') ' + sym + ' (' + another.name + ')'
+        from fxns import logical_combine
+        newbranch = logical_combine(self.branch, sym, another.branch)
+        newname = logical_combine(self.name, sym, another.name)
         if not(self.hiBin - self.loBin == 0 or another.hiBin - another.loBin == 0):
             binning_rate = max(float(self.nBins) / (self.hiBin - self.loBin), float(another.nBins) / (another.hiBin - another.loBin))
         else:
             binning_rate = 0
         if all([self.xlabel, self.ylabel, another.xlabel, another.ylabel]):
-            xlabel = self.xlabel + ' ' + sym + ' ' + another.xlabel
-            ylabel = self.ylabel + ' ' + sym + ' ' + another.ylabel
+            xlabel = logical_combine(self.xlabel, sym, another.xlabel)
+            ylabel = logical_combine(self.ylabel, sym, another.ylabel)
         else:
             xlabel = None
             ylabel = None

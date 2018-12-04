@@ -10,6 +10,7 @@ class cut(cbfch):
         self.weight = weight if weight is not None else None  # should be cut, string, or TCut -- another way to apply weights when drawing
     
     def _arithmetic(self, sym, another, altsym='_'):
+        from fxns import logical_combine
         if another.__class__.__name__ == self.__class__.__name__:
             ancut = another.cut.GetTitle()
             anname = another.name
@@ -25,8 +26,8 @@ class cut(cbfch):
         else:
             raise TypeError('cannot perform arithmetic on object of class "' + another.__class__.__name__ + '" with object of class "cut"')
         
-        newcut = '(' + self.cut.GetTitle() + ')' + sym + '(' + ancut + ')'
-        newname = '(' + self.name + ') ' + sym + ' (' + anname + ')'
+        newcut = logical_combine(self.cut.GetTitle(), sym, ancut)
+        newname = logical_combine(self.name, sym, anname)
         newhname = self.hname + altsym + another.hname if self.hname is not None and another.hname is not None else None
         newweight = None
         if not all(x is None for x in (self.weight, anweight)):
