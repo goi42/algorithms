@@ -121,7 +121,8 @@ class fch(bfch):  # abstract base class for file and chain classes
     
     def Draw(self, thisbranch, thiscut="", opt="", nentries=None, firstentry=0, canvas=None, treename=None):
         if isinstance(thiscut, cut):
-            acut = thiscut.cut
+            tempcut = thiscut if thiscut.weight is None else thiscut * thiscut.weight if isinstance(thiscut.weight, cut) else thiscut * cut(thiscut.weight)
+            acut = tempcut.cut
         else:
             acut = thiscut
         if nentries is None:
