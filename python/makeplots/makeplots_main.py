@@ -146,14 +146,8 @@ for ci_i in range(0, nCanvases):  # ci in c:
     # histogram loop
     if nhpc > 9 and not debug:  # progress bar for long jobs
         print 'starting histogram loop...'
-        histbar = progressbar.ProgressBar(maxval=nhpc,
-                                          widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage() ]
-                                          )
+        histbar = progbar_makestart(nhpc)
     for hi in xrange(0, nhpc):
-        if nhpc > 9 and not debug:
-            if hi == 0:
-                histbar.start()
-            histbar.update(hi + 1)
         # decide which file to use
         file_num = 0
         for Li in L:
@@ -275,6 +269,8 @@ for ci_i in range(0, nCanvases):  # ci in c:
             leg.AddEntry(h, leglabel)  # no need for a legend if nothing is compared
         if(verbose):
             print "done"
+        if nhpc > 9 and not debug:
+            histbar.update(hi + 1)
     # end histogram loop
     if not debug and nhpc > 9:
         histbar.finish()
