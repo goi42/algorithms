@@ -143,21 +143,24 @@ class branch(bfch):
             associated_branch = None
         newhname = self.hname + altsym + another.hname if self.hname is not None and another.hname is not None else None
         newuniquenm = self.uniquenm + altsym + another.uniquenm if self.uniquenm and another.uniquenm else None
-        return newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, newhname, newuniquenm
+        newunits = None if any(x is None for x in (self.units, another.units)) else logical_combine(self.units, sym, another.units)
+        return newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, newhname, newuniquenm, newunits
     
     def __add__(self, another):
-        newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, newhname, newuniquenm = self._arithmetic('+', another, '_plus_')
+        newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, newhname, newuniquenm, newunits = self._arithmetic('+', another, '_plus_')
         hiBin = self.hiBin + another.hiBin
         loBin = self.loBin + another.loBin
         nBins = int(round(binning_rate * (hiBin - loBin)))
         if nBins == 0:
             nBins = 100
+        if all(x is not None for x in (self.units, another.units)) and self.units == another.units:
+            newunits = self.units
         if self.associated_branch and another.associated_branch:
             associated_branch = self.associated_branch + another.associated_branch
-        return branch(newbranch, newname, nBins, loBin, hiBin, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, hname=newhname, uniquenm=newuniquenm)
+        return branch(newbranch, newname, nBins, loBin, hiBin, newunits, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, hname=newhname, uniquenm=newuniquenm)
     
     def __sub__(self, another):
-        newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, newhname, newuniquenm = self._arithmetic('-', another, '_minus_')
+        newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, newhname, newuniquenm, newunits = self._arithmetic('-', another, '_minus_')
         hiBin = self.hiBin - another.loBin
         loBin = self.loBin - another.hiBin
         nBins = int(round(binning_rate * (hiBin - loBin)))
@@ -165,12 +168,14 @@ class branch(bfch):
             nBins = 100
         # hiBin = loBin = 0
         # nBins = 100
+        if all(x is not None for x in (self.units, another.units)) and self.units == another.units:
+            newunits = self.units
         if self.associated_branch and another.associated_branch:
             associated_branch = self.associated_branch - another.associated_branch
-        return branch(newbranch, newname, nBins, loBin, hiBin, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, hname=newhname, uniquenm=newuniquenm)
+        return branch(newbranch, newname, nBins, loBin, hiBin, newunits, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, hname=newhname, uniquenm=newuniquenm)
     
     def __mul__(self, another):
-        newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, newhname, newuniquenm = self._arithmetic('*', another, '_times_')
+        newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, newhname, newuniquenm, newunits = self._arithmetic('*', another, '_times_')
         if self.hiBin >= 0 and another.hiBin >= 0 and self.loBin >= 0 and another.loBin >= 0:
             hiBin = self.hiBin * another.hiBin
             loBin = self.loBin * another.loBin
@@ -183,7 +188,9 @@ class branch(bfch):
             nBins = 100
         if self.associated_branch and another.associated_branch:
             associated_branch = self.associated_branch * another.associated_branch
-        return branch(newbranch, newname, nBins, loBin, hiBin, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, hname=newhname, uniquenm=newuniquenm)
+        if all(x is not None for x in (self.units, another.units)) and self.units == another.units:
+            newunits = '({0})^{{2}}'.format(self.units)
+        return branch(newbranch, newname, nBins, loBin, hiBin, newunits, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, hname=newhname, uniquenm=newuniquenm)
     
     def __pow__(self, power):  # special case; does not call _arithmetic
         outbranch = copy.deepcopy(self)
@@ -208,6 +215,8 @@ class branch(bfch):
         outbranch.hiBin = self.hiBin ** power
         outbranch.loBin = self.loBin ** power
         outbranch.nBins = int(round(binning_rate * (outbranch.hiBin - outbranch.loBin)))
+        if self.units is not None:
+            outbranch.units = '({0})^{{{1}}}'.format(self.units, power)
         if outbranch.nBins == 0:
             outbranch.nBins = 100
         if self.hname is not None:
@@ -217,7 +226,7 @@ class branch(bfch):
         return outbranch
     
     def __div__(self, another):
-        newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, newhname, newuniquenm = self._arithmetic('/', another, '_divided_by_')
+        newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, newhname, newuniquenm, newunits = self._arithmetic('/', another, '_divided_by_')
         if self.hiBin >= 0 and another.hiBin > 0 and self.loBin >= 0 and another.loBin > 0:
             hiBin = self.hiBin / another.loBin
             loBin = self.loBin / another.hiBin
@@ -228,9 +237,11 @@ class branch(bfch):
             hiBin = 0
             loBin = 0
             nBins = 100
+        if all(x is not None for x in (self.units, another.units)) and self.units == another.units:
+            newunits = ''
         if self.associated_branch and another.associated_branch:
             associated_branch = self.associated_branch * another.associated_branch
-        return branch(newbranch, newname, nBins, loBin, hiBin, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, hname=newhname, uniquenm=newuniquenm)
+        return branch(newbranch, newname, nBins, loBin, hiBin, newunits, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, hname=newhname, uniquenm=newuniquenm)
     
     def __iadd__(self, another):
         return self + another
