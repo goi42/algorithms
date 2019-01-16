@@ -25,7 +25,7 @@ class chain(fch):
     def add_tree(self, trname, recreate=False):
         raise Exception("chain.add_tree not yet implemented because it is not clear what it should do.")
 
-    def add_file(self, floc, check_tree=False, insist_tree=False):
+    def add_file(self, floc, check_tree=False, insist_tree=False, quiet=True):
         'adds file. check_tree will check whether the specified tree exists before adding it (may slow performance) and raises an error if insist_tree.'
         if insist_tree and not check_tree:
             raise IOError('cannot use insist_tree without check_tree')
@@ -37,17 +37,19 @@ class chain(fch):
                 addtree = False
                 if insist_tree:
                     raise IOError('{0} does not contain {1}'.format(floc, trname))
+                if not quiet:
+                    print floc, 'does not contain', trname
             f.Close()
             del f
         if addtree:
             self.chain.Add(floc)
             self.locations.append(floc)
 
-    def add_files(self, lfiles, recreate=False, check_tree=False, insist_tree=False):
+    def add_files(self, lfiles, recreate=False, check_tree=False, insist_tree=False, quiet=True):
         if recreate:
             self.chain = TChain(self._thething.GetName(), "")
         for ifile in lfiles:
-            self.add_file(ifile, check_tree=check_tree, insist_tree=insist_tree)
+            self.add_file(ifile, check_tree=check_tree, insist_tree=insist_tree, quiet=quiet)
 
     def add_files_from(self, location, ignore_path='old', filemax=None, forcename=None, inclname=None, check_tree=False, insist_tree=False):
         '''walks down the specified directory, skipping all paths with the specified ignore_path string in them, and adds all files contained therein.
