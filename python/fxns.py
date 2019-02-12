@@ -47,6 +47,30 @@ def momentum(*args):
     return outstr
 
 
+def FD(mother, daughter):
+    "returns a string representing the magnitude of the distance"
+    " between endvertices of the mother and the daughter"
+    
+    kvars = ('_ENDVERTEX_X', '_ENDVERTEX_Y', '_ENDVERTEX_Z')
+    outstr = 'sqrt('
+    for ikv, kv in enumerate(kvars):
+        outstr += 'pow('
+        for i, p in enumerate((mother, daughter,)):
+            if 'TRUE' in p:
+                raise Exception
+                use_kv = kv.replace('_P', 'P_')
+            else:
+                use_kv = kv
+            outstr += p + use_kv
+            if not i == len((mother, daughter,)) - 1:
+                outstr += ' - '
+        outstr += ', 2)'
+        if not ikv == len(kvars) - 1:
+            outstr += ' + '
+    outstr += ')'
+    return outstr
+
+
 def rapidity(nm):
     "returns a string representing the rapidity y of nm (using atanh) by using '_PZ' and '_P' "
     "(or using 'P_Z' and calculating P with 'P_X', 'P_Y', 'P_Z' [using sqrt and pow] if 'TRUE' in nm): "
