@@ -48,8 +48,9 @@ def momentum(*args):
 
 
 def rapidity(nm):
-    """returns a string representing the rapidity y of nm (using atanh) by using '_PZ' and '_P' (or using 'P_Z' and calculating P with 'P_X', 'P_Y', 'P_Z' [using sqrt and pow] if 'TRUE' in nm): y = artanh(p_Z / abs(p)) ~= -ln(tan(theta / 2)) = eta = psuedorapidity
-    """
+    "returns a string representing the rapidity y of nm (using atanh) by using '_PZ' and '_P' "
+    "(or using 'P_Z' and calculating P with 'P_X', 'P_Y', 'P_Z' [using sqrt and pow] if 'TRUE' in nm): "
+    "y = artanh(p_Z / abs(p)) ~= -ln(tan(theta / 2)) = eta = psuedorapidity"
     if 'TRUE' in nm:
         p = momentum(nm)
         pZ = '{NM}P_Z'.format(NM=nm)
