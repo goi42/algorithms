@@ -27,7 +27,20 @@ def invmass(*args):
                 use_kv = kv.replace('_P', 'P_')
             else:
                 use_kv = kv
+            brval = ''
+            if '[' in p:
+                if ']' not in p:
+                    raise ValueError('no closing ] in "{0}"'.format(p))
+                if len(p.split('[')) != 2:
+                    raise ValueError('more than one [ in "{0}"'.format(p))
+                bef, aft_ = p.split('[')
+                brval, aft = aft_.split(']')
+                if aft:
+                    raise ValueError('more text after ] in "{0}"?'.format(p))
+                p = bef + aft
             outstr += p + use_kv
+            if brval:
+                outstr += '[{0}]'.format(brval)
             if not i == len(args) - 1:
                 outstr += ' + '
         outstr += ', 2)'
