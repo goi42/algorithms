@@ -54,6 +54,9 @@ class cut(cbfch):
                 newname = '!(' + anname + ')'
         return cut(newcut, newname, hname=newhname, weight=newweight)
     
+    def __neg__(self):
+        return cut('') - self
+    
     def __mul__(self, another):
         '''useful for combining weights
         '''
