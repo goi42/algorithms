@@ -232,6 +232,12 @@ for ci_i in range(0, nCanvases):  # ci in c:
             if(verbose):
                 print "done"
             ci.cd()
+        if(norm):
+            if(verbose):
+                print "normalizing histogram...",
+            h.Scale(1 / h.Integral())
+            if(verbose):
+                print "done"
         if(verbose):
             print "stacking histogram " + repr(hi + 1) + "...",
         hs[ci_i].Add(h)  # stack histograms

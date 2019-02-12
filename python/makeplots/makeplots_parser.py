@@ -35,6 +35,8 @@ parser.add_argument('--legendkey', default=None, choices=['topcenter', 'topleft'
 # leg =  TLegend(0.75, 0.6, 1, 0.9)#create legend
 # leg = TLegend(0.41, 0.7, 0.85, 0.9)#create legend
 # leg = TLegend(0.65, 0.7, 1, 0.9)#create legend
+parser.add_argument('--norm', action='store_true',
+                    help='normalize histograms')
 parser.add_argument('--fixbinning', action='store_true',
                     help='after the first histogram is drawn, all subsequent histograms on the same canvas will be drawn with the same number of bins and same hi and lo bins.')
 parser.add_argument('--labelaxes', action='store_true',
@@ -85,6 +87,7 @@ if args.legendkey == 'topcenter':
     legpars = [0.3, 0.7, 0.6, 0.9]
 elif args.legendkey == 'topleft':
     legpars = [0.1, 0.7, 0.3, 0.9]
+norm = args.norm
 fixbinning = args.fixbinning
 labelaxes = args.labelaxes
 notitle = args.notitle
