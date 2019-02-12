@@ -3,6 +3,18 @@ import sys
 from contextlib import contextmanager
 
 
+def in_brackets(astring):
+    if '[' not in astring:
+        return None
+    if ']' not in astring:
+        raise ValueError('no closing ] in "{0}"'.format(astring))
+    if len(astring.split('[')) != 2:
+        raise ValueError('more than one [ in "{0}"'.format(astring))
+    bef, aft_ = astring.split('[')
+    brval, aft = aft_.split(']')
+    return brval
+
+
 def invmass(*args):
     """returns a string representing the invariant mass of an arbitrary number of strings (using pow and sqrt) by using '_PE', '_PX', '_PY', '_PZ' (or 'P_E' if 'TRUE' in the name)
     """
