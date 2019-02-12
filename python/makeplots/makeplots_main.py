@@ -295,7 +295,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
                 placeholder += ' ({})'.format(assocbranch.units)
             hs[ci_i].GetYaxis().SetTitle(placeholder)
         else:
-            placeholder = 'Events / {}'.format(thisbranch.get_bin_width())
+            placeholder = 'N_{{entries}} / {}'.format(thisbranch.get_bin_width())
             if thisbranch.units:
                 placeholder += ' {}'.format(thisbranch.units)
             hs[ci_i].GetYaxis().SetTitle(placeholder)
