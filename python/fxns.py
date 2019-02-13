@@ -227,9 +227,59 @@ def getRTDres(T, R0=100.0, T0=0.0, a=3.9083E-3, b=-5.7750E-7, c=None):
     return R
 
 
+class updateprogress(object):
+    """docstring for updateprogress"""
+    
+    def __init__(self, maxval):
+        super(updateprogress, self).__init__()
+        self.maxval = maxval
+        self.printevery = float(self.maxval) / 100
+        import imp
+        try:
+            imp.find_module('progressbar')
+            self.useprogressbar = True
+        except ImportError:
+            self.useprogressbar = False
+    
+    def _printupdate(self, addstring=''):
+        def _makepercent(num, tot, exact=False):
+            'returns an integer representing num/tot as a percentage'
+            exactvalue = float(num) * 100 / float(tot)
+            return exactvalue if exact else int(exactvalue)
+        
+        print 'on {0} out of {1} ({2}%){3}'.format(self.counter, self.maxval, _makepercent(self.counter, self.maxval), addstring)
+    
+    def start(self):
+        self.counter = 0
+        if self.useprogressbar:
+            import progressbar
+            self.progbar = progressbar.ProgressBar(maxval=self.maxval,
+                                                   widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage() ]
+                                                   )
+            self.progbar.start()
+        else:
+            self._lastprintupdate = 0
+            print 'tracking progress'
+            self._printupdate()
+    
+    def update(self, i):
+        self.counter = i
+        if self.useprogressbar:
+            self.progbar.update(i)
+        else:
+            if self.counter - self._lastprintupdate >= self.printevery or (self.counter < self._lastprintupdate):
+                self._printupdate()
+                self._lastprintupdate = self.counter
+    
+    def finish(self):
+        if self.useprogressbar:
+            self.progbar.finish()
+        else:
+            self._printupdate(' (finished)')
+
+
 def progbar_makestart(maxval):
-    import progressbar
-    thebar = progressbar.ProgressBar(maxval=maxval, widgets=[progressbar.Bar('=', '[', ']'), ' ', progressbar.Percentage()])
+    thebar = updateprogress(maxval)
     thebar.start()
     return thebar
 
