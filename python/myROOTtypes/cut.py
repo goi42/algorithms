@@ -28,7 +28,7 @@ class cut(cbfch):
         
         newcut = logical_combine(self.cut.GetTitle(), sym, ancut)
         newname = logical_combine(self.name, sym, anname)
-        newhname = self.hname + altsym + another.hname if self.hname is not None and another.hname is not None else None
+        newhname = self.hname + altsym + another.hname if (another.__class__.__name__ == self.__class__.__name__ and (self.hname is not None and another.hname is not None)) else None
         newweight = None
         if not all(x is None for x in (self.weight, anweight)):
             if all(x is not None for x in (self.weight, anweight)):
