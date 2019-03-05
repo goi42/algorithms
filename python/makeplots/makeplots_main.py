@@ -291,12 +291,12 @@ for ci_i in range(0, nCanvases):  # ci in c:
         placeholder += " " + drawopt  # turns out "nostack " is different than "nostack"...
     hs[ci_i].Draw(placeholder)
     if assocbranch or labelaxes:
-        placeholder = thisbranch.name
+        placeholder = thisbranch.axname if thisbranch.axname else thisbranch.name
         if thisbranch.units:
             placeholder += ' ({})'.format(thisbranch.units)
         hs[ci_i].GetXaxis().SetTitle(placeholder)
         if assocbranch:
-            placeholder = assocbranch.name
+            placeholder = assocbranch.axname if assocbranch.axname else assocbranch.name
             if assocbranch.units:
                 placeholder += ' ({})'.format(assocbranch.units)
             hs[ci_i].GetYaxis().SetTitle(placeholder)

@@ -7,7 +7,7 @@ from ROOT import TH1F, TH1, TH2F, TCut
 
 
 class branch(bfch):
-    def __init__(self, branch, name=None, nBins=0, loBin=0, hiBin=0, units=None, xlabel="", ylabel="", set_log_X=False, set_log_Y=False, can_extend=False, c=None, associated_branch=None, uniquenm=None, linecolor=None, fillcolor=None, fillstyle=None, hname=None):
+    def __init__(self, branch, name=None, nBins=0, loBin=0, hiBin=0, units=None, xlabel="", ylabel="", set_log_X=False, set_log_Y=False, can_extend=False, c=None, axname=None, associated_branch=None, uniquenm=None, linecolor=None, fillcolor=None, fillstyle=None, hname=None):
         bfch.__init__(self, c=c, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname)
         self.branch = branch  # name of branch as it appears in the tree
         self.name = branch  # nickname--usually what you want to appear on a plot
@@ -24,6 +24,7 @@ class branch(bfch):
         self.can_extend = can_extend  # do you want Draw to change the bin range?
         self.associated_branch = associated_branch if associated_branch is not None else None  # branch() object that this will be plotted against, as <thisbranch>:<associated branch>
         self.uniquenm = self.branch if uniquenm is None else uniquenm
+        self.axname = axname
         # self.legxi = 0.3
         # self.legxf = 0.6
         # self.legyi = 0.7
