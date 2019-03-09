@@ -616,3 +616,16 @@ def printcans(outfilename, clist):
 def logical_combine(one, sym, two):
     'combines `one` and `two` using parentheses to enable logically consistent combination chains'
     return '({one}) {sym} ({two})'.format(one=one, sym=sym, two=two)
+
+
+def stdpull(fr):
+    'make standard pull plot adjustments for RooFit frame'
+    fr.SetTitle('')
+    fr.GetYaxis().SetTitle('Pull')
+    fr.GetYaxis().CenterTitle()
+    fr.GetYaxis().SetTitleSize(0.1)
+    fr.GetYaxis().SetTitleOffset(0.3)
+    fr.GetYaxis().SetLabelSize(0.10)
+    fr.GetYaxis().SetNdivisions(505)
+    fr.GetXaxis().SetLabelSize(0.10)
+    fr.GetXaxis().SetTitle()
