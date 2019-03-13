@@ -35,18 +35,18 @@ with addsyspath(pathtolayerfile):
     from makeplots_layer import L
 
 ROOT.gROOT.SetBatch(True)
-if not debug:
+if(not debug):
     ROOT.gErrorIgnoreLevel = ROOT.kWarning
 
 print '---------------------------makeplots_main.py---------------------------'
 print 'starting at', time.asctime(time.localtime(time.time()))
 print 'using layer input from ' + pathtolayerfile
 print 'will save plots using option "' + drawopt + '" to', opj(outputlocation, filename)
-if histograms:
+if(histograms):
     print 'will create histogram file', opj(outputlocation, hfilename)
-if verbose and not debug:
+if(verbose and not debug):
     print 'verbose mode set'
-if debug:
+if(debug):
     print 'debug mode set'
 print ''
 
@@ -72,7 +72,7 @@ while not CutLayerExists:
             nhpc *= iLayer.nL
         else:
             nCanvases *= iLayer.nL
-    if not CutLayerExists:
+    if(not CutLayerExists):
         print 'No cut layer given. Generating...',
         for ifile in L[fL].element:
             for ibranch in ifile.b:
@@ -127,14 +127,14 @@ if(verbose):
 print "\nstarting canvas loop..."
 # actual start of the loop
 canbar = histbar = None  # choose which/whether to use
-if not debug:
-    if nhpc > nCanvases:
+if(not debug):
+    if(nhpc > nCanvases):
         histbar = True
     else:
         canbar = progbar_makestart(nCanvases)
 hs = []
 for ci_i in range(0, nCanvases):  # ci in c:
-    if debug:
+    if(debug):
         print "On canvas {i} out of {n}".format(i=ci_i + 1, n=nCanvases)
     # create necessary canvasy things
     ci = TCanvas("c" + str(ci_i), "c" + str(ci_i), 1200, 800)  # create the canvases
@@ -146,7 +146,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
     
     stacktitle = ""
     # histogram loop
-    if histbar is not None:
+    if(histbar is not None):
         print 'starting histogram loop for canvas {0} out of {1}...'.format(ci_i + 1, nCanvases)
         histbar = progbar_makestart(nhpc)
     for hi in xrange(0, nhpc):
@@ -161,7 +161,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
         thisfile = L[fL].element[file_num]
         thisbranch = thisfile.b[L[bL].Li]
         assocbranch = thisbranch.associated_branch
-        if assocbranch and debug:
+        if(assocbranch and debug):
             print thisbranch.name, 'has associated branch', assocbranch.name
         thiscut = thisbranch.c[L[cL].Li]
         if(debug):
@@ -170,47 +170,47 @@ for ci_i in range(0, nCanvases):  # ci in c:
         if(debug):
             print "creating histogram {0}...".format(hi + 1),
         listofthings = (thiscut, thisbranch, thisfile)
-        if any(x.linecolor is not None for x in listofthings):
+        if(any(x.linecolor is not None for x in listofthings)):
             foundlc = False
             for th in listofthings:
-                if th.linecolor and not foundlc:
+                if(th.linecolor and not foundlc):
                     linecolor = th.linecolor
                     foundlc = True
-                elif th.linecolor and not foundlc:
+                elif(th.linecolor and not foundlc):
                     raise ValueError('cannot assign a linecolor for multiple types of things!')
         else:
             linecolor = hi + 1
             if((hi + 1 == 5) or (hi + 1 == 10)):
                 linecolor = hi + 21
         fillcolor = None
-        if filllinecolors:
+        if(filllinecolors):
             fillcolor = linecolor
-        elif any(x.fillcolor is not None for x in listofthings):
+        elif(any(x.fillcolor is not None for x in listofthings)):
             foundfc = False
             for th in listofthings:
-                if th.fillcolor and not foundfc:
+                if(th.fillcolor and not foundfc):
                     fillcolor = th.fillcolor
                     foundfc = True
-                elif th.fillcolor and not foundfc:
+                elif(th.fillcolor and not foundfc):
                     raise ValueError('cannot assign a fillcolor for multiple types of things!')
         fillstyle = None
-        if any(x.fillstyle is not None for x in listofthings):
+        if(any(x.fillstyle is not None for x in listofthings)):
             foundfs = False
             for th in listofthings:
-                if th.fillstyle and not foundfs:
+                if(th.fillstyle and not foundfs):
                     fillstyle = th.fillstyle
                     foundfs = True
-                elif th.fillstyle and not foundfs:
+                elif(th.fillstyle and not foundfs):
                     raise ValueError('cannot assign a fillstyle for multiple types of things!')
         
-        if hs[ci_i].GetHists() and fixbinning:
-            if debug:
+        if(hs[ci_i].GetHists() and fixbinning):
+            if(debug):
                 print 'forcing branch to match previous one...',
             lasthistaxis = hs[ci_i].GetHists()[-1].GetXaxis()
             thisbranch.nBins = lasthistaxis.GetNbins()
             thisbranch.loBin = lasthistaxis.GetXmin()
             thisbranch.hiBin = lasthistaxis.GetXmax()
-            if debug:
+            if(debug):
                 print 'done'
         h = thisbranch.make_histogram(hname="h" + str(ci_i) + str(hi), linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, overwrite=True, return_histogram=True, sumw2=not nosumw2)  # linecolor is ignored for 2D histograms by make_histogram
         if(verbose and nhpc < 10):
@@ -270,42 +270,42 @@ for ci_i in range(0, nCanvases):  # ci in c:
                 Li.Li = 0  # reset the iteration if it's reached the end
         # end layer loop
         # fill legends
-        if leglabel != "":
+        if(leglabel != ""):
             leg.AddEntry(h, leglabel)  # no need for a legend if nothing is compared
         if(verbose):
             print "done"
-        if histbar is not None:
+        if(histbar is not None):
             histbar.update(hi + 1)
     # end histogram loop
-    if histbar is not None:
+    if(histbar is not None):
         histbar.finish()
     # draw stacked histograms
     if(verbose):
         print "drawing stack {i}: {st}...".format(i=ci_i + 1, st=stacktitle),
     hs[ci_i].SetTitle(stacktitle)
-    if notitle:
+    if(notitle):
         hs[ci_i].SetTitle('')
     placeholder = '' if yesstack else 'nostack'
-    if drawopt:
+    if(drawopt):
         placeholder += " " + drawopt  # turns out "nostack " is different than "nostack"...
     hs[ci_i].Draw(placeholder)
-    if assocbranch or labelaxes:
+    if(assocbranch or labelaxes):
         placeholder = thisbranch.axname if thisbranch.axname else thisbranch.name
-        if thisbranch.units:
+        if(thisbranch.units):
             placeholder += ' ({})'.format(thisbranch.units)
         hs[ci_i].GetXaxis().SetTitle(placeholder)
-        if assocbranch:
+        if(assocbranch):
             placeholder = assocbranch.axname if assocbranch.axname else assocbranch.name
-            if assocbranch.units:
+            if(assocbranch.units):
                 placeholder += ' ({})'.format(assocbranch.units)
             hs[ci_i].GetYaxis().SetTitle(placeholder)
         else:
             placeholder = 'N_{{entries}} / {}'.format(thisbranch.get_bin_width())
-            if thisbranch.units:
+            if(thisbranch.units):
                 placeholder += ' {}'.format(thisbranch.units)
             hs[ci_i].GetYaxis().SetTitle(placeholder)
         ci.Update()
-    if not nolegend and leg.GetNRows() > 0:  # you don't need a legend if nothing's compared
+    if(not nolegend and leg.GetNRows() > 0):  # you don't need a legend if nothing's compared
         leg.Draw()
     cf.cd(ci_i + 1)
     ci.DrawClonePad()
@@ -315,17 +315,17 @@ for ci_i in range(0, nCanvases):  # ci in c:
     if(verbose):
         print "saving files...",
     placeholder = opj(outputlocation, filename)
-    if nCanvases > 1:
+    if(nCanvases > 1):
         placeholder += "("  # the closing page is added after the loop
     ci.Print(placeholder)
     if(saveC):
         ci.SaveAs(opj(outputlocation, "c{i}_{st}.C".format(i=ci_i, st=stacktitle)))
     if(verbose):
         print "done\n"
-    if canbar is not None:
+    if(canbar is not None):
         canbar.update(ci_i)
 # end canvas loop
-if canbar is not None:
+if(canbar is not None):
     canbar.finish()
 if(histograms):
     if(verbose):
@@ -334,7 +334,7 @@ if(histograms):
     if(verbose):
         print "done"
 cf.cd()
-if nCanvases > 1:
+if(nCanvases > 1):
     cf.Print(opj(outputlocation, filename + ")"))
 ROOT.gROOT.SetBatch(False)
 print 'finished at', time.asctime(time.localtime(time.time()))
