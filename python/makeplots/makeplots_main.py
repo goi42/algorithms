@@ -82,8 +82,8 @@ while not CutLayerExists:
 if(verbose):
     print "done"
 nLayers = len(L)
-print "nFiles = " + repr(len(L[fL].element)) + ", nBranches = " + repr(len(L[bL].element)) + ", nCuts = " + repr(len(L[cL].element))
-print "nLayers = " + repr(nLayers) + ", nCanvases = " + repr(nCanvases) + ", nhpc = " + repr(nhpc)
+print "nFiles = " + str(len(L[fL].element)) + ", nBranches = " + str(len(L[bL].element)) + ", nCuts = " + str(len(L[cL].element))
+print "nLayers = " + str(nLayers) + ", nCanvases = " + str(nCanvases) + ", nhpc = " + str(nhpc)
 
 if(histograms):
     if(verbose):
@@ -135,7 +135,7 @@ if not debug:
 hs = []
 for ci_i in range(0, nCanvases):  # ci in c:
     if debug:
-        print "On canvas " + str(ci_i + 1) + " out of " + repr(nCanvases)
+        print "On canvas " + str(ci_i + 1) + " out of " + str(nCanvases)
     # create necessary canvasy things
     ci = TCanvas("c" + str(ci_i), "c" + str(ci_i), 1200, 800)  # create the canvases
     ci.cd()
@@ -156,7 +156,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
             if(not (Li.name == "cut" or Li.name == "branch")):  # cuts and branches do not get their own files
                 file_num += Li.Li * Li.plLx
         if(debug):
-            print "creating strings and pointers for histogram loop " + repr(hi + 1) + "/" + repr(nhpc) + "...",
+            print "creating strings and pointers for histogram loop " + str(hi + 1) + "/" + str(nhpc) + "...",
         # create convenient pointers
         thisfile = L[fL].element[file_num]
         thisbranch = thisfile.b[L[bL].Li]
@@ -168,7 +168,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
             print "done"
         # create histogram
         if(debug):
-            print "creating histogram " + repr(hi + 1) + "...",
+            print "creating histogram " + str(hi + 1) + "...",
         listofthings = (thiscut, thisbranch, thisfile)
         if any(x.linecolor is not None for x in listofthings):
             foundlc = False
@@ -217,7 +217,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
             print "done"
         # draw histograms
         if(verbose):
-            print "drawing histogram " + repr(hi + 1) + "...",
+            print "drawing histogram " + str(hi + 1) + "...",
         thisfile.Draw(thisbranch, thiscut, drawopt, canvas=ci)
         if(verbose):
             print "done"
@@ -225,7 +225,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
         
         if(histograms):
             if(verbose):
-                print "saving histogram" + repr(hi + 1) + "...",
+                print "saving histogram" + str(hi + 1) + "...",
             hfile.cd()
             h.Write()
             if(verbose):
@@ -238,14 +238,14 @@ for ci_i in range(0, nCanvases):  # ci in c:
             if(verbose):
                 print "done"
         if(verbose):
-            print "stacking histogram " + repr(hi + 1) + "...",
+            print "stacking histogram " + str(hi + 1) + "...",
         hs[ci_i].Add(h)  # stack histograms
         if(verbose):
             print "done"
 
         # loop over layers
         if(verbose):
-            print "creating legend " + repr(hi + 1) + "...",
+            print "creating legend " + str(hi + 1) + "...",
         leglabel = ""
         for Li in L:
             # determine the name of the stack title
@@ -281,7 +281,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
         histbar.finish()
     # draw stacked histograms
     if(verbose):
-        print "drawing stack " + repr(ci_i + 1) + ": " + stacktitle + "...",
+        print "drawing stack " + str(ci_i + 1) + ": " + stacktitle + "...",
     hs[ci_i].SetTitle(stacktitle)
     if notitle:
         hs[ci_i].SetTitle('')
