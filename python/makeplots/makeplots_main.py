@@ -134,17 +134,15 @@ if not debug:
         canbar = progbar_makestart(nCanvases)
 hs = []
 for ci_i in range(0, nCanvases):  # ci in c:
-    cistring = repr(ci_i)  # repr(c.index(ci))
     if debug:
-        print "On canvas " + repr(int(cistring) + 1) + " out of " + repr(nCanvases)
+        print "On canvas " + str(ci_i + 1) + " out of " + repr(nCanvases)
     # create necessary canvasy things
-    placeholder = "c" + cistring
-    ci = TCanvas(placeholder, placeholder, 1200, 800)  # create the canvases
+    ci = TCanvas("c" + str(ci_i), "c" + str(ci_i), 1200, 800)  # create the canvases
     ci.cd()
     ROOT.gStyle.SetOptStat(setoptstat)
     leg = TLegend(legpars[0], legpars[1], legpars[2], legpars[3])
     
-    hs.append(THStack("hs" + cistring, "hs" + cistring))  # create the stack to hold the histograms
+    hs.append(THStack("hs" + str(ci_i), "hs" + str(ci_i)))  # create the stack to hold the histograms
     
     stacktitle = ""
     # histogram loop
@@ -159,9 +157,6 @@ for ci_i in range(0, nCanvases):  # ci in c:
                 file_num += Li.Li * Li.plLx
         if(debug):
             print "creating strings and pointers for histogram loop " + repr(hi + 1) + "/" + repr(nhpc) + "...",
-        # create convenient strings
-        histring = repr(hi)
-        hname = "h" + cistring + histring
         # create convenient pointers
         thisfile = L[fL].element[file_num]
         thisbranch = thisfile.b[L[bL].Li]
@@ -217,7 +212,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
             thisbranch.hiBin = lasthistaxis.GetXmax()
             if debug:
                 print 'done'
-        h = thisbranch.make_histogram(hname=hname, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, overwrite=True, return_histogram=True, sumw2=not nosumw2)  # linecolor is ignored for 2D histograms by make_histogram
+        h = thisbranch.make_histogram(hname="h" + str(ci_i) + str(hi), linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, overwrite=True, return_histogram=True, sumw2=not nosumw2)  # linecolor is ignored for 2D histograms by make_histogram
         if(verbose and nhpc < 10):
             print "done"
         # draw histograms
@@ -286,7 +281,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
         histbar.finish()
     # draw stacked histograms
     if(verbose):
-        print "drawing stack " + repr(int(cistring) + 1) + ": " + stacktitle + "...",
+        print "drawing stack " + repr(ci_i + 1) + ": " + stacktitle + "...",
     hs[ci_i].SetTitle(stacktitle)
     if notitle:
         hs[ci_i].SetTitle('')
@@ -312,7 +307,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
         ci.Update()
     if not nolegend and leg.GetNRows() > 0:  # you don't need a legend if nothing's compared
         leg.Draw()
-    cf.cd(int(cistring) + 1)
+    cf.cd(ci_i + 1)
     ci.DrawClonePad()
     if(verbose):
         print "done"
@@ -324,7 +319,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
         placeholder += "("  # the closing page is added after the loop
     ci.Print(placeholder)
     if(saveC):
-        ci.SaveAs(opj(outputlocation, "c" + cistring + "_" + stacktitle + ".C"))
+        ci.SaveAs(opj(outputlocation, "c" + str(ci_i) + "_" + stacktitle + ".C"))
     if(verbose):
         print "done\n"
     if canbar is not None:
