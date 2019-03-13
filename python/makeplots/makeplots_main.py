@@ -126,8 +126,12 @@ if(verbose):
 # ------------------------------------canvas loop-----------------------------#
 print "\nstarting canvas loop..."
 # actual start of the loop
-if not debug and nCanvases > 1:
-    canbar = progbar_makestart(nCanvases)
+canbar = histbar = None  # choose which/whether to use
+if not debug:
+    if nhpc > nCanvases:
+        histbar = True
+    else:
+        canbar = progbar_makestart(nCanvases)
 hs = []
 for ci_i in range(0, nCanvases):  # ci in c:
     cistring = repr(ci_i)  # repr(c.index(ci))
@@ -144,8 +148,8 @@ for ci_i in range(0, nCanvases):  # ci in c:
     
     stacktitle = ""
     # histogram loop
-    if nhpc > 9 and not debug:  # progress bar for long jobs
-        print 'starting histogram loop...'
+    if histbar is not None:
+        print 'starting histogram loop for canvas {0} out of {1}...'.format(ci_i + 1, nCanvases)
         histbar = progbar_makestart(nhpc)
     for hi in xrange(0, nhpc):
         # decide which file to use
@@ -275,10 +279,10 @@ for ci_i in range(0, nCanvases):  # ci in c:
             leg.AddEntry(h, leglabel)  # no need for a legend if nothing is compared
         if(verbose):
             print "done"
-        if nhpc > 9 and not debug:
+        if histbar is not None:
             histbar.update(hi + 1)
     # end histogram loop
-    if not debug and nhpc > 9:
+    if histbar is not None:
         histbar.finish()
     # draw stacked histograms
     if(verbose):
@@ -323,10 +327,10 @@ for ci_i in range(0, nCanvases):  # ci in c:
         ci.SaveAs(opj(outputlocation, "c" + cistring + "_" + stacktitle + ".C"))
     if(verbose):
         print "done\n"
-    if not debug and nCanvases > 1:
+    if canbar is not None:
         canbar.update(ci_i)
 # end canvas loop
-if not debug and nCanvases > 1:
+if canbar is not None:
     canbar.finish()
 if(histograms):
     if(verbose):
