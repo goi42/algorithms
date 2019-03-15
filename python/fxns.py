@@ -50,10 +50,13 @@ def invmass(*args):
     return outstr
 
 
-def momentum(*args):
+def momentum(*args, **kwargs):
     """returns a string representing the magnitude of the momentum of an arbitrary number of strings (using pow and sqrt) by using '_PX', '_PY', '_PZ' (or 'P_X' if 'TRUE' in the name)
+    use kwarg transverse=True for transverse momentum
     """
-    kvars = ('_PX', '_PY', '_PZ')
+    kvars = ['_PX', '_PY']
+    if 'transverse' not in kwargs.keys() or kwargs['transverse'] is not True:
+        kvars.append('_PZ')
     outstr = 'sqrt('
     for ikv, kv in enumerate(kvars):
         outstr += 'pow('
