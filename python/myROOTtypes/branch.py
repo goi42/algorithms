@@ -10,11 +10,11 @@ class branch(bfch):
     def __init__(self, branch, name=None, nBins=0, loBin=0, hiBin=0, units=None, xlabel="", ylabel="",
                  set_log_X=False, set_log_Y=False, can_extend=False, c=None, axname=None,
                  associated_branch=None, uniquenm=None, linecolor=None, fillcolor=None, fillstyle=None,
-                 hname=None, neededbranchnames=None, datatype=None,
+                 hname=None, neededbranchnames=None, datatype=None, evaltemp=None, needednames=None,
                  ):
         if hname is None and uniquenm is not None:
             hname = uniquenm
-        bfch.__init__(self, c=c, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname, neededbranchnames=neededbranchnames)
+        bfch.__init__(self, c=c, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname, neededbranchnames=neededbranchnames, evaltemp=evaltemp, needednames=needednames)
         self.branch = branch  # name of branch as it appears in the tree
         self.name = branch  # nickname--usually what you want to appear on a plot
         if name:

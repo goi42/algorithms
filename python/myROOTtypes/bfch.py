@@ -4,8 +4,8 @@ from cbfch import cbfch
 
 
 class bfch(cbfch):  # abstract base class for branch and fch classes
-    def __init__(self, c=None, linecolor=None, fillcolor=None, fillstyle=None, hname=None, neededbranchnames=None):
-        cbfch.__init__(self, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname, neededbranchnames=neededbranchnames)
+    def __init__(self, c=None, linecolor=None, fillcolor=None, fillstyle=None, hname=None, neededbranchnames=None, evaltemp=None, needednames=None):
+        cbfch.__init__(self, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname, neededbranchnames=neededbranchnames, evaltemp=evaltemp, needednames=needednames)
         self.c = []  # cuts to be applied
         if c:
             if isinstance(c, list) and all(isinstance(x, cut) for x in c):
