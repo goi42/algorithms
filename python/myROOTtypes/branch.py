@@ -12,13 +12,28 @@ class branch(bfch):
                  associated_branch=None, uniquenm=None, linecolor=None, fillcolor=None, fillstyle=None,
                  hname=None, neededbranchnames=None, datatype=None, evaltemp=None, needednames=None,
                  ):
-        if hname is None and uniquenm is not None:
+        # evaluate some default values
+        if name is None:
+            name = branch
+        if uniquenm is None:
+            uniquenm = (branch.split(':=')[0].strip()) if ':=' in branch else branch
+        if hname is None:
             hname = uniquenm
-        bfch.__init__(self, c=c, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname, neededbranchnames=neededbranchnames, evaltemp=evaltemp, needednames=needednames)
+        if neededbranchnames is None:
+            neededbranchnames = ([branch]) if ':=' not in branch else ([])
+        if evaltemp is None and ':=' not in branch:
+            evaltemp = '{0}.' + branch
+        if datatype is None:
+            datatype = 'F'
+        if needednames is None:
+            needednames = []
+        
+        # initialize members
+        bfch.__init__(
+            self, c=c, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname,
+            neededbranchnames=neededbranchnames, evaltemp=evaltemp, needednames=needednames)
         self.branch = branch  # name of branch as it appears in the tree
-        self.name = branch  # nickname--usually what you want to appear on a plot
-        if name:
-            self.name = name
+        self.name = name  # nickname--usually what you want to appear on a plot
         self.nBins = nBins
         self.loBin = loBin
         self.hiBin = hiBin
@@ -28,8 +43,8 @@ class branch(bfch):
         self.set_log_X = set_log_X  # do you want a log scale?
         self.set_log_Y = set_log_Y  # do you want a log scale?
         self.can_extend = can_extend  # do you want Draw to change the bin range?
-        self.associated_branch = associated_branch if associated_branch is not None else None  # branch() object that this will be plotted against, as <thisbranch>:<associated branch>
-        self.uniquenm = self.branch if uniquenm is None else uniquenm
+        self.associated_branch = associated_branch  # branch() object that this will be plotted against, as <thisbranch>:<associated branch>
+        self.uniquenm = uniquenm
         self.axname = axname
         self.datatype = datatype  # 'F' for float, etc.
         # self.legxi = 0.3
