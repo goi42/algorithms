@@ -93,6 +93,7 @@ class cut(cbfch):
         )
     
     def __sub__(self, another):
+        'not actual subtraction--actually AND NOT'
         (
             newcut, newname,
             ancut, anname,
@@ -118,8 +119,7 @@ class cut(cbfch):
         return cut('') - self
     
     def __mul__(self, another):
-        '''useful for combining weights
-        '''
+        'useful for combining weights'
         (
             newcut, newname,
             ancut, anname,
@@ -142,8 +142,7 @@ class cut(cbfch):
         )
     
     def __div__(self, another):
-        '''not actual division--a wonky way to do OR
-        '''
+        'not actual division--actually OR'
         (
             newcut, newname,
             ancut, anname,
