@@ -23,8 +23,9 @@ class cut(cbfch):
             bool(self.needednames)
         ])
     
-    def _arithmetic(self, sym, another, altsym='_'):
+    def _arithmetic(self, sym, another, altsym='_', pysym=None):
         from fxns import logical_combine
+        
         if another.__class__.__name__ == self.__class__.__name__:
             ancut = another.cut.GetTitle()
             anname = another.name
@@ -75,7 +76,7 @@ class cut(cbfch):
             self.neededbranchnames is not None and anneededbranchnames is not None
         ) else self.neededbranchnames if self.neededbranchnames is not None else anneededbranchnames
         newevaltemp = logical_combine(
-            self.evaltemp, sym, anevaltemp
+            self.evaltemp, sym if pysym is None else pysym, anevaltemp
         ) if (
             self.evaltemp is not None and anevaltemp is not None
         ) else None
@@ -106,7 +107,7 @@ class cut(cbfch):
             newneededbranchnames,
             newevaltemp,
             newneedednames,
-        ) = self._arithmetic('&&', another, '_and_')
+        ) = self._arithmetic('&&', another, '_and_', 'and')
         return cut(
             newcut, newname,
             weight=newweight, hname=newhname, evaltemp=newevaltemp,
@@ -125,7 +126,7 @@ class cut(cbfch):
             newneededbranchnames,
             newevaltemp,
             newneedednames,
-        ) = self._arithmetic('&& !', another, '_and_not_')
+        ) = self._arithmetic('&& !', another, '_and_not_', 'and not')
         if self.check_dummy():
             newcut = '!(' + ancut + ')'
             if not self.name.strip():
@@ -170,7 +171,7 @@ class cut(cbfch):
             newneededbranchnames,
             newevaltemp,
             newneedednames,
-        ) = self._arithmetic('||', another, '_or_')
+        ) = self._arithmetic('||', another, '_or_', 'or')
         return cut(
             newcut, newname,
             weight=newweight, hname=newhname, evaltemp=newevaltemp,
