@@ -44,7 +44,7 @@ class cut(cbfch):
         newfillstyle = self.fillstyle if self.fillstyle == anfillstyle else None
         newhname = self.hname + altsym + anhname if (self.hname is not None and anhname is not None) else None
         newneededbranchnames = (
-            self.neededbranchnames + anneededbranchnames
+            list(set(self.neededbranchnames + anneededbranchnames))
         ) if (
             self.neededbranchnames is not None and anneededbranchnames is not None
         ) else self.neededbranchnames if self.neededbranchnames is not None else anneededbranchnames
@@ -54,7 +54,7 @@ class cut(cbfch):
             self.evaltemp is not None and anevaltemp is not None
         ) else None
         newneedednames = (
-            self.needednames + anneedednames
+            list(set(self.needednames + anneedednames))
         ) if (
             self.needednames is not None and anneedednames is not None
         ) else self.needednames if self.needednames is not None else anneedednames
