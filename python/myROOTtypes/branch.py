@@ -11,6 +11,7 @@ class branch(bfch):
                  set_log_X=False, set_log_Y=False, can_extend=False, c=None, axname=None,
                  associated_branch=None, uniquenm=None, linecolor=None, fillcolor=None, fillstyle=None,
                  hname=None, neededbranchnames=None, datatype=None, evaltemp=None, needednames=None,
+                 nBins_pretty=None,
                  ):
         # evaluate some default values
         if name is None:
@@ -47,6 +48,7 @@ class branch(bfch):
         self.uniquenm = uniquenm
         self.axname = axname
         self.datatype = datatype  # 'F' for float, etc.
+        self.nBins_pretty = nBins_pretty
         # self.legxi = 0.3
         # self.legxf = 0.6
         # self.legyi = 0.7
