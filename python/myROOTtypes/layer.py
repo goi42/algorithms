@@ -26,3 +26,6 @@ class layer:
         self.add_element(key)
         self.add_element(value)
         self.add_comparison(key, value)
+    
+    def __repr__(self):
+        return '<myROOTtypes.{0} object ("{0}") at {1}>'.format(self.__class__.__name__, hex(id(self)))

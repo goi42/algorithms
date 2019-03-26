@@ -10,3 +10,6 @@ class cbfch:  # abstract base class for cut, branch, and fch classes
         self.neededbranchnames = neededbranchnames  # what branch names is this composed of? only really useful for cut and branch
         self.evaltemp = evaltemp  # to be called like `eval(evaltemp.format(tree))`
         self.needednames = needednames  # things that must be defined in the environment for evaltemp to evaluate
+    
+    def __repr__(self):
+        return '<myROOTtypes.{0} object ("{0}") at {1}>'.format(self.__class__.__name__, hex(id(self)))
