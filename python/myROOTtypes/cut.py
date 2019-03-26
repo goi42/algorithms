@@ -9,6 +9,20 @@ class cut(cbfch):
         self.name = str(name) if name is not None else str(cut)
         self.weight = weight if weight is not None else None  # should be cut, string, or TCut -- another way to apply weights when drawing
     
+    def check_dummy(self):
+        return not any([  # decide whether this is a dummy cut
+            bool(self.cut.GetTitle()),
+            bool(self.name),
+            bool(self.weight),
+            bool(self.linecolor),
+            bool(self.fillcolor),
+            bool(self.fillstyle),
+            bool(self.hname),
+            bool(self.neededbranchnames),
+            bool(self.evaltemp),
+            bool(self.needednames)
+        ])
+    
     def _arithmetic(self, sym, another, altsym='_'):
         from fxns import logical_combine
         if another.__class__.__name__ == self.__class__.__name__:
@@ -32,6 +46,18 @@ class cut(cbfch):
             anweight = anlinecolor = anfillcolor = anfillstyle = anhname = anneededbranchnames = anevaltemp = anneedednames = None
         else:
             raise TypeError('cannot perform arithmetic on object of class "' + another.__class__.__name__ + '" with object of class "cut"')
+        
+        if self.check_dummy():  # self is a dummy, blank-slate cut; just use another
+            return (
+                ancut, anname,
+                ancut, anname,
+                anweight,
+                anlinecolor, anfillcolor, anfillstyle,
+                anhname,
+                anneededbranchnames,
+                anevaltemp,
+                anneedednames,
+            )
         
         newcut = logical_combine(self.cut.GetTitle(), sym, ancut)
         newname = logical_combine(self.name, sym, anname)
@@ -81,10 +107,6 @@ class cut(cbfch):
             newevaltemp,
             newneedednames,
         ) = self._arithmetic('&&', another, '_and_')
-        if not self.cut.GetTitle().strip():
-            newcut = ancut
-            if not self.name.strip():
-                newname = anname
         return cut(
             newcut, newname,
             weight=newweight, hname=newhname, evaltemp=newevaltemp,
@@ -104,7 +126,7 @@ class cut(cbfch):
             newevaltemp,
             newneedednames,
         ) = self._arithmetic('&& !', another, '_and_not_')
-        if not self.cut.GetTitle().strip():
+        if self.check_dummy():
             newcut = '!(' + ancut + ')'
             if not self.name.strip():
                 newname = '!(' + anname + ')'
@@ -130,10 +152,6 @@ class cut(cbfch):
             newevaltemp,
             newneedednames,
         ) = self._arithmetic('*', another, '_times_')
-        if not self.cut.GetTitle().strip():
-            newcut = ancut
-            if not self.name.strip():
-                newname = anname
         return cut(
             newcut, newname,
             weight=newweight, hname=newhname, evaltemp=newevaltemp,
@@ -153,10 +171,6 @@ class cut(cbfch):
             newevaltemp,
             newneedednames,
         ) = self._arithmetic('||', another, '_or_')
-        if not self.cut.GetTitle().strip():
-            newcut = ancut
-            if not self.name.strip():
-                newname = anname
         return cut(
             newcut, newname,
             weight=newweight, hname=newhname, evaltemp=newevaltemp,
