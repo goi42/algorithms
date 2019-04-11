@@ -11,7 +11,7 @@ class branch(bfch):
                  set_log_X=False, set_log_Y=False, can_extend=False, c=None, axname=None,
                  associated_branch=None, uniquenm=None, linecolor=None, fillcolor=None, fillstyle=None,
                  hname=None, neededbranchnames=None, datatype=None, evaltemp=None, needednames=None,
-                 nBins_pretty=None,
+                 nBins_pretty=None, subranges=None,
                  ):
         # evaluate some default values
         if name is None:
@@ -49,6 +49,9 @@ class branch(bfch):
         self.axname = axname
         self.datatype = datatype  # 'F' for float, etc.
         self.nBins_pretty = nBins_pretty
+        self.subranges = {}
+        if subranges is not None:
+            self.set_subranges(subranges)
         # self.legxi = 0.3
         # self.legxf = 0.6
         # self.legyi = 0.7
@@ -129,6 +132,34 @@ class branch(bfch):
         self.h = h
         if return_histogram:
             return h
+    
+    def set_subranges(self, subranges):
+        'subranges is a dictionary specifying other binning ranges '
+        'of the form {"name": (nBins, loBin, hiBin),} '
+        'must be an even subset of the primary range '
+        if not isinstance(subranges, dict):
+            raise TypeError('expected a dictionary!')
+        if not all(len(x) == 3 for x in subranges.values()):
+            raise ValueError('subranges should specify nBins, loBin, hiBin')
+        
+        for snm, (nBins, loBin, hiBin) in subranges.iteritems():
+            if snm in self.subranges:
+                raise ValueError('subrange {0} is already specified'.format(snm))
+            if loBin < self.loBin:
+                raise ValueError('subrange {0} has loBin {1} which is lower than the primary loBin {2}'.format(snm, loBin, self.loBin))
+            if hiBin > self.hiBin:
+                raise ValueError('subrange {0} has hiBin {1} which is higher than the primary hiBin {2}'.format(snm, hiBin, self.hiBin))
+            
+            if nBins != 0 and self.nBins != 0:
+                perbin = float(hiBin - loBin) / nBins
+                selfperbin = float(self.hiBin - self.loBin) / self.nBins
+                
+                if perbin < selfperbin:
+                    raise ValueError('{0} has {1} per bin, but this is less than {2}, the one of the overall range'.format(snm, perbin, selfperbin))
+                if perbin % selfperbin > 0.001:  # rounding errors
+                    raise ValueError('{0} has {1} per bin, but this is not an even multiple of {2}, the one of the overall range'.format(snm, perbin, selfperbin))
+            
+            self.subranges[snm] = (nBins, loBin, hiBin)
     
     def _arithmetic(self, sym, another, altsym='_'):
         from fxns import logical_combine
