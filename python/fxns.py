@@ -634,10 +634,14 @@ def stdpull(fr):
     fr.GetXaxis().SetTitle()
 
 
-def do_ROOT_multithreading():
+def do_ROOT_multithreading(doPrint=False):
     'enable multithreading (if applicable)'
     import ROOT
     
     ROOTv, ROOTr = ROOT.gROOT.GetVersion().split('/')[0].split('.')
     if int(ROOTv) >= 6 and int(ROOTr) >= 12:
+        if doPrint:
+            print 'enabling ROOT Implicit Multithreading'
         ROOT.ROOT.EnableImplicitMT()
+    elif doPrint:
+        print 'cannot enable ROOT Implicit Multithreading (version too old)'
