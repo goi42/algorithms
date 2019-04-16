@@ -126,6 +126,34 @@ if(verbose):
     print "done"
 # ------------done-----------#
 
+# ---------------declare and fill histograms (maybe)---------------#
+if not doDraw:
+    print '\nstarting histogram declaration loop...'
+    hbar = progbar_makestart(nFiles * nBranches * nCuts)
+    i = 0
+    for ifile in L[fL].element:
+        for ibranch in ifile.b:
+            for icut in ibranch.c:
+                icut.make_histogram(ifile, ibranch, return_histogram=False)
+                icut.format_histogram(b=ibranch, sumw2=not nosumw2)  # preliminary stuff here, more below
+                i += 1
+                hbar.update(i)
+    hbar.finish()
+    print '\ngetting entries...'
+    nEntries = sum(ifile.GetEntries() for ifile in L[fL].element)
+    print 'starting histogram fill loop over {} entries...'.format(nEntries)
+    fillbar = progbar_makestart(nEntries)
+    i = 0
+    for ifile in L[fL].element:
+        for evt in ifile.GetTree():
+            for ibranch in ifile.b:
+                for icut in ibranch.c:
+                    icut.fill_histogram(evt, ibranch)
+            i += 1
+            fillbar.update(i)
+    fillbar.finish()
+# ---------------done----------------------------------------------#
+
 # ------------------------------------canvas loop-----------------------------#
 print "\nstarting canvas loop..."
 # actual start of the loop
@@ -216,13 +244,36 @@ for ci_i in range(0, nCanvases):  # ci in c:
             thisbranch.hiBin = lasthistaxis.GetXmax()
             if(debug):
                 print 'done'
-        h = thisbranch.make_histogram(hname="h" + str(ci_i) + str(hi), linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, overwrite=True, return_histogram=True, sumw2=not nosumw2)  # linecolor is ignored for 2D histograms by make_histogram
-        if(verbose and nhpc < 10):
-            print "done"
-        # draw histograms
+        if doDraw:
+            thish = thisbranch.make_histogram(hname="h" + str(ci_i) + str(hi), linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, overwrite=True, return_histogram=True, sumw2=not nosumw2)  # linecolor is ignored for 2D histograms by make_histogram
+            # draw histograms
+            if(verbose):
+                print "drawing histogram {i}...".format(i=hi + 1),
+            thisfile.Draw(thisbranch, thiscut, drawopt, canvas=ci)
+            if(verbose):
+                print "done"
+        else:
+            thiscut.format_histogram(linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, b=thisbranch, sumw2=False, set_can_extend=False)  # linecolor is ignored for 2D histograms by format_histogram
+            thish = thiscut.h
+            if(thiscut.hdims == 1):
+                if(thisbranch.set_log_X):
+                    ci.SetLogx()
+                if(thisbranch.set_log_Y):
+                    ci.SetLogy()
+            elif(thiscut.hdims == 2):
+                if(thisbranch.set_log_X):
+                    ci.SetLogx()
+                if(assocbranch.set_log_X):
+                    ci.SetLogy()
+                if(thisbranch.set_log_Y or assocbranch.set_log_Y):
+                    ci.SetLogz()
+            else:
+                raise Exception('{0} has neither 1 nor 2 hdims?'.format(thiscut.name))
+        
+        # clone histograms
         if(verbose):
-            print "drawing histogram {i}...".format(i=hi + 1),
-        thisfile.Draw(thisbranch, thiscut, drawopt, canvas=ci)
+            print "cloning histogram {i}...".format(i=hi + 1),
+        h = thish.Clone()
         if(verbose):
             print "done"
         pli += 1  # iterate the number of plots that have been drawn
@@ -231,7 +282,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
             if(verbose):
                 print "saving histogram {i}...".format(i=hi + 1),
             hfile.cd()
-            h.Write()
+            thish.Write()
             if(verbose):
                 print "done"
             ci.cd()
@@ -292,6 +343,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
     placeholder = '' if yesstack else 'nostack'
     if(drawopt):
         placeholder += " " + drawopt  # turns out "nostack " is different than "nostack"...
+    ci.cd()
     hs[ci_i].Draw(placeholder)
     if(assocbranch or labelaxes):
         placeholder = thisbranch.axname if thisbranch.axname else thisbranch.name

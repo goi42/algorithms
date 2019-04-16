@@ -41,6 +41,8 @@ parser.add_argument('--norm', action='store_true',
                     help='normalize histograms')
 parser.add_argument('--fixbinning', action='store_true',
                     help='after the first histogram is drawn, all subsequent histograms on the same canvas will be drawn with the same number of bins and same hi and lo bins.')
+parser.add_argument('--doDraw', action='store_true',
+                    help='use Draw instead of looping over events')
 parser.add_argument('--labelaxes', action='store_true',
                     help='turn on x- and y- axis labels (done automatically for 2D plots)')
 parser.add_argument('--notitle', action='store_true',
@@ -94,6 +96,9 @@ elif args.legendkey == 'topleft':
     legpars = [0.1, 0.7, 0.3, 0.9]
 norm = args.norm
 fixbinning = args.fixbinning
+doDraw = args.doDraw
+if fixbinning and not doDraw:
+    raise parser.error('fixbinning does nothing without doDraw')
 labelaxes = args.labelaxes
 notitle = args.notitle
 nolegend = args.nolegend

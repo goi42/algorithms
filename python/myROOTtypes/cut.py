@@ -1,4 +1,4 @@
-from ROOT import TCut
+import ROOT
 from cbfch import cbfch
 
 
@@ -7,7 +7,7 @@ class cut(cbfch):
         if cut is None and evaltemp is not None:
             cut = evaltemp.replace('{0}.', '')
         cbfch.__init__(self, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname, neededbranchnames=neededbranchnames, evaltemp=evaltemp, needednames=needednames)
-        self.cut = TCut(cut)
+        self.cut = ROOT.TCut(cut)
         self.name = str(name) if name is not None else str(cut)
         self.weight = weight if weight is not None else None  # should be cut, string, or TCut -- another way to apply weights when drawing
     
@@ -24,6 +24,107 @@ class cut(cbfch):
             bool(self.evaltemp),
             bool(self.needednames)
         ])
+    
+    def make_histogram(self, f, b, hname=None, htit=None, overwrite=False, return_histogram=True):
+        'declare a histogram (set to self.h) from the given file `f` and branch `b`'
+        
+        if overwrite:
+            self.h = None
+        elif self.h is not None:
+            raise Exception('h already exists!')
+        
+        # add potentially missing items
+        b.prep_for_histogram()
+        
+        # declare title and name
+        if hname is None:
+            hname = 'h_{0}_{1}{2}_{3}'.format(
+                cbfch.nh if f.hname is None else f.hname,
+                '' if b.associated_branch is None else b.associated_branch.hname + '_',
+                cbfch.nh if b.hname is None else b.hname,
+                cbfch.nh if self.hname is None else self.hname,
+            )
+        if htit is None:
+            if b.associated_branch:
+                bname = '{0} vs. {1}'.format(b.associated_branch.name, b.name)
+            else:
+                bname = b.name
+            htit = '{0}: {1}: {2}'.format(f.name, bname, self.name)
+        
+        # declare parameters for histogram creation
+        hargs = [hname, htit, b.nBins, b.loBin, b.hiBin]  # base histogram arguments
+        if b.associated_branch is None:
+            thehcomm = getattr(ROOT, 'TH1' + b.datatype)
+            self.hdims = 1
+        else:
+            ab = b.associated_branch
+            hargs += [ab.nBins, ab.loBin, ab.hiBin]
+            if b.datatype != ab.datatype:
+                raise TypeError('cannot combine branches with different datatype!')
+            thehcomm = getattr(ROOT, 'TH2' + b.datatype)
+            self.hdims = 2
+        
+        # create histogram
+        theh = thehcomm(*hargs)
+        
+        cbfch.nh += 1
+        
+        self.h = theh
+        if return_histogram:
+            return theh
+    
+    def format_histogram(self, hname=None, htit=None, linecolor=None, fillcolor=None, fillstyle=None, sumw2=True, set_can_extend=True, set_axis_titles=True, b=None):
+        if set_can_extend and b is None:
+            raise TypeError('`set_can_extend` requires `b`')
+        if set_axis_titles and b is None:
+            raise TypeError('`set_axis_titles` requires `b`')
+        
+        if linecolor is None and self.linecolor is None:
+            linecolor = 1
+        elif linecolor is None:
+            linecolor = self.linecolor
+        if fillcolor is None:
+            fillcolor = self.fillcolor
+        if fillstyle is None:
+            fillstyle = self.fillstyle
+            
+        if hname is not None:
+            self.h.SetName(hname)
+        if htit is not None:
+            self.h.SetTitle(htit)
+        if sumw2:
+            self.h.Sumw2()
+        if self.hdims == 1:
+            if set_can_extend:
+                if b.can_extend is True:
+                    self.h.SetCanExtend(ROOT.TH1.kAllAxes)
+            self.h.SetLineColor(linecolor)
+            if fillcolor is not None:
+                self.h.SetFillColor(fillcolor)
+            if fillstyle is not None:
+                self.h.SetFillStyle(fillstyle)
+            if set_axis_titles:
+                self.h.GetXaxis().SetTitle(b.name)
+        elif self.hdims == 2:
+            if set_can_extend:
+                if b.can_extend is True:
+                    self.h.SetCanExtend(ROOT.TH1.kXaxis)
+                if b.associated_branch.can_extend is True:
+                    self.h.SetCanExtend(ROOT.TH1.kYaxis)
+            if set_axis_titles:
+                self.h.GetXaxis().SetTitle(b.name)
+                self.h.GetYaxis().SetTitle(b.associated_branch.name)
+    
+    def fill_histogram(self, evt, b):
+        if eval(self.evaltemp.format('evt')):
+            if self.hdims == 1:
+                filllist = [eval(b.evaltemp.format('evt'))]
+            elif self.hdims == 2:
+                filllist = [eval(b.evaltemp.format('evt')), eval(b.associated_branch.evaltemp.format('evt'))]
+            if self.weight is not None:
+                filllist.append(self.weight)
+            
+            self.h.Fill(*filllist)
     
     def _arithmetic(self, sym, another, altsym='_', pysym=None):
         from fxns import logical_combine
