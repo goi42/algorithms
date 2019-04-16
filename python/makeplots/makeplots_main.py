@@ -29,7 +29,7 @@ from myROOTtypes.cut import cut
 from myROOTtypes.file import file
 from myROOTtypes.chain import chain
 from myROOTtypes.layer import layer
-from fxns import addsyspath, progbar_makestart
+from fxns import addsyspath, progbar_makestart, do_ROOT_multithreading
 
 with addsyspath(pathtolayerfile):
     from makeplots_layer import L
@@ -37,6 +37,8 @@ with addsyspath(pathtolayerfile):
 ROOT.gROOT.SetBatch(True)
 if(not debug):
     ROOT.gErrorIgnoreLevel = ROOT.kWarning
+if not nomultithreading:
+    do_ROOT_multithreading()
 
 print '---------------------------makeplots_main.py---------------------------'
 print 'starting at', time.asctime(time.localtime(time.time()))
