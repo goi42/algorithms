@@ -85,9 +85,9 @@ nLayers = len(L)
 print "nFiles = {nFiles}, nBranches = {nBranches}, nCuts = {nCuts}".format(nFiles=len(L[fL].element), nBranches=len(L[bL].element), nCuts=len(L[cL].element))
 print "nLayers = {nLayers}, nCanvases = {nCanvases}, nhpc = {nhpc}".format(nLayers=nLayers, nCanvases=nCanvases, nhpc=nhpc)
 
-if(histograms):
+if(histograms or savecan):
     if(verbose):
-        print "creating histogram file {0}...".format(hfilename),
+        print "creating histogram/canvas file {0}...".format(hfilename),
     hfile = TFile(opj(outputlocation, hfilename), "recreate")  # assigned here
     if(verbose):
         print "done"
@@ -320,6 +320,8 @@ for ci_i in range(0, nCanvases):  # ci in c:
     ci.Print(placeholder)
     if(saveC):
         ci.SaveAs(opj(outputlocation, "c{i}_{st}.C".format(i=ci_i, st=stacktitle)))
+    if(savecan):
+        ci.Write()
     if(verbose):
         print "done\n"
     if(canbar is not None):
@@ -327,9 +329,9 @@ for ci_i in range(0, nCanvases):  # ci in c:
 # end canvas loop
 if(canbar is not None):
     canbar.finish()
-if(histograms):
+if(histograms or savecan):
     if(verbose):
-        print "closing histogram file {hnm}...".format(hnm=hfilename),
+        print "closing histogram/canvas file {hnm}...".format(hnm=hfilename),
     hfile.Close()
     if(verbose):
         print "done"

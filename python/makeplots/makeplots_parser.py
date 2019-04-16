@@ -25,6 +25,8 @@ parser.add_argument('--hist', action='store_true',
                     help='creates a file containing the generated histograms')
 parser.add_argument('--hfilename', default=None,
                     help='file to store histograms if --hist option specified; uses filename with ".root" extension by default')
+parser.add_argument('--can', action='store_true',
+                    help='saves canvases in hfilename')
 parser.add_argument('--legend', type=float, nargs=4,
                     metavar=('xlo', 'ylo', 'xhi', 'yhi'),
                     default=[0.75, 0.6, 1, 0.9],
@@ -82,6 +84,7 @@ histograms = args.hist
 hfilename = os.path.splitext(args.filename)[0] + '.root' if args.hfilename is None else args.hfilename
 if '.root' not in hfilename:
     hfilename += '.root'
+savecan = args.can
 legpars = args.legend
 if args.legendkey == 'topcenter':
     legpars = [0.3, 0.7, 0.6, 0.9]
