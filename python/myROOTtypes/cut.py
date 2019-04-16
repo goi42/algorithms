@@ -3,7 +3,9 @@ from cbfch import cbfch
 
 
 class cut(cbfch):
-    def __init__(self, cut, name=None, weight=None, linecolor=None, fillcolor=None, fillstyle=None, hname=None, neededbranchnames=None, evaltemp=None, needednames=None):
+    def __init__(self, cut=None, name=None, weight=None, linecolor=None, fillcolor=None, fillstyle=None, hname=None, neededbranchnames=None, evaltemp=None, needednames=None):
+        if cut is None and evaltemp is not None:
+            cut = evaltemp.replace('{0}.', '')
         cbfch.__init__(self, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname, neededbranchnames=neededbranchnames, evaltemp=evaltemp, needednames=needednames)
         self.cut = TCut(cut)
         self.name = str(name) if name is not None else str(cut)
