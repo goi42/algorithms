@@ -21,6 +21,7 @@ import math
 import subprocess
 import progressbar
 import time
+import threading
 
 import ROOT
 from ROOT import TLegend, TFile, THStack, TCanvas
@@ -139,18 +140,42 @@ if not doDraw:
                 i += 1
                 hbar.update(i)
     hbar.finish()
+    
+    class myThread(threading.Thread):
+        def __init__(self, f):
+            threading.Thread.__init__(self)
+            self.f = f
+            self.Nents = f.GetEntries()
+            self.prog = 0
+        
+        def run(self):
+            for ievt, evt in enumerate(self.f.GetTree()):
+                for ibranch in self.f.b:
+                    for icut in ibranch.c:
+                        icut.fill_histogram(evt, ibranch)
+                self.prog = ievt + 1
+    
     print '\ngetting entries...'
-    nEntries = sum(ifile.GetEntries() for ifile in L[fL].element)
-    print 'starting histogram fill loop over {} entries...'.format(nEntries)
-    fillbar = progbar_makestart(nEntries)
-    i = 0
+    threads = []
     for ifile in L[fL].element:
-        for evt in ifile.GetTree():
-            for ibranch in ifile.b:
-                for icut in ibranch.c:
-                    icut.fill_histogram(evt, ibranch)
-            i += 1
-            fillbar.update(i)
+        threads.append(myThread(ifile))
+    nEntries = sum(x.Nents for x in threads)
+    print 'starting histogram fill loops over {} entries...'.format(nEntries)
+    fillbar = progbar_makestart(nEntries)
+    Nth_at_once = len(threads) if len(threads) < 5 else 5
+    startedthreads = []
+    while len(startedthreads) < len(threads) or any(  # start all threads
+        [th.isAlive() for th in threads]  # wait for them to finish
+    ):
+        for th in [x for x in threads if x not in startedthreads]:
+            runningthreads = [x for x in threads if x.isAlive()]
+            if len(runningthreads) < Nth_at_once:
+                th.start()
+                startedthreads.append(th)
+            else:
+                break
+        fillbar.update(sum(x.prog for x in threads))
+        time.sleep(0.001)
     fillbar.finish()
 # ---------------done----------------------------------------------#
 
