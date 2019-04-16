@@ -84,7 +84,8 @@ while not CutLayerExists:
 if(verbose):
     print "done"
 nLayers = len(L)
-print "nFiles = {nFiles}, nBranches = {nBranches}, nCuts = {nCuts}".format(nFiles=len(L[fL].element), nBranches=len(L[bL].element), nCuts=len(L[cL].element))
+nFiles, nBranches, nCuts = len(L[fL].element), len(L[bL].element), len(L[cL].element)
+print "nFiles = {nFiles}, nBranches = {nBranches}, nCuts = {nCuts}".format(nFiles=nFiles, nBranches=nBranches, nCuts=nCuts)
 print "nLayers = {nLayers}, nCanvases = {nCanvases}, nhpc = {nhpc}".format(nLayers=nLayers, nCanvases=nCanvases, nhpc=nhpc)
 
 if(histograms or savecan):
