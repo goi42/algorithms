@@ -632,3 +632,12 @@ def stdpull(fr):
     fr.GetYaxis().SetNdivisions(505)
     fr.GetXaxis().SetLabelSize(0.10)
     fr.GetXaxis().SetTitle()
+
+
+def do_ROOT_multithreading():
+    'enable multithreading (if applicable)'
+    import ROOT
+    
+    ROOTv, ROOTr = ROOT.gROOT.GetVersion().split('/')[0].split('.')
+    if int(ROOTv) >= 6 and int(ROOTr) >= 12:
+        ROOT.ROOT.EnableImplicitMT()
