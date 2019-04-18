@@ -144,6 +144,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
     ci.cd()
     ROOT.gStyle.SetOptStat(setoptstat)
     leg = TLegend(legpars[0], legpars[1], legpars[2], legpars[3])
+    leg.SetFillStyle(0)  # transparent legend
     
     hs.append(THStack("hs" + str(ci_i), "hs" + str(ci_i)))  # create the stack to hold the histograms
     
