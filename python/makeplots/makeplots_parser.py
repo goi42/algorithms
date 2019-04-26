@@ -59,6 +59,8 @@ parser.add_argument('--nosumw2', action='store_true',
                     help='do not call Sumw2 on histograms')
 parser.add_argument('--nomultithreading', action='store_true',
                     help='do not do ROOT.EnableImplicitMT()')
+parser.add_argument('--lhcbStyle', action='store_true',
+                    help='use lhcbStyle.C formatting')
 parser.add_argument('--buildlegend', action='store_true',
                     help='use BuildLegend instead of the default creation (overrides all other settings)')
 
@@ -109,4 +111,5 @@ yesstack = args.yesstack
 setoptstat = args.setoptstat
 nosumw2 = args.nosumw2
 nomultithreading = args.nomultithreading
+lhcbStyle = args.lhcbStyle
 buildlegend = args.buildlegend

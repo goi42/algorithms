@@ -40,6 +40,8 @@ if(not debug):
     ROOT.gErrorIgnoreLevel = ROOT.kWarning
 if not nomultithreading:
     do_ROOT_multithreading()
+if lhcbStyle:
+    ROOT.gROOT.ProcessLine('.x lhcbStyle.C')
 
 print '---------------------------makeplots_main.py---------------------------'
 print 'starting at', time.asctime(time.localtime(time.time()))
