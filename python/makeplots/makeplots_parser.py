@@ -29,7 +29,7 @@ parser.add_argument('--can', action='store_true',
                     help='saves canvases in hfilename')
 parser.add_argument('--legend', type=float, nargs=4,
                     metavar=('xlo', 'ylo', 'xhi', 'yhi'),
-                    default=[0.75, 0.6, 1, 0.9],
+                    default=[0.6, 0.6, 0.9, 0.9],
                     help='list of parameters for legend placement')
 parser.add_argument('--legendkey', default=None, choices=['topcenter', 'topleft'],
                     help='shortcuts to certain legend configurations')
