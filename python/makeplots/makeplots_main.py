@@ -16,7 +16,7 @@ Elements of its logic are very C++-like, an artifact from its original design. I
 from makeplots_parser import *  # up here to make sure --help works
 
 import sys
-from os.path import join as opj
+import os
 import math
 import subprocess
 import progressbar
@@ -44,9 +44,9 @@ if not nomultithreading:
 print '---------------------------makeplots_main.py---------------------------'
 print 'starting at', time.asctime(time.localtime(time.time()))
 print 'using layer input from ' + pathtolayerfile
-print 'will save plots using option "' + drawopt + '" to', opj(outputlocation, filename)
+print 'will save plots using option "' + drawopt + '" to', os.path.join(outputlocation, filename)
 if(histograms):
-    print 'will create histogram file', opj(outputlocation, hfilename)
+    print 'will create histogram file', os.path.join(outputlocation, hfilename)
 if(verbose and not debug):
     print 'verbose mode set'
 if(debug):
@@ -92,7 +92,7 @@ print "nLayers = {nLayers}, nCanvases = {nCanvases}, nhpc = {nhpc}".format(nLaye
 if(histograms or savecan):
     if(verbose):
         print "creating histogram/canvas file {0}...".format(hfilename),
-    hfile = TFile(opj(outputlocation, hfilename), "recreate")  # assigned here
+    hfile = TFile(os.path.join(outputlocation, hfilename), "recreate")  # assigned here
     if(verbose):
         print "done"
 # create necessary counters, canvases, legends, etc.
@@ -395,12 +395,12 @@ for ci_i in range(0, nCanvases):  # ci in c:
     # save stuff:
     if(verbose):
         print "saving files...",
-    placeholder = opj(outputlocation, filename)
+    placeholder = os.path.join(outputlocation, filename)
     if(nCanvases > 1):
         placeholder += "("  # the closing page is added after the loop
     ci.Print(placeholder)
     if(saveC):
-        ci.SaveAs(opj(outputlocation, "c{i}_{st}.C".format(i=ci_i, st=stacktitle)))
+        ci.SaveAs(os.path.join(outputlocation, "c{i}_{st}.C".format(i=ci_i, st=stacktitle)))
     if(savecan):
         ci.Write()
     if(verbose):
@@ -418,7 +418,7 @@ if(histograms or savecan):
         print "done"
 cf.cd()
 if(nCanvases > 1):
-    cf.Print(opj(outputlocation, filename + ")"))
+    cf.Print(os.path.join(outputlocation, filename + ")"))
 ROOT.gROOT.SetBatch(False)
 print 'finished at', time.asctime(time.localtime(time.time()))
 print "---------------------------done----------------------------------------"
