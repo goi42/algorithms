@@ -59,6 +59,8 @@ parser.add_argument('--nosumw2', action='store_true',
                     help='do not call Sumw2 on histograms')
 parser.add_argument('--nomultithreading', action='store_true',
                     help='do not do ROOT.EnableImplicitMT()')
+parser.add_argument('--buildlegend', action='store_true',
+                    help='use BuildLegend instead of the default creation (overrides all other settings)')
 
 # class modimport(argparse.Action):
 #     def __init__(self,option_strings,dest,nargs=None,**kwargs):
@@ -107,3 +109,4 @@ yesstack = args.yesstack
 setoptstat = args.setoptstat
 nosumw2 = args.nosumw2
 nomultithreading = args.nomultithreading
+buildlegend = args.buildlegend

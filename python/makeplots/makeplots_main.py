@@ -196,8 +196,9 @@ for ci_i in range(0, nCanvases):  # ci in c:
     ci = TCanvas("c" + str(ci_i), "c" + str(ci_i), 1200, 800)  # create the canvases
     ci.cd()
     ROOT.gStyle.SetOptStat(setoptstat)
-    leg = TLegend(legpars[0], legpars[1], legpars[2], legpars[3])
-    leg.SetFillStyle(0)  # transparent legend
+    if not buildlegend:
+        leg = TLegend(legpars[0], legpars[1], legpars[2], legpars[3])
+        leg.SetFillStyle(0)  # transparent legend
     
     hs.append(THStack("hs" + str(ci_i), "hs" + str(ci_i)))  # create the stack to hold the histograms
     
@@ -350,7 +351,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
                 Li.Li = 0  # reset the iteration if it's reached the end
         # end layer loop
         # fill legends
-        if(leglabel != ""):
+        if(leglabel != "" and not buildlegend):
             leg.AddEntry(h, leglabel)  # no need for a legend if nothing is compared
         if(verbose):
             print "done"
@@ -386,8 +387,10 @@ for ci_i in range(0, nCanvases):  # ci in c:
                 placeholder += ' {}'.format(thisbranch.units)
             hs[ci_i].GetYaxis().SetTitle(placeholder)
         ci.Update()
-    if(not nolegend and leg.GetNRows() > 0):  # you don't need a legend if nothing's compared
+    if(not nolegend and not buildlegend and leg.GetNRows() > 0):  # you don't need a legend if nothing's compared
         leg.Draw()
+    if(buildlegend):
+        ci.BuildLegend()
     cf.cd(ci_i + 1)
     ci.DrawClonePad()
     if(verbose):
