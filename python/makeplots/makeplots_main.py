@@ -376,17 +376,17 @@ for ci_i in range(0, nCanvases):  # ci in c:
     if(assocbranch or labelaxes):
         placeholder = thisbranch.axname if thisbranch.axname else thisbranch.name
         if(thisbranch.units):
-            placeholder += ' ({})'.format(thisbranch.units)
+            placeholder += ' [{}]'.format(thisbranch.units)
         hs[ci_i].GetXaxis().SetTitle(placeholder)
         if(assocbranch):
             placeholder = assocbranch.axname if assocbranch.axname else assocbranch.name
             if(assocbranch.units):
-                placeholder += ' ({})'.format(assocbranch.units)
+                placeholder += ' [{}]'.format(assocbranch.units)
             hs[ci_i].GetYaxis().SetTitle(placeholder)
         else:
-            placeholder = 'Entries / {}'.format(thisbranch.get_bin_width())
-            if(thisbranch.units):
-                placeholder += ' {}'.format(thisbranch.units)
+            placeholder = 'Entries / ({}{})'.format(
+                thisbranch.get_bin_width(),
+                (' ' + thisbranch.units) if thisbranch.units else '')
             hs[ci_i].GetYaxis().SetTitle(placeholder)
         ci.Update()
     if(not nolegend and not buildlegend and leg.GetNRows() > 0):  # you don't need a legend if nothing's compared
