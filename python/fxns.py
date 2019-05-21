@@ -714,3 +714,9 @@ class unc:
     
     def __idiv__(self, another):
         return self / another
+    
+    def __repr__(self):
+        return '< {v}+/-{stat}+/-{sys} >'.format(
+            v=self.getValue(),
+            stat=self.getError('statistical'),
+            sys=self.getError('systematic'))
