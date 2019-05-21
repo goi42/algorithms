@@ -3,10 +3,10 @@ from cbfch import cbfch
 
 
 class cut(cbfch):
-    def __init__(self, cut=None, name=None, weight=None, linecolor=None, fillcolor=None, fillstyle=None, hname=None, neededbranchnames=None, evaltemp=None, needednames=None):
+    def __init__(self, cut=None, name=None, weight=None, linecolor=None, markercolor=None, fillcolor=None, fillstyle=None, hname=None, neededbranchnames=None, evaltemp=None, needednames=None):
         if cut is None and evaltemp is not None:
             cut = evaltemp.replace('{0}.', '')
-        cbfch.__init__(self, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname, neededbranchnames=neededbranchnames, evaltemp=evaltemp, needednames=needednames)
+        cbfch.__init__(self, linecolor=linecolor, markercolor=markercolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname, neededbranchnames=neededbranchnames, evaltemp=evaltemp, needednames=needednames)
         self.cut = ROOT.TCut(cut)
         self.name = str(name) if name is not None else str(cut)
         self.weight = weight if weight is not None else None  # should be cut, string, or TCut -- another way to apply weights when drawing
@@ -17,6 +17,7 @@ class cut(cbfch):
             bool(self.name),
             bool(self.weight),
             bool(self.linecolor),
+            bool(self.markercolor),
             bool(self.fillcolor),
             bool(self.fillstyle),
             bool(self.hname),
@@ -73,7 +74,7 @@ class cut(cbfch):
         if return_histogram:
             return theh
     
-    def format_histogram(self, hname=None, htit=None, linecolor=None, fillcolor=None, fillstyle=None, sumw2=True, set_can_extend=True, set_axis_titles=True, b=None):
+    def format_histogram(self, hname=None, htit=None, linecolor=None, markercolor=None, fillcolor=None, fillstyle=None, sumw2=True, set_can_extend=True, set_axis_titles=True, b=None):
         if set_can_extend and b is None:
             raise TypeError('`set_can_extend` requires `b`')
         if set_axis_titles and b is None:
@@ -83,6 +84,8 @@ class cut(cbfch):
             linecolor = 1
         elif linecolor is None:
             linecolor = self.linecolor
+        if markercolor is None:
+            markercolor = self.markercolor
         if fillcolor is None:
             fillcolor = self.fillcolor
         if fillstyle is None:
@@ -99,6 +102,8 @@ class cut(cbfch):
                 if b.can_extend is True:
                     self.h.SetCanExtend(ROOT.TH1.kAllAxes)
             self.h.SetLineColor(linecolor)
+            if markercolor is not None:
+                self.h.SetMarkerColor(markercolor)
             if fillcolor is not None:
                 self.h.SetFillColor(fillcolor)
             if fillstyle is not None:
@@ -147,6 +152,7 @@ class cut(cbfch):
             anname = another.name
             anweight = another.weight
             anlinecolor = another.linecolor
+            anmarkercolor = another.markercolor
             anfillcolor = another.fillcolor
             anfillstyle = another.fillstyle
             anhname = another.hname
@@ -156,11 +162,11 @@ class cut(cbfch):
         elif another.__class__.__name__ == 'str':
             ancut = another
             anname = another
-            anweight = anlinecolor = anfillcolor = anfillstyle = anhname = anneededbranchnames = anevaltemp = anneedednames = None
+            anweight = anlinecolor = anmarkercolor = anfillcolor = anfillstyle = anhname = anneededbranchnames = anevaltemp = anneedednames = None
         elif another.__class__.__name__ == 'TCut':
             ancut = another.GetTitle()
             anname = another.GetName()
-            anweight = anlinecolor = anfillcolor = anfillstyle = anhname = anneededbranchnames = anevaltemp = anneedednames = None
+            anweight = anlinecolor = anmarkercolor = anfillcolor = anfillstyle = anhname = anneededbranchnames = anevaltemp = anneedednames = None
         else:
             raise TypeError('cannot perform arithmetic on object of class "' + another.__class__.__name__ + '" with object of class "cut"')
         
@@ -169,7 +175,7 @@ class cut(cbfch):
                 ancut, anname,
                 ancut, anname,
                 anweight,
-                anlinecolor, anfillcolor, anfillstyle,
+                anlinecolor, anmarkercolor, anfillcolor, anfillstyle,
                 anhname,
                 anneededbranchnames,
                 anevaltemp,
@@ -183,6 +189,7 @@ class cut(cbfch):
         else:
             raise Exception('cannot combine two cuts with different weights!')
         newlinecolor = self.linecolor if self.linecolor == anlinecolor else None
+        newmarkercolor = self.markercolor if self.markercolor == anmarkercolor else None
         newfillcolor = self.fillcolor if self.fillcolor == anfillcolor else None
         newfillstyle = self.fillstyle if self.fillstyle == anfillstyle else None
         newhname = self.hname + altsym + anhname if (self.hname is not None and anhname is not None) else None
@@ -206,7 +213,7 @@ class cut(cbfch):
             newcut, newname,
             ancut, anname,
             newweight,
-            newlinecolor, newfillcolor, newfillstyle,
+            newlinecolor, newmarkercolor, newfillcolor, newfillstyle,
             newhname,
             newneededbranchnames,
             newevaltemp,
@@ -218,7 +225,7 @@ class cut(cbfch):
             newcut, newname,
             ancut, anname,
             newweight,
-            newlinecolor, newfillcolor, newfillstyle,
+            newlinecolor, newmarkercolor, newfillcolor, newfillstyle,
             newhname,
             newneededbranchnames,
             newevaltemp,
@@ -227,7 +234,7 @@ class cut(cbfch):
         return cut(
             newcut, newname,
             weight=newweight, hname=newhname, evaltemp=newevaltemp,
-            linecolor=newlinecolor, fillcolor=newfillcolor, fillstyle=newfillstyle,
+            linecolor=newlinecolor, markercolor=newmarkercolor, fillcolor=newfillcolor, fillstyle=newfillstyle,
             neededbranchnames=newneededbranchnames, needednames=newneedednames,
         )
     
@@ -237,7 +244,7 @@ class cut(cbfch):
             newcut, newname,
             ancut, anname,
             newweight,
-            newlinecolor, newfillcolor, newfillstyle,
+            newlinecolor, newmarkercolor, newfillcolor, newfillstyle,
             newhname,
             newneededbranchnames,
             newevaltemp,
@@ -250,7 +257,7 @@ class cut(cbfch):
         return cut(
             newcut, newname,
             weight=newweight, hname=newhname, evaltemp=newevaltemp,
-            linecolor=newlinecolor, fillcolor=newfillcolor, fillstyle=newfillstyle,
+            linecolor=newlinecolor, markercolor=newmarkercolor, fillcolor=newfillcolor, fillstyle=newfillstyle,
             neededbranchnames=newneededbranchnames, needednames=newneedednames,
         )
     
@@ -263,7 +270,7 @@ class cut(cbfch):
             newcut, newname,
             ancut, anname,
             newweight,
-            newlinecolor, newfillcolor, newfillstyle,
+            newlinecolor, newmarkercolor, newfillcolor, newfillstyle,
             newhname,
             newneededbranchnames,
             newevaltemp,
@@ -272,7 +279,7 @@ class cut(cbfch):
         return cut(
             newcut, newname,
             weight=newweight, hname=newhname, evaltemp=newevaltemp,
-            linecolor=newlinecolor, fillcolor=newfillcolor, fillstyle=newfillstyle,
+            linecolor=newlinecolor, markercolor=newmarkercolor, fillcolor=newfillcolor, fillstyle=newfillstyle,
             neededbranchnames=newneededbranchnames, needednames=newneedednames,
         )
     
@@ -282,7 +289,7 @@ class cut(cbfch):
             newcut, newname,
             ancut, anname,
             newweight,
-            newlinecolor, newfillcolor, newfillstyle,
+            newlinecolor, newmarkercolor, newfillcolor, newfillstyle,
             newhname,
             newneededbranchnames,
             newevaltemp,
@@ -291,7 +298,7 @@ class cut(cbfch):
         return cut(
             newcut, newname,
             weight=newweight, hname=newhname, evaltemp=newevaltemp,
-            linecolor=newlinecolor, fillcolor=newfillcolor, fillstyle=newfillstyle,
+            linecolor=newlinecolor, markercolor=newmarkercolor, fillcolor=newfillcolor, fillstyle=newfillstyle,
             neededbranchnames=newneededbranchnames, needednames=newneedednames,
         )
     

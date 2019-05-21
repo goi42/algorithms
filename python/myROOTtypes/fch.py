@@ -6,8 +6,8 @@ from ROOT import TCanvas, TString
 
 
 class fch(bfch):  # abstract base class for file and chain classes
-    def __init__(self, linecolor=None, fillcolor=None, fillstyle=None, hname=None):
-        bfch.__init__(self, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname)
+    def __init__(self, linecolor=None, markercolor=None, fillcolor=None, fillstyle=None, hname=None):
+        bfch.__init__(self, linecolor=linecolor, markercolor=markercolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname)
         self.name = ""  # nickname for the file or chain
         self.quality = {}  # handy for comparing files, e.g., quality["year"]="2015"
         self._thething = None  # should be set to a TTree for file and the TChain for chain

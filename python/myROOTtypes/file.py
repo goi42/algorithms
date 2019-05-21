@@ -4,8 +4,8 @@ from fch import fch
 
 
 class file(fch):
-    def __init__(self, location, name=None, tree=None, quality=None, opencondition='READ', linecolor=None, fillcolor=None, fillstyle=None, hname=None):
-        fch.__init__(self, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname)
+    def __init__(self, location, name=None, tree=None, quality=None, opencondition='READ', linecolor=None, markercolor=None, fillcolor=None, fillstyle=None, hname=None):
+        fch.__init__(self, linecolor=linecolor, markercolor=markercolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname)
         self.file = TFile.Open(location, opencondition)
         self._theotherthing = self.file
         self.location = location

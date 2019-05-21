@@ -5,8 +5,8 @@ from file import file
 
 
 class chain(fch):
-    def __init__(self, trname, name=None, quality=None, lfiles=None, add_files_from=None, nentries=False, fracentries=False, linecolor=None, fillcolor=None, fillstyle=None, hname=None):
-        fch.__init__(self, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname)
+    def __init__(self, trname, name=None, quality=None, lfiles=None, add_files_from=None, nentries=False, fracentries=False, linecolor=None, markercolor=None, fillcolor=None, fillstyle=None, hname=None):
+        fch.__init__(self, linecolor=linecolor, markercolor=markercolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname)
         self.chain = TChain(trname, "")
         self._thething = self.chain
         self._theotherthing = self.chain

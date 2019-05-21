@@ -1,8 +1,9 @@
 class cbfch:  # abstract base class for cut, branch, and fch classes
     nh = 0  # number of created histograms to avoid duplicate names and memory leaks
     
-    def __init__(self, linecolor=None, fillcolor=None, fillstyle=None, hname=None, neededbranchnames=None, evaltemp=None, needednames=None):
+    def __init__(self, linecolor=None, markercolor=None, fillcolor=None, fillstyle=None, hname=None, neededbranchnames=None, evaltemp=None, needednames=None):
         self.linecolor = linecolor
+        self.markercolor = markercolor
         self.fillcolor = fillcolor
         self.fillstyle = fillstyle
         self.hname = hname

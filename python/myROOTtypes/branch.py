@@ -9,7 +9,7 @@ from ROOT import TH1F, TH1, TH2F, TCut
 class branch(bfch):
     def __init__(self, branch, name=None, nBins=0, loBin=0, hiBin=0, units=None, xlabel="", ylabel="",
                  set_log_X=False, set_log_Y=False, can_extend=False, c=None, axname=None,
-                 associated_branch=None, uniquenm=None, linecolor=None, fillcolor=None, fillstyle=None,
+                 associated_branch=None, uniquenm=None, linecolor=None, markercolor=None, fillcolor=None, fillstyle=None,
                  hname=None, neededbranchnames=None, datatype=None, evaltemp=None, needednames=None,
                  nBins_pretty=None, subranges=None,
                  ):
@@ -31,7 +31,7 @@ class branch(bfch):
         
         # initialize members
         bfch.__init__(
-            self, c=c, linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname,
+            self, c=c, linecolor=linecolor, markercolor=markercolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname,
             neededbranchnames=neededbranchnames, evaltemp=evaltemp, needednames=needednames)
         self.branch = branch  # name of branch as it appears in the tree
         self.name = name  # nickname--usually what you want to appear on a plot
@@ -91,11 +91,13 @@ class branch(bfch):
         if self.associated_branch:
             self.associated_branch.prep_for_histogram()
     
-    def make_histogram(self, hname=None, linecolor=None, fillcolor=None, fillstyle=None, sumw2=True, overwrite=False, return_histogram=True):  # create an empty histogram
+    def make_histogram(self, hname=None, linecolor=None, markercolor=None, fillcolor=None, fillstyle=None, sumw2=True, overwrite=False, return_histogram=True):  # create an empty histogram
         if linecolor is None and self.linecolor is None:
             linecolor = 1
         elif linecolor is None:
             linecolor = self.linecolor
+        if markercolor is None:
+            markercolor = self.markercolor
         if fillcolor is None:
             fillcolor = self.fillcolor
         if fillstyle is None:
@@ -115,6 +117,8 @@ class branch(bfch):
             if(self.can_extend):
                 h.SetCanExtend(TH1.kAllAxes)
             h.SetLineColor(linecolor)
+            if markercolor is not None:
+                h.SetMarkerColor(markercolor)
             if fillcolor is not None:
                 h.SetFillColor(fillcolor)
             if fillstyle is not None:

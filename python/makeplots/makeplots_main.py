@@ -242,6 +242,17 @@ for ci_i in range(0, nCanvases):  # ci in c:
             linecolor = hi + 1
             if((hi + 1 == 5) or (hi + 1 == 10)):
                 linecolor = hi + 21
+        markercolor = None
+        if(markerlinecolors):
+            markercolor = linecolor
+        elif(any(x.markercolor is not None for x in listofthings)):
+            foundfc = False
+            for th in listofthings:
+                if(th.markercolor and not foundfc):
+                    markercolor = th.markercolor
+                    foundfc = True
+                elif(th.markercolor and not foundfc):
+                    raise ValueError('cannot assign a markercolor for multiple types of things!')
         fillcolor = None
         if(filllinecolors):
             fillcolor = linecolor
@@ -273,7 +284,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
             if(debug):
                 print 'done'
         if doDraw:
-            thish = thisbranch.make_histogram(hname="h" + str(ci_i) + str(hi), linecolor=linecolor, fillcolor=fillcolor, fillstyle=fillstyle, overwrite=True, return_histogram=True, sumw2=not nosumw2)  # linecolor is ignored for 2D histograms by make_histogram
+            thish = thisbranch.make_histogram(hname="h" + str(ci_i) + str(hi), linecolor=linecolor, markercolor=markercolor, fillcolor=fillcolor, fillstyle=fillstyle, overwrite=True, return_histogram=True, sumw2=not nosumw2)  # linecolor is ignored for 2D histograms by make_histogram
             # draw histograms
             if(verbose):
                 print "drawing histogram {i}...".format(i=hi + 1),
