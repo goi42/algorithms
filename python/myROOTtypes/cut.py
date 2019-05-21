@@ -104,7 +104,14 @@ class cut(cbfch):
             if fillstyle is not None:
                 self.h.SetFillStyle(fillstyle)
             if set_axis_titles:
-                self.h.GetXaxis().SetTitle(b.name)
+                xaxtit = b.name
+                if b.units:
+                    xaxtit += ' [{}]'.format(b.units)
+                yaxtit = 'Entries / ({}{})'.format(
+                    b.get_bin_width(),
+                    (' ' + b.units) if b.units else '')
+                self.h.GetXaxis().SetTitle(xaxtit)
+                self.h.GetYaxis().SetTitle(yaxtit)
         elif self.hdims == 2:
             if set_can_extend:
                 if b.can_extend is True:
@@ -112,8 +119,14 @@ class cut(cbfch):
                 if b.associated_branch.can_extend is True:
                     self.h.SetCanExtend(ROOT.TH1.kYaxis)
             if set_axis_titles:
-                self.h.GetXaxis().SetTitle(b.name)
-                self.h.GetYaxis().SetTitle(b.associated_branch.name)
+                xaxtit = b.name
+                if b.units:
+                    xaxtit += ' [{}]'.format(b.units)
+                yaxtit = b.associated_branch.name
+                if b.associated_branch.units:
+                    yaxtit += ' [{}]'.format(b.associated_branch.units)
+                self.h.GetXaxis().SetTitle(xaxtit)
+                self.h.GetYaxis().SetTitle(yaxtit)
     
     def fill_histogram(self, evt, b):
         if eval(self.evaltemp.format('evt')):
