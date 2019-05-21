@@ -328,7 +328,11 @@ for ci_i in range(0, nCanvases):  # ci in c:
         if(norm):
             if(verbose):
                 print "normalizing histogram {i}...".format(i=hi + 1),
-            h.Scale(1 / h.Integral())
+            if h.Integral() == 0:
+                if(verbose):
+                    print "histogram {i} has no contents--not normalizing".format(i=hi + 1),
+            else:
+                h.Scale(1 / h.Integral())
             if(verbose):
                 print "done"
         if(verbose):
