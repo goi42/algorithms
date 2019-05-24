@@ -720,3 +720,34 @@ class unc:
             v=self.getValue(),
             stat=self.getError('statistical'),
             sys=self.getError('systematic'))
+
+
+def dblGauIntX(f1, o1, o2, lo=0, hi=200):
+    'fraction of events in double Gaussian from mu - x to mu + x'
+    'to get the value of x yielding 0.9973 of the integral:'
+    'dblGauIntX(f1, o1, o2).GetX(0.9973)'
+    from ROOT import TF1
+    
+    def dblerf(x, par):
+        'integral of double Gaussian from mean - y to mean + y'
+        'first argument (x) is a 1-element list: y'
+        'second argument is a 3-element list:'
+        'fraction of the first Gaussian'
+        'sigma of the first Gaussian'
+        'sigma of the second Gaussian'
+        from ROOT import TMath
+        y, f1, o1, o2 = x[0], par[0], par[1], par[2]
+        
+        if len(par) != 3:
+            raise ValueError('par must have len 3')
+        if (o1 < 0) or (o2 < 0):
+            raise ValueError('both sigma must be >= 0')
+        
+        # this is the function returned by Mathematica for a normalized dbl-Gaussian
+        return f1 * TMath.Erf(y / (TMath.Sqrt(2) * o1)) + (1 - f1) * TMath.Erf(y / (TMath.Sqrt(2) * o2))
+    
+    myerffunc = TF1('dblerf', dblerf, lo, hi, 3)
+    myerffunc.SetParameters(f1, o1, o2)
+    myerffunc.SetParNames('f1', 'o1', 'o2')
+    
+    return myerffunc
