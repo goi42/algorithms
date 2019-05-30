@@ -751,3 +751,36 @@ def dblGauIntX(f1, o1, o2, lo=0, hi=200):
     myerffunc.SetParNames('f1', 'o1', 'o2')
     
     return myerffunc
+
+
+def pdfIntX(pdf, intvar, normset, mean, lo=0, hi=None):
+    'fraction of events in pdf from mean - x to mean + x'
+    'to get the value of x yielding 0.9973 of the integral:'
+    'dblGauIntX(pdf, intvar, normset, mean).GetX(0.9973)'
+    import ROOT
+    
+    if not intvar.hasRange('fitrange'):
+        raise Exception('intvar must have a fitrange declared for normalization')
+    if not (intvar.getMin('fitrange') < mean < intvar.getMax('fitrange')):
+        raise ValueError('mean does not fall within fitrange: {0} < {1} < {2} ?'.format(intvar.getMin('fitrange'), mean, intvar.getMax('fitrange')))
+    
+    if hi is None:
+        # search within fitrange
+        hi = min([intvar.getMax('fitrange') - mean, mean - intvar.getMin('fitrange')])
+    
+    def getIntrangeName(nm):
+        'give the range a name that is not already declared'
+        if intvar.hasRange(nm):
+            nm += '_'
+            return getIntrangeName(nm)
+        else:
+            return nm
+    
+    IntrangeName = getIntrangeName('intrange')
+    
+    def retval(x):
+        intvar.setRange(IntrangeName, mean - x[0], mean + x[0])
+        return pdf.createIntegral(normset, ROOT.RooFit.Range(IntrangeName)).getVal() / pdf.createIntegral(normset, ROOT.RooFit.Range('fitrange')).getVal()
+    
+    myfunc = ROOT.TF1('pdfIntX', retval, lo, hi, 0)
+    return myfunc
