@@ -153,6 +153,7 @@ if(not debug):
     else:
         canbar = progbar_makestart(nCanvases)
 hs = []
+file_nums_that_have_been_called = set()
 for ci_i in range(0, nCanvases):  # ci in c:
     if(debug):
         print "On canvas {i} out of {n}".format(i=ci_i + 1, n=nCanvases)
@@ -248,7 +249,43 @@ for ci_i in range(0, nCanvases):  # ci in c:
             )
             if(debug):
                 print 'done'
+        
+        fbar = None
+        if file_num not in file_nums_that_have_been_called and not nofileprogress:
+            barref = histbar if histbar is not None else canbar
+            if barref.useprogressbar:
+                # overwrite current progressbar (in order to look pretty)
+                pausestr = 'pausing at {perc}%...'.format(perc=round(barref.progbar.percentage()))
+                print pausestr, max((0, (barref.progbar.term_width - 2 - len(pausestr) + 1))) * ' '
+            
+            nEntries = thisfile.GetEntries()
+            print 'looping over {n} entries from {f}...'.format(n=nEntries, f=thisfile.name)
+            fbar = progbar_makestart(nEntries)
+            
+            freq = int(nEntries / 100 + 1)
+            # this has to be done in C++ bcause thiscut.h.OnPartialResultSlot cannot yet take a python function
+            ROOT.gInterpreter.ProcessLine(
+                'std::mutex bar_mutex{file_num};'
+                'int fbarprogress{file_num} = 0;'
+                'ROOT::RDF::RResultPtr<TH1D> * cpph{file_num} = (ROOT::RDF::RResultPtr<TH1D> * )TPython::Eval("thiscut.h");'
+                'cpph{file_num}->OnPartialResultSlot({freq}, [&bar_mutex{file_num}, &fbarprogress{file_num}](unsigned int, TH1D &){{'
+                'std::lock_guard<std::mutex> l(bar_mutex{file_num});'
+                'fbarprogress{file_num} += {freq};'
+                'char * fbarupdate_expression = Form("fbar.update(%d)", fbarprogress{file_num});'
+                'TPython::Eval(fbarupdate_expression);'
+                '}});'
+                ''.format(file_num=file_num, freq=freq)  # ensure unique definitions
+            )
+        
+        # fill and format histogram
         thiscut.format_histogram(linecolor=linecolor, markercolor=markercolor, fillcolor=fillcolor, fillstyle=fillstyle, b=thisbranch, sumw2=not nosumw2)  # linecolor is ignored for 2D histograms by format_histogram
+        
+        if fbar is not None:
+            fbar.finish()
+
+        # update file_nums_that_have_been_called
+        file_nums_that_have_been_called.add(file_num)
+        
         if(thiscut.hdims == 1):
             if(thisbranch.set_log_X):
                 ci.SetLogx()

@@ -65,6 +65,8 @@ parser.add_argument('--lhcbStyle', action='store_true',
                     help='use lhcbStyle.C formatting')
 parser.add_argument('--buildlegend', action='store_true',
                     help='use BuildLegend instead of the default creation (overrides all other settings)')
+parser.add_argument('--nofileprogress', action='store_true',
+                    help='do not display progress in event loops of files/chains')
 
 # class modimport(argparse.Action):
 #     def __init__(self,option_strings,dest,nargs=None,**kwargs):
@@ -116,3 +118,4 @@ nosumw2 = args.nosumw2
 nomultithreading = args.nomultithreading
 lhcbStyle = args.lhcbStyle
 buildlegend = args.buildlegend
+nofileprogress = args.nofileprogress
