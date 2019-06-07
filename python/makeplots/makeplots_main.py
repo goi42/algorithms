@@ -284,7 +284,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
             if(debug):
                 print 'done'
         if doDraw:
-            thish = thisbranch.make_histogram(hname="h" + str(ci_i) + str(hi), linecolor=linecolor, markercolor=markercolor, fillcolor=fillcolor, fillstyle=fillstyle, overwrite=True, return_histogram=True, sumw2=not nosumw2)  # linecolor is ignored for 2D histograms by make_histogram
+            thish = thisbranch.make_histogram(thisfile, thiscut, linecolor=linecolor, markercolor=markercolor, fillcolor=fillcolor, fillstyle=fillstyle, overwrite=True, return_histogram=True, sumw2=not nosumw2)  # linecolor is ignored for 2D histograms by make_histogram
             # draw histograms
             if(verbose):
                 print "drawing histogram {i}...".format(i=hi + 1),

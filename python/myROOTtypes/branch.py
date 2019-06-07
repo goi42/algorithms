@@ -91,7 +91,8 @@ class branch(bfch):
         if self.associated_branch:
             self.associated_branch.prep_for_histogram()
     
-    def make_histogram(self, hname=None, linecolor=None, markercolor=None, fillcolor=None, fillstyle=None, sumw2=True, overwrite=False, return_histogram=True):  # create an empty histogram
+    def make_histogram(self, f, c, hname=None, htit=None, linecolor=None, markercolor=None, fillcolor=None, fillstyle=None, sumw2=True, overwrite=False, return_histogram=True):  # create an empty histogram
+        'declare a histogram (set to self.h) from the given file `f` and cut `c`'
         if linecolor is None and self.linecolor is None:
             linecolor = 1
         elif linecolor is None:
@@ -103,9 +104,19 @@ class branch(bfch):
         if fillstyle is None:
             fillstyle = self.fillstyle
             
-        if not hname:
-            hname = 'h' + repr(cbfch.nh)
-            cbfch.nh += 1
+        if hname is None:
+            hname = 'h_{0}_{1}{2}_{3}'.format(
+                cbfch.nh if f.hname is None else f.hname,
+                '' if self.associated_branch is None else self.associated_branch.hname + '_',
+                cbfch.nh if self.hname is None else self.hname,
+                cbfch.nh if c.hname is None else c.hname,
+            )
+        if htit is None:
+            if self.associated_branch:
+                bname = '{0} vs. {1}'.format(self.associated_branch.name, self.name)
+            else:
+                bname = self.name
+            htit = '{0}: {1}: {2}'.format(f.name, bname, c.name)
         if self.h and not overwrite:
             raise Exception('{} has h already'.format(self.name))
         elif overwrite:
@@ -113,7 +124,7 @@ class branch(bfch):
         assocbranch = self.associated_branch
         self.prep_for_histogram()
         if not assocbranch:
-            h = TH1F(hname, self.name, self.nBins, self.loBin, self.hiBin)
+            h = TH1F(hname, htit, self.nBins, self.loBin, self.hiBin)
             if(self.can_extend):
                 h.SetCanExtend(TH1.kAllAxes)
             h.SetLineColor(linecolor)
@@ -124,7 +135,7 @@ class branch(bfch):
             if fillstyle is not None:
                 h.SetFillStyle(fillstyle)
         else:
-            h = TH2F(hname, self.name + ' vs. ' + assocbranch.name, self.nBins, self.loBin, self.hiBin, assocbranch.nBins, assocbranch.loBin, assocbranch.hiBin)
+            h = TH2F(hname, htit, self.nBins, self.loBin, self.hiBin, assocbranch.nBins, assocbranch.loBin, assocbranch.hiBin)
             if(self.can_extend):
                 h.SetCanExtend(TH1.kXaxis)
             if(assocbranch.can_extend):
