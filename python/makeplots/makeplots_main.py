@@ -263,7 +263,7 @@ for ci_i in range(0, nCanvases):  # ci in c:
             fbar = progbar_makestart(nEntries)
             
             freq = int(nEntries / 100 + 1)
-            # this has to be done in C++ bcause thiscut.h.OnPartialResultSlot cannot yet take a python function
+            # this has to be done in C++ because thiscut.h.OnPartialResultSlot cannot yet take a python function
             ROOT.gInterpreter.ProcessLine(
                 'std::mutex bar_mutex{file_num};'
                 'int fbarprogress{file_num} = 0;'
