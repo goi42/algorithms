@@ -99,6 +99,64 @@ def FD(mother, daughter):
     return outstr
 
 
+def angle_endv(p1, p2):
+    "returns a string representing the angle between"
+    " the ENDVERTEX w.r.t. the OWNPV for two particles"
+    
+    endvkvars = ('_ENDVERTEX_X', '_ENDVERTEX_Y', '_ENDVERTEX_Z')
+    pvkvars = ('_OWNPV_X', '_OWNPV_Y', '_OWNPV_Z')
+    plist = (p1, p2, )
+    
+    # -- product of magnitudes
+    maglist = []
+    for p in plist:
+        if 'TRUE' in p:
+            raise ValueError('cannot use TRUE')
+        mag = 'sqrt('
+        for (endvkv, pvkv) in zip(endvkvars, pvkvars):
+            mag += 'pow(({e} - {p}), 2)'.format(e=p + endvkv, p=p + pvkv)
+            if endvkv is not endvkvars[-1]:
+                assert pvkv is not pvkvars[-1]
+                mag += ' + '
+        mag += ')'
+        maglist.append(mag)
+    assert len(maglist) == 2
+    magprod = '({m1} * {m2})'.format(m1=maglist[0], m2=maglist[1])
+    
+    # -- dot product
+    dot = '('
+    for (endvkv, pvkv) in zip(endvkvars, pvkvars):
+        v1 = '({e} - {p})'.format(e=p1 + endvkv, p=p1 + pvkv)
+        v2 = '({e} - {p})'.format(e=p2 + endvkv, p=p2 + pvkv)
+        dot += '({v1} * {v2})'.format(v1=v1, v2=v2)
+        if endvkv is not endvkvars[-1]:
+            assert pvkv is not pvkvars[-1]
+            dot += ' + '
+    dot += ')'
+    
+    return 'acos({prod} / {mag})'.format(prod=dot, mag=magprod)
+
+
+def angle_p(p1, p2):
+    "returns a string representing the angle between"
+    " the momenta of two particles"
+    
+    kvars = ('_PX', '_PY', '_PZ')
+    plist = (p1, p2, )
+    
+    # -- product of magnitudes
+    magprod = '({m1} * {m2})'.format(m1=momentum(p1), m2=momentum(p2))
+    
+    dot = '('
+    for kv in kvars:
+        dot += '({v1} * {v2})'.format(v1=p1 + kv, v2=p2 + kv)
+        if kv is not kvars[-1]:
+            dot += ' + '
+    dot += ')'
+    
+    return 'acos({prod} / {mag})'.format(prod=dot, mag=magprod)
+
+
 def rapidity(nm):
     "returns a string representing the rapidity y of nm (using atanh) by using '_PZ' and '_P' "
     "(or using 'P_Z' and calculating P with 'P_X', 'P_Y', 'P_Z' [using sqrt and pow] if 'TRUE' in nm): "
@@ -709,3 +767,16 @@ def pdfIntX(pdf, intvar, normset, mean, lo=0, hi=None):
     
     myfunc = ROOT.TF1('pdfIntX', retval, lo, hi, 0)
     return myfunc
+
+
+def invvarmean(alist):
+    'find the inverse-variance weighted mean of a list of ufloats (from the uncertainties package)'
+    from uncertainties import ufloat
+    from uncertainties.umath import sqrt
+    
+    num = den = 0
+    for a in alist:
+        num += a.n / a.s**2
+        den += 1 / a.s**2
+    
+    return ufloat(num / den, sqrt(1 / den))
