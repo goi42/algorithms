@@ -40,6 +40,8 @@ class fch(bfch):  # abstract base class for file and chain classes
     def add_filtered_dframe(self, c, overwrite=False):
         if isinstance(c, str):
             ctit = c
+        elif isinstance(c, cut):
+            ctit = c.uniquenm
         else:
             ctit = c.GetTitle()
         

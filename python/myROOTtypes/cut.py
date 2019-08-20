@@ -3,13 +3,18 @@ from cbfch import cbfch
 
 
 class cut(cbfch):
-    def __init__(self, cut=None, name=None, weight=None, linecolor=None, markercolor=None, fillcolor=None, fillstyle=None, hname=None, neededbranchnames=None, evaltemp=None, needednames=None):
+    def __init__(self, cut=None, name=None, weight=None, linecolor=None, markercolor=None, fillcolor=None, fillstyle=None, hname=None, neededbranchnames=None, evaltemp=None, needednames=None, uniquenm=None):
         if cut is None and evaltemp is not None:
             cut = evaltemp.replace('{0}.', '')
+        if hname is None:
+            hname = uniquenm
         cbfch.__init__(self, linecolor=linecolor, markercolor=markercolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname, neededbranchnames=neededbranchnames, evaltemp=evaltemp, needednames=needednames)
         self.cut = ROOT.TCut(cut)
         self.name = str(name) if name is not None else str(cut)
         self.weight = weight if weight is not None else None  # should be cut, string, or TCut -- another way to apply weights when drawing
+        if uniquenm is None:
+            uniquenm = self.cut.GetTitle()
+        self.uniquenm = uniquenm
     
     def check_dummy(self):
         return not any([  # decide whether this is a dummy cut
@@ -23,7 +28,8 @@ class cut(cbfch):
             bool(self.hname),
             bool(self.neededbranchnames),
             bool(self.evaltemp),
-            bool(self.needednames)
+            bool(self.needednames),
+            bool(self.uniquenm),
         ])
     
     def make_histogram(self, f, b, hname=None, htit=None, overwrite=False, return_histogram=True):
