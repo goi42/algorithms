@@ -3,7 +3,7 @@ from cbfch import cbfch
 
 
 class cut(cbfch):
-    def __init__(self, cut=None, name=None, weight=None, linecolor=None, markercolor=None, fillcolor=None, fillstyle=None, hname=None, neededbranchnames=None, evaltemp=None, needednames=None, uniquenm=None):
+    def __init__(self, cut=None, name=None, weight=None, linecolor=None, markercolor=None, fillcolor=None, fillstyle=None, hname=None, neededbranchnames=None, evaltemp=None, needednames=None, uniquenm=None, stackcut=None):
         if cut is None and evaltemp is not None:
             cut = evaltemp.replace('{0}.', '')
         if hname is None:
@@ -15,6 +15,8 @@ class cut(cbfch):
         if uniquenm is None:
             uniquenm = self.cut.GetTitle()
         self.uniquenm = uniquenm
+        self.stackcut = stackcut  # this cut should be interpreted as a filter of another cut (the stackcut)
+        # WARNING: make sure that cuts with this stackcut are assigned a unique uniquenm! Otherwise they could get overridden by cuts without.
     
     def check_dummy(self):
         return not any([  # decide whether this is a dummy cut
@@ -30,6 +32,7 @@ class cut(cbfch):
             bool(self.evaltemp),
             bool(self.needednames),
             bool(self.uniquenm),
+            bool(self.stackcut),
         ])
     
     def make_histogram(self, f, b, hname=None, htit=None, overwrite=False, return_histogram=True):

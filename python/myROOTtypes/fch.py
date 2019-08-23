@@ -56,7 +56,14 @@ class fch(bfch):  # abstract base class for file and chain classes
                 unm = get_title(c)
             return unm
         
-        dictkey = ''
+        if isinstance(c, cut):
+            if c.stackcut is None:
+                dictkey = ''
+            else:
+                self.add_filtered_dframe(c.stackcut, overwrite=overwrite)
+                dictkey = get_uniquenm(c.stackcut)
+        else:
+            dictkey = ''
         
         self.make_dframedict()
         
