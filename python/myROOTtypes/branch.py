@@ -7,13 +7,15 @@ from ROOT import TH1F, TH1, TH2F, TCut
 
 
 class branch(bfch):
-    def __init__(self, branch, name=None, nBins=0, loBin=0, hiBin=0, units=None, xlabel="", ylabel="",
+    def __init__(self, branch=None, name=None, nBins=0, loBin=0, hiBin=0, units=None, xlabel="", ylabel="",
                  set_log_X=False, set_log_Y=False, can_extend=False, c=None, axname=None,
                  associated_branch=None, uniquenm=None, linecolor=None, markercolor=None, fillcolor=None, fillstyle=None,
                  hname=None, neededbranchnames=None, datatype=None, evaltemp=None, needednames=None,
                  nBins_pretty=None, subranges=None,
                  ):
         # evaluate some default values
+        if branch is None and evaltemp is not None:
+            branch = evaltemp.replace('{0}.', '')
         if name is None:
             name = branch
         if uniquenm is None:
