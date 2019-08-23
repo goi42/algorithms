@@ -35,7 +35,9 @@ from fxns import addsyspath, progbar_makestart, do_ROOT_multithreading
 with addsyspath(pathtolayerfile):
     from makeplots_layer import L
 
+wasbatch = ROOT.gROOT.IsBatch()
 ROOT.gROOT.SetBatch(True)
+orig_errlvl = ROOT.gErrorIgnoreLevel
 if(not debug):
     ROOT.gErrorIgnoreLevel = ROOT.kWarning
 if not nomultithreading:
@@ -431,6 +433,7 @@ if(histograms or savecan):
 cf.cd()
 if(nCanvases > 1):
     cf.Print(os.path.join(outputlocation, filename + ")"))
-ROOT.gROOT.SetBatch(False)
+ROOT.gROOT.SetBatch(wasbatch)
+ROOT.gErrorIgnoreLevel = orig_errlvl
 print 'finished at', time.asctime(time.localtime(time.time()))
 print "---------------------------done----------------------------------------"
