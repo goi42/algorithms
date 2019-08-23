@@ -38,19 +38,33 @@ class fch(bfch):  # abstract base class for file and chain classes
         return self.dframedict
     
     def add_filtered_dframe(self, c, overwrite=False):
-        if isinstance(c, str):
-            ctit = c
-        elif isinstance(c, cut):
-            ctit = c.uniquenm
-        else:
-            ctit = c.GetTitle()
+        def get_title(c):
+            'get the Title (or equivalent) of c'
+            if isinstance(c, cut):
+                ctit = c.cut.GetTitle()
+            elif isinstance(c, str):
+                ctit = c
+            else:
+                ctit = c.GetTitle()
+            return ctit
+        
+        def get_uniquenm(c):
+            'get the uniquenm (or equivalent) of c'
+            if isinstance(c, cut):
+                unm = c.uniquenm
+            else:
+                unm = get_title(c)
+            return unm
+        
+        dictkey = ''
         
         self.make_dframedict()
         
-        if ctit not in self.dframedict or overwrite:
-            self.dframedict[ctit] = self.dframedict[''].Filter(ctit)
+        unm = get_uniquenm(c)
+        if overwrite or unm not in self.dframedict:
+            self.dframedict[unm] = self.dframedict[dictkey].Filter(get_title(c))
         
-        return self.dframedict[ctit]
+        return self.dframedict[unm]
     
     def add_branch(self, *args, **kwargs):
         if all(isinstance(x, branch) for x in args):
