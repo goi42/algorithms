@@ -266,6 +266,8 @@ class cut(cbfch):
             newcut = '!(' + ancut + ')'
             if not self.name.strip():
                 newname = '!(' + anname + ')'
+            newevaltemp = 'not (' + newevaltemp + ')'
+            newhname = 'not_' + newhname
         return cut(
             newcut, newname,
             weight=newweight, hname=newhname, evaltemp=newevaltemp,
