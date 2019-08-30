@@ -73,11 +73,22 @@ class fch(bfch):  # abstract base class for file and chain classes
         
         return self.dframedict[unm]
     
+    def range_dframes(self, begin, end, stride=1):
+        'all existing dframes are replaced by limited range versions of themselves'
+        self.make_dframedict()
+        for k, df in self.dframedict.iteritems():
+            self.dframedict[k] = df.Range(begin, end, stride)
+    
     def add_branch(self, *args, **kwargs):
         if all(isinstance(x, branch) for x in args):
             self.b += args
         else:
             self.b.append(branch(*args, **kwargs))
+    
+    def add_columns(self):
+        'adds branches as columns to all existing dframes'
+        for b in self.b:
+            b.add_column(self)
     
     def file_1tree(self, fname):
         if self.__class__.__name__ == 'file':  # this check is only necessary for files, not chains
