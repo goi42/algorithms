@@ -85,9 +85,11 @@ class fch(bfch):  # abstract base class for file and chain classes
         else:
             self.b.append(branch(*args, **kwargs))
     
-    def add_columns(self):
-        'adds branches as columns to all existing dframes'
-        for b in self.b:
+    def add_columns(self, *args):
+        'adds branches as columns to all existing dframes if no arguments'
+        'else, adds specified branches as columns without adding them to b'
+        blist = args if args else self.b
+        for b in blist:
             b.add_column(self)
     
     def file_1tree(self, fname):
