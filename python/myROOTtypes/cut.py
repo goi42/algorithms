@@ -35,7 +35,7 @@ class cut(cbfch):
             bool(self.stackcut),
         ])
     
-    def make_histogram(self, f, b, hname=None, htit=None, overwrite=False, return_histogram=True):
+    def make_histogram(self, f, b, hname=None, htit=None, overwrite=False, return_histogram=True, use_subranges=False):
         'declare a histogram (set to self.h) from the given file `f` and branch `b`'
         
         if overwrite:
@@ -64,14 +64,26 @@ class cut(cbfch):
             htit = '{0}: {1}: {2}'.format(f.name, bname, self.name)
         
         # declare parameters for histogram creation
-        hargs = [hname, htit, b.nBins, b.loBin, b.hiBin]  # base histogram arguments
+        hargs = [hname, htit]  # base histogram arguments
+        if use_subranges:
+            from array import array
+            hargs += [
+                len(b.subranges.keys()) - 1,
+                array('d', sorted([sr[1] for (key, sr) in b.subranges.iteritems()]))]
+        else:
+            hargs += [b.nBins, b.loBin, b.hiBin]
         if b.associated_branch is None:
             passlist = [tuple(hargs), b.uniquenm]
             thehcomm = filterdframe.Histo1D
             self.hdims = 1
         else:
             ab = b.associated_branch
-            passlist = [tuple(hargs + [ab.nBins, ab.loBin, ab.hiBin]), b.uniquenm, ab.uniquenm]
+            toadd = [
+                len(ab.subranges.keys()) - 1,
+                array('d', sorted([sr[1] for (key, sr) in ab.subranges.iteritems()]))
+            ] if use_subranges else [
+                ab.nBins, ab.loBin, ab.hiBin]
+            passlist = [tuple(hargs + toadd), b.uniquenm, ab.uniquenm]
             thehcomm = filterdframe.Histo2D
             self.hdims = 2
         if self.weight is not None:
