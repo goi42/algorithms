@@ -139,7 +139,7 @@ for ifile in L[fL].element:
     for ibranch in ifile.b:
         # ibranch.add_column(ifile)
         for icut in ibranch.c:
-            icut.make_histogram(ifile, ibranch, return_histogram=False)
+            icut.make_histogram(ifile, ibranch, return_histogram=False, use_subranges=use_subranges)
             i += 1
             hbar.update(i)
 hbar.finish()
