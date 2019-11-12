@@ -43,6 +43,29 @@ class cut(cbfch):
         elif self.h is not None:
             raise Exception('h already exists!')
         
+        if use_subranges:
+            def getarray(_b):
+                from array import array
+                
+                # ensure subranges exists
+                if not _b.subranges:
+                    raise Exception('branch {0} has no subranges'.format(_b.name))
+                
+                # get list of bin edges
+                bins = []
+                for key, (nbins, lo, hi) in _b.subranges.iteritems():
+                    step = float(hi - lo) / nbins
+                    val = lo
+                    while val <= hi:
+                        if val not in bins:
+                            bins.append(val)
+                        val += step
+                
+                return array('d', sorted(bins))
+            
+            bbins = getarray(b)
+            abbins = getarray(b.associated_branch)
+        
         # add potentially missing items
         b.add_column(f)
         b.prep_for_histogram()
@@ -64,25 +87,15 @@ class cut(cbfch):
             htit = '{0}: {1}: {2}'.format(f.name, bname, self.name)
         
         # declare parameters for histogram creation
-        hargs = [hname, htit]  # base histogram arguments
-        if use_subranges:
-            from array import array
-            hargs += [
-                len(b.subranges.keys()) - 1,
-                array('d', sorted([sr[1] for (key, sr) in b.subranges.iteritems()]))]
-        else:
-            hargs += [b.nBins, b.loBin, b.hiBin]
+        hargs = [hname, htit]
+        hargs += [len(bbins) - 1, bbins] if use_subranges else [b.nBins, b.loBin, b.hiBin]
         if b.associated_branch is None:
             passlist = [tuple(hargs), b.uniquenm]
             thehcomm = filterdframe.Histo1D
             self.hdims = 1
         else:
             ab = b.associated_branch
-            toadd = [
-                len(ab.subranges.keys()) - 1,
-                array('d', sorted([sr[1] for (key, sr) in ab.subranges.iteritems()]))
-            ] if use_subranges else [
-                ab.nBins, ab.loBin, ab.hiBin]
+            toadd = [len(abbins) - 1, abbins] if use_subranges else [ab.nBins, ab.loBin, ab.hiBin]
             passlist = [tuple(hargs + toadd), b.uniquenm, ab.uniquenm]
             thehcomm = filterdframe.Histo2D
             self.hdims = 2
