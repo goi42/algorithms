@@ -103,7 +103,12 @@ class cut(cbfch):
             passlist += [self.weight if isinstance(self.weight, str) else self.weight.GetTitle()]
         
         # create histogram
-        theh = thehcomm(*passlist)
+        try:
+            theh = thehcomm(*passlist)
+        except TypeError as e:
+            if self.weight is not None and len(self.weight.split()) > 1:
+                print 'There is a problem. Did you forget to Define a weight column?'
+            raise e
         
         cbfch.nh += 1
         
