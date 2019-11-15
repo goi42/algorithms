@@ -780,3 +780,21 @@ def invvarmean(alist):
         den += 1 / a.s**2
     
     return ufloat(num / den, sqrt(1 / den))
+
+
+def chunk(it, size):
+    'takes an iterable and chunks it into a list of tuples of length size or smaller'
+    'https://stackoverflow.com/a/22045226'
+    
+    from itertools import islice
+    
+    it = iter(it)
+    return iter(lambda: tuple(islice(it, size)), ())
+
+
+def split(it, size):
+    'takes an iterable and splits it into a size tuples'
+    'https://stackoverflow.com/a/2135920'
+    
+    k, m = divmod(len(it), size)
+    return (it[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in xrange(size))
