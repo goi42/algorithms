@@ -49,7 +49,7 @@ class cut(cbfch):
                 
                 # ensure subranges exists
                 if not _b.subranges:
-                    raise Exception('branch {0} has no subranges'.format(_b.name))
+                    return
                 
                 # get list of bin edges
                 bins = []
@@ -89,14 +89,14 @@ class cut(cbfch):
         
         # declare parameters for histogram creation
         hargs = [hname, htit]
-        hargs += [len(bbins) - 1, bbins] if use_subranges else [b.nBins, b.loBin, b.hiBin]
+        hargs += [len(bbins) - 1, bbins] if use_subranges and bbins else [b.nBins, b.loBin, b.hiBin]
         if b.associated_branch is None:
             passlist = [tuple(hargs), b.uniquenm]
             thehcomm = filterdframe.Histo1D
             self.hdims = 1
         else:
             ab = b.associated_branch
-            toadd = [len(abbins) - 1, abbins] if use_subranges else [ab.nBins, ab.loBin, ab.hiBin]
+            toadd = [len(abbins) - 1, abbins] if use_subranges and abbins else [ab.nBins, ab.loBin, ab.hiBin]
             passlist = [tuple(hargs + toadd), b.uniquenm, ab.uniquenm]
             thehcomm = filterdframe.Histo2D
             self.hdims = 2
