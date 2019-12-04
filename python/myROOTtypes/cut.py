@@ -64,7 +64,8 @@ class cut(cbfch):
                 return array('d', sorted(bins))
             
             bbins = getarray(b)
-            abbins = getarray(b.associated_branch)
+            if b.associated_branch is not None:
+                abbins = getarray(b.associated_branch)
         
         # add potentially missing items
         b.add_column(f)
