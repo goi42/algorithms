@@ -194,6 +194,7 @@ class cut(cbfch):
             ancut = another.cut.GetTitle()
             anname = another.name
             anweight = another.weight
+            anstackcut = another.stackcut
             anlinecolor = another.linecolor
             anmarkercolor = another.markercolor
             anfillcolor = another.fillcolor
@@ -205,11 +206,11 @@ class cut(cbfch):
         elif another.__class__.__name__ == 'str':
             ancut = another
             anname = another
-            anweight = anlinecolor = anmarkercolor = anfillcolor = anfillstyle = anhname = anneededbranchnames = anevaltemp = anneedednames = None
+            anweight = anstackcut = anlinecolor = anmarkercolor = anfillcolor = anfillstyle = anhname = anneededbranchnames = anevaltemp = anneedednames = None
         elif another.__class__.__name__ == 'TCut':
             ancut = another.GetTitle()
             anname = another.GetName()
-            anweight = anlinecolor = anmarkercolor = anfillcolor = anfillstyle = anhname = anneededbranchnames = anevaltemp = anneedednames = None
+            anweight = anstackcut = anlinecolor = anmarkercolor = anfillcolor = anfillstyle = anhname = anneededbranchnames = anevaltemp = anneedednames = None
         else:
             raise TypeError('cannot perform arithmetic on object of class "' + another.__class__.__name__ + '" with object of class "cut"')
         
@@ -217,7 +218,7 @@ class cut(cbfch):
             return (
                 ancut, anname,
                 ancut, anname,
-                anweight,
+                anweight, anstackcut,
                 anlinecolor, anmarkercolor, anfillcolor, anfillstyle,
                 anhname,
                 anneededbranchnames,
@@ -231,6 +232,10 @@ class cut(cbfch):
             newweight = self.weight
         else:
             raise Exception('cannot combine two cuts with different weights!')
+        if self.stackcut is anstackcut:
+            newstackcut = self.stackcut
+        else:
+            raise Exception('cannot combine two cuts with different stackcuts!')
         newlinecolor = self.linecolor if self.linecolor == anlinecolor else None
         newmarkercolor = self.markercolor if self.markercolor == anmarkercolor else None
         newfillcolor = self.fillcolor if self.fillcolor == anfillcolor else None
@@ -255,7 +260,7 @@ class cut(cbfch):
         return (
             newcut, newname,
             ancut, anname,
-            newweight,
+            newweight, newstackcut,
             newlinecolor, newmarkercolor, newfillcolor, newfillstyle,
             newhname,
             newneededbranchnames,
@@ -267,7 +272,7 @@ class cut(cbfch):
         (
             newcut, newname,
             ancut, anname,
-            newweight,
+            newweight, newstackcut,
             newlinecolor, newmarkercolor, newfillcolor, newfillstyle,
             newhname,
             newneededbranchnames,
@@ -276,7 +281,7 @@ class cut(cbfch):
         ) = self._arithmetic('&&', another, '_and_', 'and')
         return cut(
             newcut, newname,
-            weight=newweight, hname=newhname, evaltemp=newevaltemp,
+            weight=newweight, stackcut=newstackcut, hname=newhname, evaltemp=newevaltemp,
             linecolor=newlinecolor, markercolor=newmarkercolor, fillcolor=newfillcolor, fillstyle=newfillstyle,
             neededbranchnames=newneededbranchnames, needednames=newneedednames,
         )
@@ -286,7 +291,7 @@ class cut(cbfch):
         (
             newcut, newname,
             ancut, anname,
-            newweight,
+            newweight, newstackcut,
             newlinecolor, newmarkercolor, newfillcolor, newfillstyle,
             newhname,
             newneededbranchnames,
@@ -297,11 +302,11 @@ class cut(cbfch):
             newcut = '!(' + ancut + ')'
             if not self.name.strip():
                 newname = '!(' + anname + ')'
-            newevaltemp = 'not (' + newevaltemp + ')'
-            newhname = 'not_' + newhname
+            newevaltemp = None if newevaltemp is None else ('not (' + newevaltemp + ')')
+            newhname = None if newhname is None else ('not_' + newhname)
         return cut(
             newcut, newname,
-            weight=newweight, hname=newhname, evaltemp=newevaltemp,
+            weight=newweight, stackcut=newstackcut, hname=newhname, evaltemp=newevaltemp,
             linecolor=newlinecolor, markercolor=newmarkercolor, fillcolor=newfillcolor, fillstyle=newfillstyle,
             neededbranchnames=newneededbranchnames, needednames=newneedednames,
         )
@@ -314,7 +319,7 @@ class cut(cbfch):
         (
             newcut, newname,
             ancut, anname,
-            newweight,
+            newweight, newstackcut,
             newlinecolor, newmarkercolor, newfillcolor, newfillstyle,
             newhname,
             newneededbranchnames,
@@ -323,7 +328,7 @@ class cut(cbfch):
         ) = self._arithmetic('*', another, '_times_')
         return cut(
             newcut, newname,
-            weight=newweight, hname=newhname, evaltemp=newevaltemp,
+            weight=newweight, stackcut=newstackcut, hname=newhname, evaltemp=newevaltemp,
             linecolor=newlinecolor, markercolor=newmarkercolor, fillcolor=newfillcolor, fillstyle=newfillstyle,
             neededbranchnames=newneededbranchnames, needednames=newneedednames,
         )
@@ -333,7 +338,7 @@ class cut(cbfch):
         (
             newcut, newname,
             ancut, anname,
-            newweight,
+            newweight, newstackcut,
             newlinecolor, newmarkercolor, newfillcolor, newfillstyle,
             newhname,
             newneededbranchnames,
@@ -342,7 +347,7 @@ class cut(cbfch):
         ) = self._arithmetic('||', another, '_or_', 'or')
         return cut(
             newcut, newname,
-            weight=newweight, hname=newhname, evaltemp=newevaltemp,
+            weight=newweight, stackcut=newstackcut, hname=newhname, evaltemp=newevaltemp,
             linecolor=newlinecolor, markercolor=newmarkercolor, fillcolor=newfillcolor, fillstyle=newfillstyle,
             neededbranchnames=newneededbranchnames, needednames=newneedednames,
         )
