@@ -295,9 +295,8 @@ class updateprogress(object):
         super(updateprogress, self).__init__()
         self.maxval = maxval
         self.printevery = float(self.maxval) / 100
-        import imp
         try:
-            imp.find_module('progressbar')
+            import progressbar
             self.useprogressbar = True
         except ImportError:
             self.useprogressbar = False
