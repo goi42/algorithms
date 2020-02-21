@@ -51,17 +51,7 @@ class cut(cbfch):
                 if not _b.subranges:
                     return
                 
-                # get list of bin edges
-                bins = []
-                for key, (nbins, lo, hi) in _b.subranges.iteritems():
-                    step = float(hi - lo) / nbins
-                    val = lo
-                    while val <= hi:
-                        if val not in bins:
-                            bins.append(val)
-                        val += step
-                
-                return array('d', sorted(bins))
+                return _b.get_bin_edges()
             
             bbins = getarray(b)
             if b.associated_branch is not None:

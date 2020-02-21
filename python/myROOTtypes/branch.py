@@ -186,6 +186,47 @@ class branch(bfch):
             
             self.subranges[snm] = (nBins, loBin, hiBin)
     
+    def get_bin_edges(self):
+        'return list of bin edges from subranges'
+        from array import array
+        
+        # verify subranges
+        if not self.subranges:
+            raise Exception('No subranges assigned!')
+        lobins = []
+        hibins = []
+        for lab, (nbins, lo, hi) in self.subranges.iteritems():
+            lobins.append(lo)
+            hibins.append(hi)
+        if not (len(set(lobins)) == len(lobins) and len(set(hibins)) == len(hibins)):
+            # more than one range with the same edge
+            raise Exception('Overlapping ranges!')
+        nLoInHi = 0
+        for lo in lobins:
+            if lo in hibins:
+                nLoInHi += 1
+        nHiInLo = 0
+        for hi in hibins:
+            if hi in lobins:
+                nHiInLo += 1
+        if not (nLoInHi == len(hibins) - 1 and nHiInLo == len(lobins) - 1):
+            raise Exception('Discontinuous ranges!')
+        
+        # get list of bin edges
+        bins = set()
+        for key, (nbins, lo, hi) in self.subranges.iteritems():
+            step = float(hi - lo) / nbins
+            val = lo
+            equaledHi = False
+            while val <= hi:
+                bins.add(val)
+                val += step
+                if val == hi:
+                    equaledHi = True
+            assert equaledHi
+        
+        return array('d', sorted(bins))
+    
     def _arithmetic(self, sym, another, altsym='_'):
         from fxns import logical_combine
         newbranch = logical_combine(self.branch, sym, another.branch)
