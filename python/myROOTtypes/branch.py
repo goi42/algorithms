@@ -30,7 +30,7 @@ class branch(bfch):
             datatype = 'F'
         if needednames is None:
             needednames = []
-        
+
         # initialize members
         bfch.__init__(
             self, c=c, linecolor=linecolor, markercolor=markercolor, fillcolor=fillcolor, fillstyle=fillstyle, hname=hname,
@@ -59,7 +59,7 @@ class branch(bfch):
         # self.legyi = 0.7
         # self.legyf = 0.9
         # self.legend = TLegend(self.legxi,self.legyi,self.legxf,self.legyf)
-    
+
     def set_binning(self, nBins, loBin, hiBin, can_extend=False):
         if nBins < 0:
             raise ValueError("branch {} cannot be assigned nBins = {}. nBins must be >=0!".format(repr(self.name), repr(nBins)))
@@ -69,16 +69,16 @@ class branch(bfch):
         self.loBin = loBin
         self.hiBin = hiBin
         self.can_extend = can_extend
-    
+
     def calc_nBins(self, binsize):
         nBins = float(self.hiBin - self.loBin) / float(binsize)
         if nBins != int(nBins):
             raise ValueError('binsize incompatible with range')
         self.nBins = int(nBins)
-    
+
     def get_bin_width(self):
         return (float(self.hiBin) - float(self.loBin)) / float(self.nBins)
-    
+
     def add_column(self, ifile):
         ifile.make_dframedict()  # only makes it if it doesn't already exist
         for c in ifile.dframedict.iterkeys():
@@ -86,10 +86,10 @@ class branch(bfch):
                 ifile.dframedict[c] = ifile.dframedict[c].Define(self.uniquenm, str(self))
             if self.associated_branch:
                 self.associated_branch.add_column(ifile)
-    
+
     def prep_for_histogram(self):
         'make sure properties are set properly for histogram creation'
-        
+
         if self.nBins is None:
             self.nBins = 100  # set default binning if not specified
         hilospec = False  # is either loBin or hiBin non-0?
@@ -100,7 +100,7 @@ class branch(bfch):
             self.can_extend = True
         if self.associated_branch:
             self.associated_branch.prep_for_histogram()
-    
+
     def make_histogram(self, f, c, hname=None, htit=None, linecolor=None, markercolor=None, fillcolor=None, fillstyle=None, sumw2=True, overwrite=False, return_histogram=True):  # create an empty histogram
         'declare a histogram (set to self.h) from the given file `f` and cut `c`'
         if linecolor is None and self.linecolor is None:
@@ -113,7 +113,7 @@ class branch(bfch):
             fillcolor = self.fillcolor
         if fillstyle is None:
             fillstyle = self.fillstyle
-            
+
         if hname is None:
             hname = 'h_{0}_{1}{2}_{3}'.format(
                 cbfch.nh if f.hname is None else f.hname,
@@ -157,7 +157,7 @@ class branch(bfch):
         self.h = h
         if return_histogram:
             return h
-    
+
     def set_subranges(self, subranges):
         'subranges is a dictionary specifying other binning ranges '
         'of the form {"name": (nBins, loBin, hiBin),} '
@@ -166,7 +166,7 @@ class branch(bfch):
             raise TypeError('expected a dictionary!')
         if not all(len(x) == 3 for x in subranges.values()):
             raise ValueError('subranges should specify nBins, loBin, hiBin')
-        
+
         for snm, (nBins, loBin, hiBin) in subranges.iteritems():
             if snm in self.subranges:
                 raise ValueError('subrange {0} is already specified'.format(snm))
@@ -174,22 +174,22 @@ class branch(bfch):
                 raise ValueError('subrange {0} has loBin {1} which is lower than the primary loBin {2}'.format(snm, loBin, self.loBin))
             if hiBin > self.hiBin:
                 raise ValueError('subrange {0} has hiBin {1} which is higher than the primary hiBin {2}'.format(snm, hiBin, self.hiBin))
-            
+
             if nBins != 0 and self.nBins != 0:
                 perbin = float(hiBin - loBin) / nBins
                 selfperbin = float(self.hiBin - self.loBin) / self.nBins
-                
+
                 if perbin < selfperbin:
                     raise ValueError('{0} has {1} per bin, but this is less than {2}, the one of the overall range'.format(snm, perbin, selfperbin))
                 if perbin % selfperbin > 0.001:  # rounding errors
                     raise ValueError('{0} has {1} per bin, but this is not an even multiple of {2}, the one of the overall range'.format(snm, perbin, selfperbin))
-            
+
             self.subranges[snm] = (nBins, loBin, hiBin)
-    
+
     def get_bin_edges(self):
         'return list of bin edges from subranges'
         from array import array
-        
+
         # verify subranges
         if not self.subranges:
             raise Exception('No subranges assigned!')
@@ -211,7 +211,7 @@ class branch(bfch):
                 nHiInLo += 1
         if not (nLoInHi == len(hibins) - 1 and nHiInLo == len(lobins) - 1):
             raise Exception('Discontinuous ranges!')
-        
+
         # get list of bin edges
         bins = set()
         for key, (nbins, lo, hi) in self.subranges.iteritems():
@@ -224,9 +224,9 @@ class branch(bfch):
                 if val == hi:
                     equaledHi = True
             assert equaledHi
-        
+
         return array('d', sorted(bins))
-    
+
     def _arithmetic(self, sym, another, altsym='_'):
         from fxns import logical_combine
         newbranch = logical_combine(self.branch, sym, another.branch)
@@ -267,7 +267,7 @@ class branch(bfch):
         newuniquenm = self.uniquenm + altsym + another.uniquenm if self.uniquenm and another.uniquenm else None
         newunits = None if any(x is None for x in (self.units, another.units)) else logical_combine(self.units, sym, another.units)
         return newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, newhname, newuniquenm, newunits
-    
+
     def __add__(self, another):
         newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, newhname, newuniquenm, newunits = self._arithmetic('+', another, '_plus_')
         hiBin = self.hiBin + another.hiBin
@@ -280,7 +280,7 @@ class branch(bfch):
         if self.associated_branch and another.associated_branch:
             associated_branch = self.associated_branch + another.associated_branch
         return branch(newbranch, newname, nBins, loBin, hiBin, newunits, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, hname=newhname, uniquenm=newuniquenm)
-    
+
     def __sub__(self, another):
         newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, newhname, newuniquenm, newunits = self._arithmetic('-', another, '_minus_')
         hiBin = self.hiBin - another.loBin
@@ -295,7 +295,7 @@ class branch(bfch):
         if self.associated_branch and another.associated_branch:
             associated_branch = self.associated_branch - another.associated_branch
         return branch(newbranch, newname, nBins, loBin, hiBin, newunits, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, hname=newhname, uniquenm=newuniquenm)
-    
+
     def __mul__(self, another):
         newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, newhname, newuniquenm, newunits = self._arithmetic('*', another, '_times_')
         if self.hiBin >= 0 and another.hiBin >= 0 and self.loBin >= 0 and another.loBin >= 0:
@@ -313,7 +313,7 @@ class branch(bfch):
         if all(x is not None for x in (self.units, another.units)) and self.units == another.units:
             newunits = '({0})^{{2}}'.format(self.units)
         return branch(newbranch, newname, nBins, loBin, hiBin, newunits, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, hname=newhname, uniquenm=newuniquenm)
-    
+
     def __pow__(self, power):  # special case; does not call _arithmetic
         outbranch = copy.deepcopy(self)
         if power == 0.5:
@@ -346,7 +346,7 @@ class branch(bfch):
         if self.uniquenm is not None:
             outbranch.uniquenm = self.uniquenm + '_to_power_{}_'.format(power)
         return outbranch
-    
+
     def __div__(self, another):
         newbranch, newname, binning_rate, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, newhname, newuniquenm, newunits = self._arithmetic('/', another, '_divided_by_')
         if self.hiBin >= 0 and another.hiBin > 0 and self.loBin >= 0 and another.loBin > 0:
@@ -364,21 +364,21 @@ class branch(bfch):
         if self.associated_branch and another.associated_branch:
             associated_branch = self.associated_branch * another.associated_branch
         return branch(newbranch, newname, nBins, loBin, hiBin, newunits, xlabel, ylabel, set_log_X, set_log_Y, can_extend, c, associated_branch, hname=newhname, uniquenm=newuniquenm)
-    
+
     def __iadd__(self, another):
         return self + another
-    
+
     def __isub__(self, another):
         return self - another
-    
+
     def __imul__(self, another):
         return self * another
-    
+
     def __ipow__(self, power):
         return self ** power
-    
+
     def __idiv__(self, another):
         return self / another
-    
+
     def __str__(self):
         return self.branch
