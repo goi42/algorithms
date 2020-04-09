@@ -186,8 +186,8 @@ class branch(bfch):
 
             self.subranges[snm] = (nBins, loBin, hiBin)
 
-    def get_bin_edges(self):
-        'return list of bin edges from subranges'
+    def get_bin_edges(self, doArray=True):
+        'return array of bin edges from subranges'
         from array import array
 
         # verify subranges
@@ -219,13 +219,14 @@ class branch(bfch):
             val = lo
             equaledHi = False
             while val <= hi:
-                bins.add(val)
+                addval = int(val) if int(val) == val else val
+                bins.add(addval)
                 val += step
                 if val == hi:
                     equaledHi = True
             assert equaledHi
 
-        return array('d', sorted(bins))
+        return array('d', sorted(bins)) if doArray else sorted(bins)
 
     def _arithmetic(self, sym, another, altsym='_'):
         from fxns import logical_combine
